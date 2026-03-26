@@ -1,4 +1,4 @@
-// ===== Phase 1 MVP 核心类型 =====
+// ===== Phase 2.1 核心类型 =====
 
 export type EmotionType =
   | 'anxiety'
@@ -41,6 +41,16 @@ export type ReleaseMethod =
   | 'blow'        // 💨 吹走
   | 'melt'        // 🫠 融化
   | 'store';      // 📌 暂存
+
+// Phase 2.1: 练习类型
+export type PracticeType =
+  | 'thought-train'     // 🚂 念头列车
+  | 'thought-tv'        // 📺 念头电视
+  | 'cloud-writing'     // ☁️ 云上书写
+  | 'balloon-release'   // 🎈 气球释放
+  | 'drift-bottle'      // 🌊 念头漂流瓶
+  | 'microscope'        // 🔬 念头显微镜
+  | 'meet-personas';    // 👿 认识脑内角色
 
 export interface Thought {
   id?: number;  // auto-increment for IndexedDB
@@ -85,6 +95,35 @@ export interface AppSettings {
   onboardingCompleted: boolean;
 }
 
+// Phase 2.1: 角色卡片详细信息
+export interface PersonaCard {
+  type: PersonaType;
+  nickname?: string;       // 用户起的昵称
+  greeting: string;        // 角色自我介绍
+  thoughtCount: number;    // 归属念头数
+  firstSeen: number;       // 首次出现时间
+  recentThoughts: string[]; // 最近的念头内容
+}
+
+// Phase 2.1: 练习记录
+export interface PracticeRecord {
+  id: string;
+  type: PracticeType;
+  completedAt: number;
+  duration: number;       // 秒
+  thoughtsUsed: string[]; // 使用的念头内容
+}
+
+// Phase 2.1: 练习信息
+export interface PracticeInfo {
+  type: PracticeType;
+  name: string;
+  emoji: string;
+  duration: string;
+  description: string;
+  mechanism: string;
+}
+
 // ===== 视觉常量 =====
 
 // 气泡的情绪颜色映射
@@ -114,14 +153,14 @@ export const DISTORTION_NAMES: Record<CognitiveDistortion, string> = {
   'unknown':              '自动念头',
 };
 
-// 内在角色信息
-export const PERSONA_INFO: Record<PersonaType, { emoji: string; name: string; shortName: string; description: string }> = {
-  'anxiety-monster':  { emoji: '👿', name: '焦虑怪', shortName: '焦虑怪', description: '不断颤抖的小恶魔，它的工作是让你担心一切可能出错的事' },
-  'perfectionist-ai': { emoji: '🤖', name: '完美主义AI', shortName: '完美主义', description: '冰冷的机器人，总觉得你还不够好，需要再努力' },
-  'inner-child':      { emoji: '👶', name: '内在小孩', shortName: '内在小孩', description: '蜷缩的小人，害怕被抛弃，需要安全感' },
-  'performer':        { emoji: '🎭', name: '表演者', shortName: '表演者', description: '戴面具的人，总担心别人怎么看自己' },
-  'judge':            { emoji: '📢', name: '评判官', shortName: '评判官', description: '拿锤子的法官，对一切下定论' },
-  'fortune-teller':   { emoji: '🔮', name: '预言家', shortName: '预言家', description: '水晶球先知，总是预见最坏的结局' },
+// 内在角色信息（Phase 2.1 增强版，含角色自我介绍）
+export const PERSONA_INFO: Record<PersonaType, { emoji: string; name: string; shortName: string; description: string; greeting: string }> = {
+  'anxiety-monster':  { emoji: '👿', name: '焦虑怪', shortName: '焦虑怪', description: '不断颤抖的小恶魔，它的工作是让你担心一切可能出错的事', greeting: '嗨，我是焦虑怪！我的工作就是让你提前担心所有可能出错的事。虽然有时候我有点烦人，但我其实是想保护你。只不过……我总是用力过猛了 😅' },
+  'perfectionist-ai': { emoji: '🤖', name: '完美主义AI', shortName: '完美主义', description: '冰冷的机器人，总觉得你还不够好，需要再努力', greeting: '你好。我是完美主义AI。我的程序只有一个目标：让你变得更好。标准？永远是100分。我知道这让你很累，但在我的系统里，"够好了"这个词……不存在。' },
+  'inner-child':      { emoji: '👶', name: '内在小孩', shortName: '内在小孩', description: '蜷缩的小人，害怕被抛弃，需要安全感', greeting: '我是内在小孩……我住在你心里很深很深的地方。我害怕被忽视、被抛弃。当你感到不安全的时候，其实是我在哭。我只是需要一个拥抱 🤗' },
+  'performer':        { emoji: '🎭', name: '表演者', shortName: '表演者', description: '戴面具的人，总担心别人怎么看自己', greeting: '我是表演者！我时刻关注着舞台下的观众——也就是所有人。他们在看什么？在想什么？对你满意吗？别怪我，我只是太在意别人的掌声了 🎪' },
+  'judge':            { emoji: '📢', name: '评判官', shortName: '评判官', description: '拿锤子的法官，对一切下定论', greeting: '庭审开始！我是评判官。我对所有事情都有定论——尤其是对你。错了？判有罪。没做好？判有罪。我知道这不公平，但我停不下来啊 ⚖️' },
+  'fortune-teller':   { emoji: '🔮', name: '预言家', shortName: '预言家', description: '水晶球先知，总是预见最坏的结局', greeting: '我是预言家，我能看到未来——至少我觉得我能。坏消息是：我预见的结局总是最糟糕的那个。好消息是：我的预言准确率其实很低 🔮' },
 };
 
 // 情绪中文名
@@ -147,3 +186,63 @@ export const RELEASE_METHOD_INFO: Record<ReleaseMethod, { emoji: string; name: s
   melt:     { emoji: '🫠', name: '融化', description: '看着念头慢慢变透明消失' },
   store:    { emoji: '📌', name: '暂存', description: '放进念头罐，不急着处理' },
 };
+
+// Phase 2.1: 解钩实验室练习列表
+export const PRACTICE_LIST: PracticeInfo[] = [
+  {
+    type: 'thought-train',
+    name: '念头列车',
+    emoji: '🚂',
+    duration: '3分钟',
+    description: '念头变成列车车厢，看它们驶过站台',
+    mechanism: '你只是站台上的观察者，列车会自己开走',
+  },
+  {
+    type: 'thought-tv',
+    name: '念头电视',
+    emoji: '📺',
+    duration: '2分钟',
+    description: '念头变成电视屏幕上的字幕',
+    mechanism: '你手持遥控器，可以调台、静音、关机',
+  },
+  {
+    type: 'cloud-writing',
+    name: '云上书写',
+    emoji: '☁️',
+    duration: '3分钟',
+    description: '念头变成云朵上的文字',
+    mechanism: '风吹过，文字渐渐散去',
+  },
+  {
+    type: 'balloon-release',
+    name: '气球释放',
+    emoji: '🎈',
+    duration: '2分钟',
+    description: '每个念头绑在一个气球上',
+    mechanism: '松手让它飞走，越飞越高越小',
+  },
+  {
+    type: 'drift-bottle',
+    name: '念头漂流瓶',
+    emoji: '🌊',
+    duration: '3分钟',
+    description: '念头装进瓶子，放入海浪',
+    mechanism: '看它慢慢漂远，消失在海平线',
+  },
+  {
+    type: 'microscope',
+    name: '念头显微镜',
+    emoji: '🔬',
+    duration: '4分钟',
+    description: '用显微镜观察念头的微观结构',
+    mechanism: '拆解为词语→音节→符号→像素→消散',
+  },
+  {
+    type: 'meet-personas',
+    name: '认识脑内角色',
+    emoji: '👿',
+    duration: '5分钟',
+    description: '输入多个念头，AI识别你的内在角色阵容',
+    mechanism: '逐个认识住在你脑子里的小伙伴们',
+  },
+];

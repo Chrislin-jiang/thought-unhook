@@ -1,7 +1,7 @@
 /**
- * App 主组件 — Phase 1 MVP
+ * App 主组件 — Phase 2.1
  * 
- * 多页面（Tab导航）：念头空间 / 觉察日志 / 睡前模式
+ * 多页面（Tab导航）：念头空间 / 觉察日志 / 解钩实验室 / 睡前模式
  * + Onboarding 引导流程
  */
 
@@ -14,6 +14,7 @@ import ThoughtInput from './components/ThoughtInput';
 import ActionPanel from './components/ActionPanel';
 import AwarenessJournal from './components/AwarenessJournal';
 import NightMode from './components/NightMode';
+import UnhookLab from './components/UnhookLab';
 import Onboarding from './components/Onboarding';
 import TabBar from './components/TabBar';
 import StoredThoughts from './components/StoredThoughts';
@@ -93,6 +94,12 @@ export default function App() {
         {currentPage === 'journal' && (
           <div className="flex-1 overflow-hidden" key="journal">
             <AwarenessJournal />
+          </div>
+        )}
+
+        {currentPage === 'lab' && (
+          <div className="flex-1 overflow-hidden" key="lab">
+            <UnhookLab />
           </div>
         )}
 

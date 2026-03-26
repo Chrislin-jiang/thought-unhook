@@ -8,6 +8,7 @@ import { useThoughtStore } from '../store';
 const TABS = [
   { id: 'space' as const, emoji: '🫧', label: '念头空间' },
   { id: 'journal' as const, emoji: '📊', label: '觉察日志' },
+  { id: 'lab' as const, emoji: '🧪', label: '解钩实验室' },
   { id: 'night' as const, emoji: '🌙', label: '睡前模式' },
 ];
 

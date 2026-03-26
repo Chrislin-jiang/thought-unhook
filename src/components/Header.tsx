@@ -15,6 +15,7 @@ export default function Header() {
   const pageTitle: Record<string, string> = {
     space: '念头空间',
     journal: '觉察日志',
+    lab: '解钩实验室',
     night: '睡前模式',
   };
 
@@ -26,7 +27,7 @@ export default function Header() {
     >
       <div className="flex items-center gap-2">
         <span className="text-xl">
-          {currentPage === 'space' ? '🫧' : currentPage === 'journal' ? '📊' : '🌙'}
+          {currentPage === 'space' ? '🫧' : currentPage === 'journal' ? '📊' : currentPage === 'lab' ? '🧪' : '🌙'}
         </span>
         <h1
           className="text-base font-medium tracking-wide"

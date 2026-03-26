@@ -1,10 +1,11 @@
 /**
- * 念头输入区组件 — Phase 1
+ * 念头输入区组件 — Phase 2.1（含语音输入）
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '../store';
+import VoiceInput from './VoiceInput';
 
 const PLACEHOLDER_TEXTS = [
   '脑子里在想什么？写下来...',
@@ -23,6 +24,15 @@ export default function ThoughtInput() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const addThought = useThoughtStore(s => s.addThought);
   const todayCount = useThoughtStore(s => s.getTodayCount());
+
+  // 语音识别结果追加到文本
+  const handleVoiceResult = useCallback((voiceText: string) => {
+    setText(prev => {
+      const separator = prev.trim() ? ' ' : '';
+      return prev + separator + voiceText;
+    });
+    textareaRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     setTimeout(() => textareaRef.current?.focus(), 500);
@@ -57,8 +67,14 @@ export default function ThoughtInput() {
           placeholder={placeholder}
           rows={2}
           maxLength={200}
-          className="w-full pr-14"
+          className="w-full pr-24"
           style={{ minHeight: '56px' }}
+        />
+
+        {/* 语音输入按钮 */}
+        <VoiceInput
+          onResult={handleVoiceResult}
+          className="absolute right-14 bottom-3"
         />
 
         <motion.button
