@@ -1,11 +1,11 @@
 /**
- * Zustand Store — Phase 2.1
+ * Zustand Store — Phase 3
  * IndexedDB 持久化 (via Dexie)
- * 新增：解钩实验室 + 角色昵称 + 语音输入状态
+ * 新增：主题系统 + 个性化推荐状态 + 分享功能状态
  */
 
 import { create } from 'zustand';
-import type { Thought, ReleaseMethod, EmotionType, CognitiveDistortion, PersonaType, DailyStats, PracticeRecord } from './types';
+import type { Thought, ReleaseMethod, EmotionType, CognitiveDistortion, PersonaType, DailyStats, PracticeRecord, ThemeType } from './types';
 import { classifyThought, rewriteThought } from './ai-service';
 import { addThoughtToDB, updateThoughtInDB, getAllThoughts, clearAllThoughts, migrateFromLocalStorage, getSetting, setSetting } from './db';
 
@@ -24,6 +24,12 @@ interface ThoughtStore {
 
   // Phase 2.1: 练习记录
   practiceRecords: PracticeRecord[];
+
+  // Phase 3: 主题
+  currentTheme: ThemeType;
+
+  // Phase 3: 分享面板
+  showSharePanel: boolean;
 
   // 初始化
   init: () => Promise<void>;
@@ -50,15 +56,26 @@ interface ThoughtStore {
   // Phase 2.1: 练习记录
   addPracticeRecord: (record: PracticeRecord) => void;
 
+  // Phase 3: 主题
+  setTheme: (theme: ThemeType) => void;
+
+  // Phase 3: 分享面板
+  setShowSharePanel: (show: boolean) => void;
+
+  // Phase 3: 方法使用统计（用于推荐算法）
+  getMethodStats: () => Record<ReleaseMethod, number>;
+
   // 统计
   getActiveThoughts: () => Thought[];
   getStoredThoughts: () => Thought[];
   getReleasedThoughts: () => Thought[];
   getTodayCount: () => number;
+  getTodayThoughts: () => Thought[];
   getDailyStats: (days?: number) => DailyStats[];
   getPersonaStats: () => Array<{ persona: PersonaType; count: number; percentage: number }>;
   getDistortionStats: () => Array<{ distortion: CognitiveDistortion; count: number; percentage: number }>;
   getWordCloud: () => Array<{ word: string; count: number }>;
+  getStreak: () => number;
 }
 
 let idCounter = Date.now();
@@ -73,6 +90,8 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
   currentPage: 'space',
   personaNicknames: {},
   practiceRecords: [],
+  currentTheme: 'starry' as ThemeType,
+  showSharePanel: false,
 
   init: async () => {
     // 从 localStorage 迁移到 IndexedDB
@@ -90,12 +109,16 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
     // 加载练习记录
     const records = await getSetting<PracticeRecord[]>('practice-records', []);
 
+    // Phase 3: 加载主题
+    const theme = await getSetting<ThemeType>('current-theme', 'starry');
+
     set({ 
       thoughts, 
       isLoading: false, 
       onboardingCompleted: onboardingDone,
       personaNicknames: nicknames,
       practiceRecords: records,
+      currentTheme: theme,
     });
   },
 
@@ -239,6 +262,30 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
     });
   },
 
+  // Phase 3: 主题切换
+  setTheme: (theme) => {
+    setSetting('current-theme', theme);
+    set({ currentTheme: theme });
+  },
+
+  // Phase 3: 分享面板
+  setShowSharePanel: (show) => set({ showSharePanel: show }),
+
+  // Phase 3: 方法使用统计
+  getMethodStats: () => {
+    const thoughts = get().thoughts.filter(t => t.status === 'released' && t.releaseMethod);
+    const stats: Record<ReleaseMethod, number> = {
+      observe: 0, label: 0, rewrite: 0, voice: 0,
+      resize: 0, blow: 0, melt: 0, store: 0,
+    };
+    for (const t of thoughts) {
+      if (t.releaseMethod) {
+        stats[t.releaseMethod] = (stats[t.releaseMethod] || 0) + 1;
+      }
+    }
+    return stats;
+  },
+
   getActiveThoughts: () => {
     return get().thoughts.filter(t => t.status === 'active');
   },
@@ -256,6 +303,14 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
     today.setHours(0, 0, 0, 0);
     const todayStart = today.getTime();
     return get().thoughts.filter(t => t.createdAt >= todayStart).length;
+  },
+
+  // Phase 3: 获取今日念头
+  getTodayThoughts: () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStart = today.getTime();
+    return get().thoughts.filter(t => t.createdAt >= todayStart);
   },
 
   // Phase 2.1: 角色出场统计
@@ -359,5 +414,27 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
     }
 
     return stats;
+  },
+
+  // Phase 3: 连续使用天数
+  getStreak: () => {
+    const thoughts = get().thoughts;
+    if (thoughts.length === 0) return 0;
+
+    let streak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < 365; i++) {
+      const dayStart = today.getTime() - i * 86400000;
+      const dayEnd = dayStart + 86400000;
+      const hasThoughts = thoughts.some(t => t.createdAt >= dayStart && t.createdAt < dayEnd);
+      if (hasThoughts) {
+        streak++;
+      } else if (i > 0) {
+        break; // 中断了
+      }
+    }
+    return streak;
   },
 }));

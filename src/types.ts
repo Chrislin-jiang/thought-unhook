@@ -1,4 +1,4 @@
-// ===== Phase 2.1 核心类型 =====
+// ===== Phase 3 核心类型 =====
 
 export type EmotionType =
   | 'anxiety'
@@ -88,9 +88,50 @@ export interface DailyStats {
   methods: Record<ReleaseMethod, number>;
 }
 
+// Phase 3: 主题类型
+export type ThemeType = 'starry' | 'ocean' | 'forest' | 'void';
+
+// Phase 3: 行为建议
+export interface BehaviorSuggestion {
+  trigger: string;         // 触发条件描述
+  suggestion: string;      // 建议内容
+  emoji: string;           // 配套emoji
+  actionLabel: string;     // 行动按钮文字
+  duration?: string;       // 建议时长
+}
+
+// Phase 3: 解钩推荐结果
+export interface UnhookRecommendation {
+  method: ReleaseMethod;
+  reason: string;          // 推荐理由
+  confidence: number;      // 0-1 推荐置信度
+  isPersonalized: boolean; // 是否为个性化推荐
+}
+
+// Phase 3: 分享报告
+export interface ShareReport {
+  date: string;
+  totalThoughts: number;
+  releasedCount: number;
+  topEmotion: EmotionType;
+  topMethod?: ReleaseMethod;
+  topPersona?: PersonaType;
+  releaseRate: number;
+  streak: number;           // 连续使用天数
+  insight: string;          // AI 洞察
+}
+
+// Phase 3: 念头艺术画
+export interface ThoughtArt {
+  thought: string;
+  emotion: EmotionType;
+  style: 'watercolor' | 'ink' | 'pixel' | 'geometric';
+  palette: string[];        // 色彩数组
+}
+
 // 应用设置
 export interface AppSettings {
-  theme: 'starry' | 'ocean' | 'forest' | 'void';
+  theme: ThemeType;
   nightModeEnabled: boolean;
   onboardingCompleted: boolean;
 }
@@ -185,6 +226,14 @@ export const RELEASE_METHOD_INFO: Record<ReleaseMethod, { emoji: string; name: s
   blow:     { emoji: '💨', name: '吹走', description: '让气泡飘走' },
   melt:     { emoji: '🫠', name: '融化', description: '看着念头慢慢变透明消失' },
   store:    { emoji: '📌', name: '暂存', description: '放进念头罐，不急着处理' },
+};
+
+// Phase 3: 主题信息
+export const THEME_INFO: Record<ThemeType, { name: string; emoji: string; description: string; bgColor: string }> = {
+  starry:  { name: '星空', emoji: '✨', description: '深邃宁静的星空', bgColor: '#0a0a1a' },
+  ocean:   { name: '海底', emoji: '🌊', description: '平静的深海世界', bgColor: '#0a1628' },
+  forest:  { name: '森林', emoji: '🌿', description: '安宁的森林深处', bgColor: '#0a1a12' },
+  void:    { name: '暖夜', emoji: '🕯️', description: '柔和温暖的夜灯', bgColor: '#1a1510' },
 };
 
 // Phase 2.1: 解钩实验室练习列表

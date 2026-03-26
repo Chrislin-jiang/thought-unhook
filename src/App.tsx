@@ -1,13 +1,15 @@
 /**
- * App 主组件 — Phase 2.1
+ * App 主组件 — Phase 3
  * 
  * 多页面（Tab导航）：念头空间 / 觉察日志 / 解钩实验室 / 睡前模式
  * + Onboarding 引导流程
+ * + 多主题背景系统
+ * + 分享功能
  */
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import StarryBackground from './components/StarryBackground';
+import ThemeBackground from './components/ThemeBackground';
 import Header from './components/Header';
 import ThoughtSpace from './components/ThoughtSpace';
 import ThoughtInput from './components/ThoughtInput';
@@ -18,8 +20,10 @@ import UnhookLab from './components/UnhookLab';
 import Onboarding from './components/Onboarding';
 import TabBar from './components/TabBar';
 import StoredThoughts from './components/StoredThoughts';
+import SharePanel from './components/SharePanel';
 import { useThoughtStore } from './store';
 import { preloadVoices } from './ai-service';
+import { THEME_INFO } from './types';
 
 export default function App() {
   const selectedId = useThoughtStore(s => s.selectedThoughtId);
@@ -29,7 +33,11 @@ export default function App() {
   const onboardingCompleted = useThoughtStore(s => s.onboardingCompleted);
   const init = useThoughtStore(s => s.init);
   const isLoading = useThoughtStore(s => s.isLoading);
+  const currentTheme = useThoughtStore(s => s.currentTheme);
   const [showStored, setShowStored] = useState(false);
+
+  const themeInfo = THEME_INFO[currentTheme];
+  const isVoidTheme = currentTheme === 'void';
 
   useEffect(() => {
     init();
@@ -55,8 +63,16 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen flex flex-col relative" style={{ background: '#0a0a1a', minHeight: '100dvh' }}>
-      <StarryBackground />
+    <div
+      className="h-screen flex flex-col relative"
+      style={{
+        background: themeInfo.bgColor,
+        minHeight: '100dvh',
+        color: isVoidTheme ? '#e8dcc8' : '#e0e0f0',
+        transition: 'background 0.8s ease, color 0.8s ease',
+      }}
+    >
+      <ThemeBackground theme={currentTheme} />
       <Header />
 
       {/* 主内容区 */}
@@ -77,7 +93,10 @@ export default function App() {
                 <button
                   onClick={() => setShowStored(!showStored)}
                   className="w-full text-center py-1"
-                  style={{ color: 'rgba(200,200,230,0.3)', fontSize: '12px' }}
+                  style={{
+                    color: isVoidTheme ? 'rgba(220,200,170,0.3)' : 'rgba(200,200,230,0.3)',
+                    fontSize: '12px',
+                  }}
                 >
                   📌 念头罐（{thoughts.filter(t => t.status === 'stored').length}）
                   {showStored ? ' ▲' : ' ▼'}
@@ -112,6 +131,9 @@ export default function App() {
 
       {/* 底部 Tab 栏 */}
       <TabBar />
+
+      {/* Phase 3: 分享面板 */}
+      <SharePanel />
     </div>
   );
 }

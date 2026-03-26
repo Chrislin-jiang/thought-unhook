@@ -37,13 +37,12 @@ body {
 
 /* 星空背景粒子 */
 .stars-bg {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 0;
   background: 
     radial-gradient(ellipse at 20% 50%, rgba(40, 40, 120, 0.3) 0%, transparent 60%),
     radial-gradient(ellipse at 80% 20%, rgba(60, 30, 90, 0.2) 0%, transparent 50%),
@@ -234,4 +233,272 @@ input[type="range"]::-moz-range-thumb {
 /* 选择控件无样式 */
 button {
   font-family: inherit;
+}
+
+/* ===== Phase 3: 海底主题 ===== */
+.ocean-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 30% 60%, rgba(20, 60, 120, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 30%, rgba(10, 80, 100, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(15, 40, 80, 0.3) 0%, transparent 60%);
+  overflow: hidden;
+}
+
+.ocean-light {
+  position: absolute;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(100, 200, 255, 0.3), transparent);
+  pointer-events: none;
+}
+
+.ocean-light-1 {
+  left: 25%;
+  top: 0;
+  height: 40%;
+  animation: ocean-ray 8s ease-in-out infinite;
+  opacity: 0.3;
+}
+
+.ocean-light-2 {
+  left: 55%;
+  top: 0;
+  height: 55%;
+  animation: ocean-ray 10s ease-in-out infinite 2s;
+  opacity: 0.2;
+}
+
+.ocean-light-3 {
+  left: 75%;
+  top: 0;
+  height: 35%;
+  animation: ocean-ray 7s ease-in-out infinite 4s;
+  opacity: 0.25;
+}
+
+@keyframes ocean-ray {
+  0%, 100% { opacity: 0.1; transform: scaleX(1) rotate(-2deg); }
+  50% { opacity: 0.4; transform: scaleX(1.5) rotate(2deg); }
+}
+
+.ocean-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(100, 200, 255, 0.15);
+  border: 1px solid rgba(100, 200, 255, 0.1);
+  animation: ocean-rise var(--rise-duration) ease-in infinite;
+}
+
+@keyframes ocean-rise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-110vh) translateX(var(--sway));
+    opacity: 0;
+  }
+}
+
+/* ===== Phase 3: 森林主题 ===== */
+.forest-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(20, 80, 40, 0.3) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 30%, rgba(30, 60, 30, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(10, 40, 20, 0.2) 0%, transparent 70%);
+  overflow: hidden;
+}
+
+.forest-mist {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, rgba(10, 26, 18, 0.6), transparent);
+  animation: forest-mist-drift 20s ease-in-out infinite;
+}
+
+@keyframes forest-mist-drift {
+  0%, 100% { opacity: 0.6; transform: translateX(0); }
+  50% { opacity: 0.8; transform: translateX(10px); }
+}
+
+.forest-firefly {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(200, 255, 150, 0.8);
+  box-shadow: 0 0 6px rgba(200, 255, 150, 0.5), 0 0 12px rgba(200, 255, 150, 0.2);
+  animation: firefly-glow var(--glow-duration) ease-in-out infinite, firefly-drift 8s ease-in-out infinite;
+}
+
+@keyframes firefly-glow {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes firefly-drift {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(var(--drift-x), calc(var(--drift-y) * -1));
+  }
+  50% {
+    transform: translate(calc(var(--drift-x) * 0.5), var(--drift-y));
+  }
+  75% {
+    transform: translate(calc(var(--drift-x) * -0.5), calc(var(--drift-y) * -0.5));
+  }
+}
+
+.forest-leaf {
+  position: absolute;
+  font-size: 16px;
+  animation: leaf-fall var(--fall-duration) linear infinite;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes leaf-fall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(50vh) translateX(var(--sway-amount)) rotate(180deg);
+    opacity: 0.4;
+  }
+  95% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(110vh) translateX(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ===== Phase 3: 暖夜主题 ===== */
+.void-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(180, 120, 60, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 60%, rgba(200, 150, 80, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(160, 100, 50, 0.06) 0%, transparent 60%);
+}
+
+.void-circle {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200, 160, 100, 0.08) 0%, transparent 70%);
+}
+
+/* ===== Phase 3: 动画细节打磨 ===== */
+
+/* 增强气泡出现动画 */
+.thought-bubble {
+  animation: bubble-appear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes bubble-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(20px);
+    filter: blur(4px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-5px);
+    filter: blur(0);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 操作按钮悬浮增强 */
+.action-btn-sm:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 120, 255, 0.1);
+}
+
+.action-btn-sm:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* 平滑的主题过渡 */
+.stars-bg,
+.ocean-bg,
+.forest-bg,
+.void-bg {
+  transition: opacity 0.6s ease;
+}
+
+/* 改写面板增强 */
+.rewrite-panel {
+  animation: panel-slide-up 0.3s ease-out;
+}
+
+@keyframes panel-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 分享卡片渐变边框 */
+.share-card {
+  position: relative;
+}
+
+.share-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(139, 120, 255, 0.3), rgba(100, 180, 255, 0.2));
+  z-index: -1;
+}
+
+/* 推荐徽标脉冲 */
+@keyframes recommend-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 120, 255, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(139, 120, 255, 0); }
+}
+
+/* 增强滚动平滑度 */
+.overflow-y-auto {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }

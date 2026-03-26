@@ -1,12 +1,13 @@
 /**
- * 解钩操作面板 — Phase 1: 完整 8 种操作
+ * 解钩操作面板 — Phase 3: 个性化推荐 + 行为建议
  * 🫧 看见 / 🏷️ 贴标签 / ✏️ 改写 / 🎵 变声 / 🔍 缩小 / 💨 吹走 / 🫠 融化 / 📌 暂存
+ * ⭐ AI 推荐徽标 + 💡 行为建议
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '../store';
-import { speakThought, FUNNY_VOICES, generateLabel } from '../ai-service';
+import { speakThought, FUNNY_VOICES, generateLabel, recommendMethods, generateBehaviorSuggestion } from '../ai-service';
 import type { VoiceOption } from '../ai-service';
 import { PERSONA_INFO, DISTORTION_NAMES } from '../types';
 
@@ -32,6 +33,20 @@ export default function ActionPanel() {
   const [labelGenerated, setLabelGenerated] = useState<string | null>(null);
 
   const thought = thoughts.find(t => t.uid === selectedId && t.status === 'active');
+
+  // Phase 3: AI 个性化推荐
+  const recommendations = useMemo(() => {
+    if (!thought) return [];
+    return recommendMethods(thought, thoughts);
+  }, [thought, thoughts]);
+
+  const topRecommended = recommendations[0]?.method;
+
+  // Phase 3: 行为建议
+  const behaviorSuggestion = useMemo(() => {
+    if (!thought) return null;
+    return generateBehaviorSuggestion(thought);
+  }, [thought]);
 
   if (!thought) return null;
 
@@ -149,6 +164,50 @@ export default function ActionPanel() {
           </span>
         </div>
 
+        {/* Phase 3: 行为建议 */}
+        <AnimatePresence>
+          {behaviorSuggestion && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-3 p-3 rounded-xl"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255,200,100,0.08), rgba(255,180,100,0.04))',
+                border: '1px solid rgba(255,200,100,0.12)',
+              }}
+            >
+              <div className="flex items-start gap-2">
+                <span className="text-lg">{behaviorSuggestion.emoji}</span>
+                <div className="flex-1">
+                  <p className="text-xs font-medium" style={{ color: 'rgba(255,200,100,0.7)' }}>
+                    💡 {behaviorSuggestion.trigger}
+                  </p>
+                  <p className="text-xs mt-1" style={{ color: 'rgba(200,200,230,0.7)' }}>
+                    {behaviorSuggestion.suggestion}
+                  </p>
+                  {behaviorSuggestion.duration && (
+                    <span className="text-[10px] mt-1 inline-block px-2 py-0.5 rounded-full"
+                      style={{ background: 'rgba(255,200,100,0.1)', color: 'rgba(255,200,100,0.5)' }}>
+                      ⏱️ {behaviorSuggestion.duration}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Phase 3: AI 推荐提示 */}
+        {recommendations.length > 0 && recommendations[0].isPersonalized && (
+          <div className="text-center mb-2">
+            <span className="text-[10px] px-2 py-0.5 rounded-full"
+              style={{ background: 'rgba(139,120,255,0.1)', color: 'rgba(139,120,255,0.6)' }}>
+              ⭐ AI 根据你的习惯推荐了操作方式
+            </span>
+          </div>
+        )}
+
         {/* 8 种操作按钮 — 2行4列 */}
         <div className="grid grid-cols-4 gap-2 mb-3">
           {/* Row 1 */}
@@ -157,24 +216,28 @@ export default function ActionPanel() {
             onClick={handleObserve}
             active={observing}
             disabled={!!releasingId || !!meltingId || !!shrinkingId}
+            recommended={topRecommended === 'observe'}
           />
           <ActionButton
             emoji="🏷️" label="标签"
             onClick={handleLabel}
             active={!!labelGenerated}
             disabled={!!releasingId || !!meltingId || !!shrinkingId}
+            recommended={topRecommended === 'label'}
           />
           <ActionButton
             emoji="✏️" label="改写"
             onClick={handleRewrite}
             active={!!rewriteVariants}
             disabled={!!releasingId || !!meltingId || !!shrinkingId}
+            recommended={topRecommended === 'rewrite'}
           />
           <ActionButton
             emoji="🎵" label="变声"
             onClick={handleVoice}
             active={showVoices}
             disabled={isSpeaking || !!releasingId || !!meltingId || !!shrinkingId}
+            recommended={topRecommended === 'voice'}
           />
 
           {/* Row 2 */}
@@ -184,6 +247,7 @@ export default function ActionPanel() {
             active={!!shrinkingId}
             disabled={!!releasingId || !!meltingId}
             statusText={shrinkingId ? '缩小中...' : undefined}
+            recommended={topRecommended === 'resize'}
           />
           <ActionButton
             emoji="💨" label="吹走"
@@ -191,6 +255,7 @@ export default function ActionPanel() {
             active={!!releasingId}
             disabled={!!meltingId || !!shrinkingId}
             statusText={releasingId ? '飘走了...' : undefined}
+            recommended={topRecommended === 'blow'}
           />
           <ActionButton
             emoji="🫠" label="融化"
@@ -198,11 +263,13 @@ export default function ActionPanel() {
             active={!!meltingId}
             disabled={!!releasingId || !!shrinkingId}
             statusText={meltingId ? '融化中...' : undefined}
+            recommended={topRecommended === 'melt'}
           />
           <ActionButton
             emoji="📌" label="暂存"
             onClick={handleStore}
             disabled={!!releasingId || !!meltingId || !!shrinkingId}
+            recommended={topRecommended === 'store'}
           />
         </div>
 
@@ -331,7 +398,7 @@ export default function ActionPanel() {
           )}
         </AnimatePresence>
 
-        {/* 变声选择面板 */}
+        {/* 变声选择面板 — Phase 3: 8种音色 */}
         <AnimatePresence>
           {showVoices && (
             <motion.div
@@ -349,19 +416,27 @@ export default function ActionPanel() {
                     key={voice.id}
                     onClick={() => handleSpeak(voice)}
                     disabled={isSpeaking}
-                    className="flex items-center gap-2 p-3 rounded-xl transition-all hover:bg-white/[0.06]"
+                    className="flex items-center gap-2 p-2.5 rounded-xl transition-all hover:bg-white/[0.06]"
                     style={{
                       background: 'rgba(255,255,255,0.03)',
                       border: '1px solid rgba(255,255,255,0.06)',
                       cursor: isSpeaking ? 'not-allowed' : 'pointer',
+                      fontFamily: 'inherit',
                     }}
                     whileHover={isSpeaking ? {} : { scale: 1.02 }}
                     whileTap={isSpeaking ? {} : { scale: 0.95 }}
                   >
-                    <span className="text-xl">{voice.emoji}</span>
-                    <span className="text-sm" style={{ color: 'rgba(230,230,250,0.7)' }}>
-                      {voice.name}
-                    </span>
+                    <span className="text-lg">{voice.emoji}</span>
+                    <div className="text-left">
+                      <span className="text-xs block" style={{ color: 'rgba(230,230,250,0.7)' }}>
+                        {voice.name}
+                      </span>
+                      {voice.description && (
+                        <span className="text-[9px] block" style={{ color: 'rgba(200,200,230,0.3)' }}>
+                          {voice.description}
+                        </span>
+                      )}
+                    </div>
                   </motion.button>
                 ))}
               </div>
@@ -388,6 +463,7 @@ function ActionButton({
   active,
   disabled,
   statusText,
+  recommended,
 }: {
   emoji: string;
   label: string;
@@ -395,6 +471,7 @@ function ActionButton({
   active?: boolean;
   disabled?: boolean;
   statusText?: string;
+  recommended?: boolean;
 }) {
   return (
     <motion.button
@@ -410,16 +487,46 @@ function ActionButton({
         gap: '4px',
         padding: '10px 6px',
         borderRadius: '14px',
-        background: active ? 'rgba(139,120,255,0.1)' : 'rgba(255,255,255,0.05)',
-        border: `1px solid ${active ? 'rgba(139,120,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
+        background: recommended
+          ? 'rgba(139,120,255,0.15)'
+          : active ? 'rgba(139,120,255,0.1)' : 'rgba(255,255,255,0.05)',
+        border: `1px solid ${
+          recommended
+            ? 'rgba(139,120,255,0.4)'
+            : active ? 'rgba(139,120,255,0.3)' : 'rgba(255,255,255,0.08)'
+        }`,
         color: '#c0c0e0',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.4 : 1,
         fontSize: '12px',
         fontFamily: 'inherit',
         transition: 'all 0.2s ease',
+        position: 'relative',
       }}
     >
+      {/* AI 推荐徽标 */}
+      {recommended && (
+        <motion.span
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          style={{
+            position: 'absolute',
+            top: '-4px',
+            right: '-4px',
+            fontSize: '10px',
+            background: 'linear-gradient(135deg, rgba(139,120,255,0.8), rgba(100,180,255,0.8))',
+            borderRadius: '50%',
+            width: '16px',
+            height: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            lineHeight: 1,
+          }}
+        >
+          ⭐
+        </motion.span>
+      )}
       <span style={{ fontSize: '20px', lineHeight: 1 }}>{emoji}</span>
       <span style={{ fontSize: '11px' }}>{statusText || label}</span>
     </motion.button>

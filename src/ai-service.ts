@@ -1,18 +1,24 @@
 /**
- * AI 服务 — Phase 2.1
+ * AI 服务 — Phase 3
  * 
  * Layer 1 完整版: 深度语义分类（多维度加权 + 上下文分析）
  * Layer 2: 自动解钩改写（模板版）
+ * Layer 3: 个性化解钩推荐 + 念头→行为建议
  * Layer 4: 念头人格化（角色识别 + 自我介绍 + 昵称）
  * + 语音输入（Web Speech Recognition API）
+ * + 增强变声（8种音色）
  */
 
 import type {
   EmotionType,
   CognitiveDistortion,
   PersonaType,
+  ReleaseMethod,
+  BehaviorSuggestion,
+  UnhookRecommendation,
+  Thought,
 } from './types';
-import { PERSONA_INFO } from './types';
+import { PERSONA_INFO, RELEASE_METHOD_INFO } from './types';
 
 // ===== Layer 1 完整版: 深度语义分类 =====
 
@@ -337,7 +343,7 @@ export function generatePersonaGreeting(type: PersonaType, thoughtCount: number,
   return options[Math.floor(Math.random() * options.length)];
 }
 
-// ===== TTS 变声（Web Speech API）=====
+// ===== TTS 变声（Web Speech API）— Phase 3 增强版：8种音色 =====
 
 export interface VoiceOption {
   id: string;
@@ -345,13 +351,18 @@ export interface VoiceOption {
   emoji: string;
   rate: number;
   pitch: number;
+  description?: string;
 }
 
 export const FUNNY_VOICES: VoiceOption[] = [
-  { id: 'chipmunk', name: '花栗鼠', emoji: '🐿️', rate: 1.8, pitch: 2 },
-  { id: 'slow', name: '超级慢速', emoji: '🐌', rate: 0.4, pitch: 0.8 },
-  { id: 'robot', name: '机器人', emoji: '🤖', rate: 1.0, pitch: 0.1 },
-  { id: 'dramatic', name: '浮夸播报', emoji: '📢', rate: 0.7, pitch: 1.5 },
+  { id: 'chipmunk', name: '花栗鼠', emoji: '🐿️', rate: 1.8, pitch: 2, description: '高速高音，像吸了氦气' },
+  { id: 'slow', name: '超级慢速', emoji: '🐌', rate: 0.4, pitch: 0.8, description: '慢到每个字都可以看清' },
+  { id: 'robot', name: '机器人', emoji: '🤖', rate: 1.0, pitch: 0.1, description: '毫无感情的AI播报' },
+  { id: 'dramatic', name: '浮夸播报', emoji: '📢', rate: 0.7, pitch: 1.5, description: '像新闻联播一样播报你的烦恼' },
+  { id: 'whisper', name: '悄悄话', emoji: '🤫', rate: 0.6, pitch: 1.2, description: '像在耳边轻声说' },
+  { id: 'opera', name: '歌剧腔', emoji: '🎭', rate: 0.5, pitch: 1.8, description: '把烦恼唱成咏叹调' },
+  { id: 'baby', name: '婴儿音', emoji: '👶', rate: 1.3, pitch: 1.9, description: '奶声奶气地说出来' },
+  { id: 'giant', name: '巨人声', emoji: '🗿', rate: 0.6, pitch: 0.3, description: '低沉浑厚的巨人' },
 ];
 
 export function speakThought(content: string, voice: VoiceOption): Promise<void> {
@@ -388,7 +399,267 @@ export function preloadVoices(): void {
   }
 }
 
-// ===== 语音输入（Web Speech Recognition API）=====
+// ===== Layer 3: 个性化解钩推荐引擎 =====
+
+/**
+ * 基于用户历史行为推荐最合适的解钩方法
+ * 算法考量：
+ * 1. 用户历史偏好（哪种方法用得多且效果好）
+ * 2. 当前念头的情绪类型适配
+ * 3. 认知扭曲类型适配
+ * 4. 探索性推荐（鼓励用户尝试新方法）
+ */
+export function recommendMethods(
+  thought: Thought,
+  historyThoughts: Thought[],
+): UnhookRecommendation[] {
+  const methodScores: Record<ReleaseMethod, number> = {
+    observe: 0, label: 0, rewrite: 0, voice: 0,
+    resize: 0, blow: 0, melt: 0, store: 0,
+  };
+
+  // 1. 情绪-方法适配矩阵
+  const emotionMethodMap: Partial<Record<EmotionType, Partial<Record<ReleaseMethod, number>>>> = {
+    anxiety: { observe: 3, melt: 2, blow: 2, rewrite: 1 },
+    anger: { blow: 3, voice: 2, resize: 2, melt: 1 },
+    sadness: { observe: 2, store: 3, rewrite: 2, voice: 1 },
+    fear: { observe: 3, label: 2, rewrite: 2, resize: 1 },
+    guilt: { rewrite: 3, label: 2, observe: 2, melt: 1 },
+    shame: { voice: 3, resize: 2, blow: 2, rewrite: 1 },
+    neutral: { observe: 2, label: 2, store: 1, rewrite: 1 },
+    mixed: { label: 3, rewrite: 2, observe: 2, melt: 1 },
+  };
+
+  const emotionMatch = emotionMethodMap[thought.emotion] || {};
+  for (const [method, score] of Object.entries(emotionMatch)) {
+    methodScores[method as ReleaseMethod] += score;
+  }
+
+  // 2. 认知扭曲-方法适配
+  const distortionMethodMap: Partial<Record<CognitiveDistortion, Partial<Record<ReleaseMethod, number>>>> = {
+    catastrophizing: { rewrite: 3, resize: 2, voice: 1 },
+    overgeneralization: { label: 3, rewrite: 2, observe: 1 },
+    'mind-reading': { rewrite: 3, label: 2, voice: 1 },
+    'should-statements': { rewrite: 3, voice: 2, blow: 1 },
+    personalization: { label: 3, rewrite: 2, observe: 1 },
+    'black-white': { rewrite: 3, label: 2, observe: 1 },
+    'emotional-reasoning': { label: 3, observe: 2, rewrite: 1 },
+    'fortune-telling': { resize: 3, voice: 2, blow: 1 },
+    labeling: { rewrite: 3, voice: 2, label: 1 },
+    'discounting-positive': { rewrite: 3, observe: 2, label: 1 },
+  };
+
+  const distortionMatch = distortionMethodMap[thought.cognitiveDistortion] || {};
+  for (const [method, score] of Object.entries(distortionMatch)) {
+    methodScores[method as ReleaseMethod] += score;
+  }
+
+  // 3. 历史行为分析（用户偏好加权）
+  const releasedThoughts = historyThoughts.filter(t => t.status === 'released' && t.releaseMethod);
+  const methodUsage: Record<string, number> = {};
+  for (const t of releasedThoughts) {
+    if (t.releaseMethod) {
+      methodUsage[t.releaseMethod] = (methodUsage[t.releaseMethod] || 0) + 1;
+    }
+  }
+
+  // 用户偏好的方法加分
+  for (const [method, count] of Object.entries(methodUsage)) {
+    const frequency = count / Math.max(releasedThoughts.length, 1);
+    methodScores[method as ReleaseMethod] += frequency * 2;
+  }
+
+  // 4. 探索性奖励：用户不常用的方法略微加分（鼓励探索）
+  const allMethods: ReleaseMethod[] = ['observe', 'label', 'rewrite', 'voice', 'resize', 'blow', 'melt', 'store'];
+  const unusedMethods = allMethods.filter(m => !methodUsage[m] || methodUsage[m] < 2);
+  for (const method of unusedMethods) {
+    methodScores[method] += 0.5; // 小幅探索奖励
+  }
+
+  // 5. 高强度念头特殊处理
+  if (thought.intensity >= 8) {
+    methodScores.observe += 2;  // 高强度先观察
+    methodScores.blow += 1.5;   // 或快速释放
+  }
+
+  // 排序生成推荐
+  const sorted = Object.entries(methodScores)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 3);
+
+  const maxScore = sorted[0]?.[1] || 1;
+  const isPersonalized = releasedThoughts.length >= 3;
+
+  const reasons: Record<ReleaseMethod, string> = {
+    observe: '安静地看见念头，让它自然来去',
+    label: '给念头分类命名，从中退一步',
+    rewrite: '换一种更温和的说法',
+    voice: '用搞笑的声音读出来，念头就没那么可怕了',
+    resize: '把念头缩到很小，它其实没那么大',
+    blow: '深呼吸，让念头飘走',
+    melt: '看着念头慢慢消融',
+    store: '先放下，以后再处理也可以',
+  };
+
+  return sorted.map(([method, score]) => ({
+    method: method as ReleaseMethod,
+    reason: reasons[method as ReleaseMethod] || RELEASE_METHOD_INFO[method as ReleaseMethod]?.description || '',
+    confidence: Math.min(1, score / maxScore),
+    isPersonalized,
+  }));
+}
+
+// ===== Layer 3: 念头→行为建议 =====
+
+/**
+ * 基于念头内容和情绪，生成具体的行为建议
+ * 核心理念：不是"别想了"，而是"试试这样做"
+ */
+export function generateBehaviorSuggestion(thought: Thought): BehaviorSuggestion | null {
+  const content = thought.content;
+
+  // 逃避/拖延检测
+  if (/不想做|拖延|逃避|不想面对|太难了|做不到|懒得/.test(content)) {
+    return {
+      trigger: '逃避倾向',
+      suggestion: '你可能在逃避。试试"5分钟版本"——只做5分钟，之后可以停',
+      emoji: '⏱️',
+      actionLabel: '开始5分钟',
+      duration: '5分钟',
+    };
+  }
+
+  // 社交焦虑
+  if (/别人怎么看|丢人|丢脸|害怕社交|不敢开口|紧张/.test(content)) {
+    return {
+      trigger: '社交担忧',
+      suggestion: '先给一个安全的人发条消息，从小互动开始',
+      emoji: '💬',
+      actionLabel: '发一条消息',
+    };
+  }
+
+  // 完美主义
+  if (/不够好|还差得远|不完美|必须做到|标准太高/.test(content)) {
+    return {
+      trigger: '完美主义',
+      suggestion: '试试"60分版本"——先完成一个够用的版本',
+      emoji: '✅',
+      actionLabel: '做60分版本',
+    };
+  }
+
+  // 焦虑/担忧未来
+  if (/万一|怎么办|以后|将来|如果.*失败|考不上/.test(content)) {
+    return {
+      trigger: '未来焦虑',
+      suggestion: '写下最坏的情况，然后问自己：我能活下来吗？大概率能',
+      emoji: '📝',
+      actionLabel: '写下最坏情况',
+    };
+  }
+
+  // 自我否定
+  if (/我不行|我很差|废物|没用|失败者|不配/.test(content)) {
+    return {
+      trigger: '自我否定',
+      suggestion: '列出今天你做到的3件小事（哪怕是起床、吃饭）',
+      emoji: '🌱',
+      actionLabel: '列出3件事',
+    };
+  }
+
+  // 愤怒/冲突
+  if (/生气|愤怒|受不了|太过分|凭什么|讨厌/.test(content)) {
+    return {
+      trigger: '愤怒情绪',
+      suggestion: '先做10次深呼吸，然后写下你真正需要的是什么',
+      emoji: '🌬️',
+      actionLabel: '开始深呼吸',
+      duration: '2分钟',
+    };
+  }
+
+  // 过度思考
+  if (/一直在想|停不下来|翻来覆去|纠结|犹豫不决/.test(content)) {
+    return {
+      trigger: '反刍思维',
+      suggestion: '起身走动5分钟，或者做一件需要手动的事（洗碗、整理桌面）',
+      emoji: '🚶',
+      actionLabel: '起身走走',
+      duration: '5分钟',
+    };
+  }
+
+  // 孤独/无助
+  if (/孤独|没人懂|一个人|无助|无力|空虚/.test(content)) {
+    return {
+      trigger: '孤独感',
+      suggestion: '给一个你信任的人发一句"嗨，想到你了"',
+      emoji: '🤗',
+      actionLabel: '联系一个人',
+    };
+  }
+
+  // 通用建议（基于情绪强度）
+  if (thought.intensity >= 7) {
+    return {
+      trigger: '高强度情绪',
+      suggestion: '先让身体动起来：跳3下、拍拍手、深呼吸3次',
+      emoji: '💪',
+      actionLabel: '身体重启',
+      duration: '1分钟',
+    };
+  }
+
+  return null;
+}
+
+// ===== Phase 3: 分享报告生成 =====
+
+export function generateShareInsight(
+  totalThoughts: number,
+  releasedCount: number,
+  topEmotion: EmotionType,
+  topPersona?: PersonaType,
+): string {
+  const releaseRate = totalThoughts > 0 ? Math.round((releasedCount / totalThoughts) * 100) : 0;
+
+  const insights: string[] = [];
+
+  if (releaseRate >= 70) {
+    insights.push(`今天释放了${releaseRate}%的念头，你正在学会与念头和平共处 ✨`);
+  } else if (releaseRate >= 40) {
+    insights.push(`今天解钩了${releasedCount}个念头，每一次放手都是练习 🌿`);
+  } else if (totalThoughts > 0) {
+    insights.push(`今天觉察了${totalThoughts}个念头，光是看见就已经很了不起 👏`);
+  } else {
+    insights.push('今天是平静的一天，没有被念头打扰 🕊️');
+  }
+
+  if (topPersona) {
+    const persona = PERSONA_INFO[topPersona];
+    insights.push(`${persona.emoji}「${persona.name}」今天最活跃`);
+  }
+
+  return insights.join('，');
+}
+
+// ===== Phase 3: 念头艺术画配色方案 =====
+
+export function getThoughtArtPalette(emotion: EmotionType): { colors: string[]; style: string } {
+  const palettes: Record<EmotionType, { colors: string[]; style: string }> = {
+    anxiety: { colors: ['#ff6b6b', '#ffa07a', '#ffcc5c', '#2c1810'], style: '焦虑的旋涡' },
+    anger: { colors: ['#ff4757', '#ff6348', '#ff7675', '#1a0a0a'], style: '愤怒的火焰' },
+    sadness: { colors: ['#5f9ea0', '#74b9ff', '#a29bfe', '#0a0a2e'], style: '悲伤的雨滴' },
+    fear: { colors: ['#dda0dd', '#9b59b6', '#8e44ad', '#1a0a1a'], style: '恐惧的迷雾' },
+    guilt: { colors: ['#cd853f', '#d4a574', '#e8c39e', '#1a1008'], style: '内疚的沙漏' },
+    shame: { colors: ['#bc8f8f', '#c9a0a0', '#d4b5b5', '#1a1010'], style: '羞耻的面具' },
+    neutral: { colors: ['#87ceeb', '#a0d2f0', '#b8dff5', '#f0f0fa'], style: '平静的天空' },
+    mixed: { colors: ['#b19cd9', '#a29bfe', '#7c73e6', '#0a0a1e'], style: '复杂的星云' },
+  };
+  return palettes[emotion] || palettes.neutral;
+}
 
 interface SpeechRecognitionEvent {
   results: SpeechRecognitionResultList;
