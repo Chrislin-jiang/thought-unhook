@@ -1,5 +1,5 @@
 /**
- * AI 服务 — Phase 0 极简版
+ * AI 服务 — Phase 1 MVP
  * 
  * v0.1: 基于关键词匹配的本地分析 + 模板化改写（零成本）
  * 将来可升级为 OpenAI API 调用
@@ -18,6 +18,7 @@ interface ClassifyResult {
   cognitiveDistortion: CognitiveDistortion;
   persona: PersonaType;
   intensity: number;
+  tags: string[];
 }
 
 // 关键词规则库
@@ -58,6 +59,18 @@ const PERSONA_MAPPING: Record<CognitiveDistortion, PersonaType> = {
   'discounting-positive': 'perfectionist-ai',
   'unknown': 'anxiety-monster',
 };
+
+// 标签提取关键词
+const TAG_KEYWORDS: Array<{ keywords: string[]; tag: string }> = [
+  { keywords: ['工作', '项目', '任务', '会议', '同事', '领导', '老板', '需求', '加班'], tag: '工作' },
+  { keywords: ['考试', '学习', '成绩', '分数', '作业', '论文'], tag: '学习' },
+  { keywords: ['朋友', '他', '她', '社交', '关系', '感情', '恋爱', '对象'], tag: '人际' },
+  { keywords: ['钱', '经济', '房', '贷', '工资', '花费'], tag: '经济' },
+  { keywords: ['健康', '身体', '病', '医', '睡', '累', '疲'], tag: '健康' },
+  { keywords: ['未来', '将来', '明天', '以后', '前途'], tag: '未来' },
+  { keywords: ['过去', '后悔', '曾经', '当初', '那时'], tag: '过去' },
+  { keywords: ['自己', '自我', '不够', '配不上', '不值得'], tag: '自我价值' },
+];
 
 export function classifyThought(content: string): ClassifyResult {
   // 1. 检测情绪
@@ -101,7 +114,7 @@ export function classifyThought(content: string): ClassifyResult {
   // 3. 分配内在角色
   const persona = PERSONA_MAPPING[cognitiveDistortion];
 
-  // 4. 估算强度（基于内容长度、感叹号、关键词数量）
+  // 4. 估算强度
   let intensity = 5;
   if (content.includes('!') || content.includes('！')) intensity += 1;
   if (content.length > 20) intensity += 1;
@@ -109,7 +122,18 @@ export function classifyThought(content: string): ClassifyResult {
   if (maxScore >= 5) intensity += 1;
   intensity = Math.min(10, Math.max(1, intensity));
 
-  return { emotion, cognitiveDistortion, persona, intensity };
+  // 5. 提取标签
+  const tags: string[] = [];
+  for (const rule of TAG_KEYWORDS) {
+    for (const keyword of rule.keywords) {
+      if (content.includes(keyword) && !tags.includes(rule.tag)) {
+        tags.push(rule.tag);
+        break;
+      }
+    }
+  }
+
+  return { emotion, cognitiveDistortion, persona, intensity, tags };
 }
 
 // ===== Layer 2: 自动解钩改写（模板版）=====
@@ -142,8 +166,33 @@ export function rewriteThought(content: string): RewriteResult {
         technique: 'narrative',
         techniqueName: '叙事化',
       },
+      {
+        text: `「${cleaned}」这个念头又来了，像个老朋友`,
+        technique: 'personification',
+        techniqueName: '拟人化',
+      },
     ],
   };
+}
+
+// ===== 自动标签生成 =====
+
+export function generateLabel(content: string, emotion: EmotionType, distortion: CognitiveDistortion): string {
+  const emotionMap: Record<string, string> = {
+    anxiety: '未来的担忧', anger: '愤怒', sadness: '悲伤',
+    fear: '恐惧', guilt: '内疚', shame: '羞耻', neutral: '日常想法', mixed: '复杂情绪',
+  };
+  const distortionMap: Record<string, string> = {
+    catastrophizing: '灾难化', overgeneralization: '过度概括', 'mind-reading': '揣测他人',
+    'should-statements': '应该思维', personalization: '自我归因', 'black-white': '极端化',
+    'emotional-reasoning': '情绪推理', 'fortune-telling': '预测未来', labeling: '自我标签',
+    'discounting-positive': '否定积极', unknown: '',
+  };
+
+  const emo = emotionMap[emotion] || '想法';
+  const dist = distortionMap[distortion];
+  
+  return dist ? `这是一个关于「${emo}」的${dist}念头` : `这是一个关于「${emo}」的念头`;
 }
 
 // ===== TTS 变声（Web Speech API）=====
@@ -170,7 +219,6 @@ export function speakThought(content: string, voice: VoiceOption): Promise<void>
       return;
     }
 
-    // 取消之前的朗读
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(content);
@@ -179,7 +227,6 @@ export function speakThought(content: string, voice: VoiceOption): Promise<void>
     utterance.pitch = voice.pitch;
     utterance.volume = 1;
 
-    // 尝试选择中文语音
     const voices = window.speechSynthesis.getVoices();
     const zhVoice = voices.find(v => v.lang.startsWith('zh'));
     if (zhVoice) {
@@ -193,7 +240,6 @@ export function speakThought(content: string, voice: VoiceOption): Promise<void>
   });
 }
 
-// 预加载语音
 export function preloadVoices(): void {
   if (window.speechSynthesis) {
     window.speechSynthesis.getVoices();

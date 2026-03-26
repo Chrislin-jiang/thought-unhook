@@ -1,5 +1,5 @@
 /**
- * 念头输入区组件
+ * 念头输入区组件 — Phase 1
  */
 
 import { useState, useRef, useEffect } from 'react';
@@ -25,20 +25,17 @@ export default function ThoughtInput() {
   const todayCount = useThoughtStore(s => s.getTodayCount());
 
   useEffect(() => {
-    // 自动 focus
     setTimeout(() => textareaRef.current?.focus(), 500);
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const trimmed = text.trim();
     if (!trimmed) return;
 
-    addThought(trimmed);
+    await addThought(trimmed);
     setText('');
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1500);
-
-    // 重新 focus
     textareaRef.current?.focus();
   };
 
@@ -64,7 +61,6 @@ export default function ThoughtInput() {
           style={{ minHeight: '56px' }}
         />
 
-        {/* 发送按钮 */}
         <motion.button
           onClick={handleSubmit}
           className="absolute right-3 bottom-3 w-10 h-10 rounded-full flex items-center justify-center"
@@ -86,7 +82,6 @@ export default function ThoughtInput() {
         </motion.button>
       </div>
 
-      {/* 底部提示 */}
       <div className="flex items-center justify-between mt-2 px-1">
         <AnimatePresence mode="wait">
           {justAdded ? (

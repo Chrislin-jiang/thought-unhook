@@ -2,10 +2,9 @@
  * 念头空间 — 气泡漂浮区域
  */
 
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useThoughtStore } from '../store';
 import ThoughtBubble from './ThoughtBubble';
-import { motion } from 'framer-motion';
 
 export default function ThoughtSpace() {
   const thoughts = useThoughtStore(s => s.thoughts);
@@ -19,7 +18,7 @@ export default function ThoughtSpace() {
         <div className="flex flex-col items-center gap-4 pb-4">
           <AnimatePresence mode="popLayout">
             {activeThoughts.map((thought, index) => (
-              <ThoughtBubble key={thought.id} thought={thought} index={index} />
+              <ThoughtBubble key={thought.uid} thought={thought} index={index} />
             ))}
           </AnimatePresence>
         </div>

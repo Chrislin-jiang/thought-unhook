@@ -154,6 +154,16 @@ body {
   line-height: 1;
 }
 
+/* 小号操作按钮（8宫格） */
+.action-btn-sm {
+  font-family: inherit;
+}
+
+.action-btn-sm:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
 /* 改写结果面板 */
 .rewrite-panel {
   background: rgba(255, 255, 255, 0.05);
@@ -161,6 +171,37 @@ body {
   border-radius: 16px;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+}
+
+/* Range slider 样式 */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(139,120,255,0.9), rgba(100,180,255,0.9));
+  cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(139,120,255,0.9), rgba(100,180,255,0.9));
+  cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.2);
 }
 
 /* 滚动条 */
@@ -188,4 +229,9 @@ body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
+}
+
+/* 选择控件无样式 */
+button {
+  font-family: inherit;
 }

@@ -1,12 +1,12 @@
 /**
- * 解钩操作面板 — 选中气泡后展开
- * 三种操作：✏️ 改写 / 🎵 变声 / 💨 吹走
+ * 解钩操作面板 — Phase 1: 完整 8 种操作
+ * 🫧 看见 / 🏷️ 贴标签 / ✏️ 改写 / 🎵 变声 / 🔍 缩小 / 💨 吹走 / 🫠 融化 / 📌 暂存
  */
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '../store';
-import { speakThought, FUNNY_VOICES } from '../ai-service';
+import { speakThought, FUNNY_VOICES, generateLabel } from '../ai-service';
 import type { VoiceOption } from '../ai-service';
 import { PERSONA_INFO, DISTORTION_NAMES } from '../types';
 
@@ -14,39 +14,72 @@ export default function ActionPanel() {
   const selectedId = useThoughtStore(s => s.selectedThoughtId);
   const thoughts = useThoughtStore(s => s.thoughts);
   const releaseThought = useThoughtStore(s => s.releaseThought);
+  const storeThought = useThoughtStore(s => s.storeThought);
   const setRewritten = useThoughtStore(s => s.setRewritten);
   const requestRewrite = useThoughtStore(s => s.requestRewrite);
   const clearRewrite = useThoughtStore(s => s.clearRewrite);
   const selectThought = useThoughtStore(s => s.selectThought);
+  const addTagToThought = useThoughtStore(s => s.addTagToThought);
   const isRewriting = useThoughtStore(s => s.isRewriting);
   const rewriteVariants = useThoughtStore(s => s.rewriteVariants);
 
   const [showVoices, setShowVoices] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [releasingId, setReleasingId] = useState<string | null>(null);
+  const [meltingId, setMeltingId] = useState<string | null>(null);
+  const [shrinkingId, setShrinkingId] = useState<string | null>(null);
+  const [observing, setObserving] = useState(false);
+  const [labelGenerated, setLabelGenerated] = useState<string | null>(null);
 
-  const thought = thoughts.find(t => t.id === selectedId && t.status === 'active');
+  const thought = thoughts.find(t => t.uid === selectedId && t.status === 'active');
 
   if (!thought) return null;
 
   const persona = PERSONA_INFO[thought.persona];
   const distortionName = DISTORTION_NAMES[thought.cognitiveDistortion];
 
-  // ===== 改写操作 =====
-  const handleRewrite = () => {
+  const resetPanels = () => {
     setShowVoices(false);
-    requestRewrite(thought.id);
+    clearRewrite();
+    setObserving(false);
+    setLabelGenerated(null);
+  };
+
+  // ===== 🫧 看见操作 =====
+  const handleObserve = () => {
+    resetPanels();
+    setObserving(true);
+    // 3秒后自动标记为"已看见"
+    setTimeout(() => {
+      releaseThought(thought.uid, 'observe');
+      setObserving(false);
+      selectThought(null);
+    }, 3000);
+  };
+
+  // ===== 🏷️ 贴标签操作 =====
+  const handleLabel = () => {
+    resetPanels();
+    const label = generateLabel(thought.content, thought.emotion, thought.cognitiveDistortion);
+    setLabelGenerated(label);
+    addTagToThought(thought.uid, label);
+  };
+
+  // ===== ✏️ 改写操作 =====
+  const handleRewrite = () => {
+    resetPanels();
+    requestRewrite(thought.uid);
   };
 
   const handleSelectRewrite = (text: string) => {
-    setRewritten(thought.id, text);
+    setRewritten(thought.uid, text);
     clearRewrite();
   };
 
-  // ===== 变声操作 =====
+  // ===== 🎵 变声操作 =====
   const handleVoice = () => {
-    clearRewrite();
-    setShowVoices(!showVoices);
+    resetPanels();
+    setShowVoices(true);
   };
 
   const handleSpeak = async (voice: VoiceOption) => {
@@ -59,18 +92,44 @@ export default function ActionPanel() {
     setIsSpeaking(false);
   };
 
-  // ===== 吹走操作 =====
-  const handleBlow = () => {
-    setReleasingId(thought.id);
-    setShowVoices(false);
-    clearRewrite();
-
-    // 延迟执行释放，让动画先跑
+  // ===== 🔍 缩小操作 =====
+  const handleShrink = () => {
+    resetPanels();
+    setShrinkingId(thought.uid);
     setTimeout(() => {
-      releaseThought(thought.id, 'blow');
+      releaseThought(thought.uid, 'resize');
+      setShrinkingId(null);
+      selectThought(null);
+    }, 1500);
+  };
+
+  // ===== 💨 吹走操作 =====
+  const handleBlow = () => {
+    resetPanels();
+    setReleasingId(thought.uid);
+    setTimeout(() => {
+      releaseThought(thought.uid, 'blow');
       setReleasingId(null);
       selectThought(null);
     }, 700);
+  };
+
+  // ===== 🫠 融化操作 =====
+  const handleMelt = () => {
+    resetPanels();
+    setMeltingId(thought.uid);
+    setTimeout(() => {
+      releaseThought(thought.uid, 'melt');
+      setMeltingId(null);
+      selectThought(null);
+    }, 2000);
+  };
+
+  // ===== 📌 暂存操作 =====
+  const handleStore = () => {
+    resetPanels();
+    storeThought(thought.uid);
+    selectThought(null);
   };
 
   return (
@@ -90,55 +149,122 @@ export default function ActionPanel() {
           </span>
         </div>
 
-        {/* 三个操作按钮 */}
-        <div className="flex gap-3 justify-center mb-4">
-          {/* ✏️ 改写 */}
-          <motion.button
-            className="action-btn"
+        {/* 8 种操作按钮 — 2行4列 */}
+        <div className="grid grid-cols-4 gap-2 mb-3">
+          {/* Row 1 */}
+          <ActionButton
+            emoji="🫧" label="看见"
+            onClick={handleObserve}
+            active={observing}
+            disabled={!!releasingId || !!meltingId || !!shrinkingId}
+          />
+          <ActionButton
+            emoji="🏷️" label="标签"
+            onClick={handleLabel}
+            active={!!labelGenerated}
+            disabled={!!releasingId || !!meltingId || !!shrinkingId}
+          />
+          <ActionButton
+            emoji="✏️" label="改写"
             onClick={handleRewrite}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              borderColor: rewriteVariants ? 'rgba(139,220,180,0.3)' : undefined,
-              background: rewriteVariants ? 'rgba(139,220,180,0.08)' : undefined,
-            }}
-          >
-            <span className="icon">✏️</span>
-            <span>改写</span>
-          </motion.button>
-
-          {/* 🎵 变声 */}
-          <motion.button
-            className="action-btn"
+            active={!!rewriteVariants}
+            disabled={!!releasingId || !!meltingId || !!shrinkingId}
+          />
+          <ActionButton
+            emoji="🎵" label="变声"
             onClick={handleVoice}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            disabled={isSpeaking}
-            style={{
-              borderColor: showVoices ? 'rgba(255,200,100,0.3)' : undefined,
-              background: showVoices ? 'rgba(255,200,100,0.08)' : undefined,
-            }}
-          >
-            <span className="icon">{isSpeaking ? '🔊' : '🎵'}</span>
-            <span>{isSpeaking ? '播放中...' : '搞笑变声'}</span>
-          </motion.button>
+            active={showVoices}
+            disabled={isSpeaking || !!releasingId || !!meltingId || !!shrinkingId}
+          />
 
-          {/* 💨 吹走 */}
-          <motion.button
-            className="action-btn"
+          {/* Row 2 */}
+          <ActionButton
+            emoji="🔍" label="缩小"
+            onClick={handleShrink}
+            active={!!shrinkingId}
+            disabled={!!releasingId || !!meltingId}
+            statusText={shrinkingId ? '缩小中...' : undefined}
+          />
+          <ActionButton
+            emoji="💨" label="吹走"
             onClick={handleBlow}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            disabled={!!releasingId}
-            style={{
-              borderColor: releasingId ? 'rgba(100,180,255,0.3)' : undefined,
-              background: releasingId ? 'rgba(100,180,255,0.08)' : undefined,
-            }}
-          >
-            <span className="icon">💨</span>
-            <span>{releasingId ? '飘走了...' : '吹走'}</span>
-          </motion.button>
+            active={!!releasingId}
+            disabled={!!meltingId || !!shrinkingId}
+            statusText={releasingId ? '飘走了...' : undefined}
+          />
+          <ActionButton
+            emoji="🫠" label="融化"
+            onClick={handleMelt}
+            active={!!meltingId}
+            disabled={!!releasingId || !!shrinkingId}
+            statusText={meltingId ? '融化中...' : undefined}
+          />
+          <ActionButton
+            emoji="📌" label="暂存"
+            onClick={handleStore}
+            disabled={!!releasingId || !!meltingId || !!shrinkingId}
+          />
         </div>
+
+        {/* 看见效果 */}
+        <AnimatePresence>
+          {observing && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="rewrite-panel p-4 mb-3 text-center"
+            >
+              <motion.div
+                animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="text-3xl mb-2"
+              >
+                🫧
+              </motion.div>
+              <p className="text-sm" style={{ color: 'rgba(200,200,230,0.6)' }}>
+                安静地看着这个念头...
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'rgba(200,200,230,0.3)' }}>
+                它只是一个气泡，不是一个事实
+              </p>
+              <motion.div
+                className="mt-3 h-1 rounded-full overflow-hidden"
+                style={{ background: 'rgba(255,255,255,0.05)' }}
+              >
+                <motion.div
+                  initial={{ width: '0%' }}
+                  animate={{ width: '100%' }}
+                  transition={{ duration: 3, ease: 'linear' }}
+                  className="h-full rounded-full"
+                  style={{ background: 'linear-gradient(90deg, rgba(139,120,255,0.5), rgba(100,180,255,0.5))' }}
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 标签结果 */}
+        <AnimatePresence>
+          {labelGenerated && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="rewrite-panel p-4 mb-3"
+            >
+              <p className="text-xs mb-2" style={{ color: 'rgba(200,200,230,0.4)' }}>
+                🏷️ AI 为这个念头贴上了标签：
+              </p>
+              <p className="text-sm" style={{ color: 'rgba(139,180,255,0.85)' }}>
+                "{labelGenerated}"
+              </p>
+              <p className="text-xs mt-2" style={{ color: 'rgba(200,200,230,0.3)' }}>
+                给念头分类，帮助你从中退一步
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* 改写结果面板 */}
         <AnimatePresence>
@@ -251,5 +377,51 @@ export default function ActionPanel() {
         </div>
       </motion.div>
     </AnimatePresence>
+  );
+}
+
+// ===== 操作按钮子组件 =====
+function ActionButton({
+  emoji,
+  label,
+  onClick,
+  active,
+  disabled,
+  statusText,
+}: {
+  emoji: string;
+  label: string;
+  onClick: () => void;
+  active?: boolean;
+  disabled?: boolean;
+  statusText?: string;
+}) {
+  return (
+    <motion.button
+      className="action-btn-sm"
+      onClick={onClick}
+      whileHover={disabled ? {} : { scale: 1.05 }}
+      whileTap={disabled ? {} : { scale: 0.95 }}
+      disabled={disabled}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '4px',
+        padding: '10px 6px',
+        borderRadius: '14px',
+        background: active ? 'rgba(139,120,255,0.1)' : 'rgba(255,255,255,0.05)',
+        border: `1px solid ${active ? 'rgba(139,120,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
+        color: '#c0c0e0',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.4 : 1,
+        fontSize: '12px',
+        fontFamily: 'inherit',
+        transition: 'all 0.2s ease',
+      }}
+    >
+      <span style={{ fontSize: '20px', lineHeight: 1 }}>{emoji}</span>
+      <span style={{ fontSize: '11px' }}>{statusText || label}</span>
+    </motion.button>
   );
 }
