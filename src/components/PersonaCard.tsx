@@ -3,12 +3,13 @@
  * 展示内在角色的详细信息、自我介绍、昵称管理
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '../store';
 import { PERSONA_INFO } from '../types';
 import type { PersonaType } from '../types';
-import { generatePersonaGreeting } from '../ai-service';
+import { generatePersonaGreeting, generatePersonaGreetingLLM } from '../ai-service';
+import { isLLMEnabled } from '../llm-client';
 
 interface PersonaCardProps {
   persona: PersonaType;
@@ -32,6 +33,27 @@ export default function PersonaCard({ persona, count, percentage, expanded, onCl
     .filter(t => t.persona === persona)
     .slice(0, 3)
     .map(t => t.content);
+
+  // 角色问候语：LLM 优先，失败降级本地
+  const [greeting, setGreeting] = useState('');
+
+  useEffect(() => {
+    if (!expanded) return;
+
+    let cancelled = false;
+
+    if (isLLMEnabled()) {
+      generatePersonaGreetingLLM(persona, count, nickname).then(result => {
+        if (!cancelled) setGreeting(result);
+      }).catch(() => {
+        if (!cancelled) setGreeting(generatePersonaGreeting(persona, count, nickname));
+      });
+    } else {
+      setGreeting(generatePersonaGreeting(persona, count, nickname));
+    }
+
+    return () => { cancelled = true; };
+  }, [expanded, persona, count, nickname]);
 
   const handleSaveNickname = () => {
     if (nicknameInput.trim()) {
@@ -111,7 +133,7 @@ export default function PersonaCard({ persona, count, percentage, expanded, onCl
                   💬 角色自我介绍
                 </p>
                 <p className="text-xs leading-relaxed" style={{ color: 'rgba(200,200,230,0.6)' }}>
-                  {generatePersonaGreeting(persona, count, nickname)}
+                  {greeting}
                 </p>
               </div>
 

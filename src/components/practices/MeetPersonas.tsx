@@ -3,10 +3,11 @@
  * Phase 2.1 特别练习：角色卡片 + 自我介绍 + 起昵称
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '../../store';
-import { classifyThought, identifyPersonas, generatePersonaGreeting } from '../../ai-service';
+import { classifyThought, identifyPersonas, generatePersonaGreeting, generatePersonaGreetingLLM } from '../../ai-service';
+import { isLLMEnabled } from '../../llm-client';
 import { PERSONA_INFO } from '../../types';
 import type { PersonaType } from '../../types';
 
@@ -62,6 +63,32 @@ export default function MeetPersonas({ onBack }: { onBack: () => void }) {
     }
     setEditingNickname(null);
     setNicknameInput('');
+  };
+
+  // LLM 优先的问候语，失败降级本地
+  const [greetings, setGreetings] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if ((phase === 'reveal' || phase === 'nickname') && personas.length > 0) {
+      let cancelled = false;
+      personas.forEach(p => {
+        const nickname = personaNicknames[p.type];
+        if (isLLMEnabled()) {
+          generatePersonaGreetingLLM(p.type, p.frequency, nickname).then(result => {
+            if (!cancelled) setGreetings(prev => ({ ...prev, [p.type]: result }));
+          }).catch(() => {
+            if (!cancelled) setGreetings(prev => ({ ...prev, [p.type]: generatePersonaGreeting(p.type, p.frequency, nickname) }));
+          });
+        } else {
+          setGreetings(prev => ({ ...prev, [p.type]: generatePersonaGreeting(p.type, p.frequency, nickname) }));
+        }
+      });
+      return () => { cancelled = true; };
+    }
+  }, [phase, personas.length]);
+
+  const getGreeting = (type: PersonaType, frequency: number, nickname?: string) => {
+    return greetings[type] || generatePersonaGreeting(type, frequency, nickname);
   };
 
   const handleComplete = () => {
@@ -258,7 +285,7 @@ export default function MeetPersonas({ onBack }: { onBack: () => void }) {
                           )}
                         </div>
                         <p className="text-xs mb-2" style={{ color: 'rgba(200,200,230,0.5)' }}>
-                          {generatePersonaGreeting(persona.type, persona.frequency, nickname)}
+                          {getGreeting(persona.type, persona.frequency, nickname)}
                         </p>
                         <p className="text-[10px]" style={{ color: 'rgba(200,200,230,0.3)' }}>
                           出场 {persona.frequency} 次 · 代表念头：{persona.thoughts[0]?.slice(0, 15)}...

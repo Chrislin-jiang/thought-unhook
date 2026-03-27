@@ -4,10 +4,11 @@
  * - 念头艺术画生成
  */
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '../store';
-import { generateShareInsight, getThoughtArtPalette } from '../ai-service';
+import { generateShareInsight, generateShareInsightLLM, getThoughtArtPalette } from '../ai-service';
+import { isLLMEnabled } from '../llm-client';
 import { EMOTION_NAMES, PERSONA_INFO, RELEASE_METHOD_INFO } from '../types';
 import type { EmotionType, PersonaType, ReleaseMethod } from '../types';
 
@@ -135,12 +136,26 @@ function DailyReport() {
   }
   const topMethod = Object.entries(methodCounts).sort((a, b) => b[1] - a[1])[0];
 
-  const insight = generateShareInsight(
-    totalToday,
-    releasedToday,
-    (topEmotion?.[0] as EmotionType) || 'neutral',
-    topPersona?.[0] as PersonaType | undefined,
-  );
+  // 分享洞察：LLM 优先，失败降级本地
+  const [insight, setInsight] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    const emotion = (topEmotion?.[0] as EmotionType) || 'neutral';
+    const topP = topPersona?.[0] as PersonaType | undefined;
+
+    if (isLLMEnabled() && totalToday > 0) {
+      generateShareInsightLLM(totalToday, releasedToday, emotion, topP).then(result => {
+        if (!cancelled) setInsight(result);
+      }).catch(() => {
+        if (!cancelled) setInsight(generateShareInsight(totalToday, releasedToday, emotion, topP));
+      });
+    } else {
+      setInsight(generateShareInsight(totalToday, releasedToday, emotion, topP));
+    }
+
+    return () => { cancelled = true; };
+  }, [totalToday, releasedToday, topEmotion?.[0], topPersona?.[0]]);
 
   const handleSaveImage = useCallback(() => {
     const canvas = canvasRef.current;

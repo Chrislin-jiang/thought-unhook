@@ -1,11 +1,14 @@
 /**
- * 顶部导航 — Phase 3 增强
- * 含主题选择器 + 分享按钮
+ * 顶部导航 — Phase 4 增强
+ * 含主题选择器 + 分享按钮 + AI设置入口
  */
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useThoughtStore } from '../store';
 import ThemeSelector from './ThemeSelector';
+import AISettingsPanel from './AISettingsPanel';
+import { isLLMEnabled } from '../llm-client';
 
 export default function Header() {
   const thoughts = useThoughtStore(s => s.thoughts);
@@ -15,8 +18,10 @@ export default function Header() {
   const releasedCount = thoughts.filter(t => t.status === 'released').length;
   const activeCount = thoughts.filter(t => t.status === 'active').length;
   const storedCount = thoughts.filter(t => t.status === 'stored').length;
+  const [showAISettings, setShowAISettings] = useState(false);
 
   const isVoidTheme = currentTheme === 'void';
+  const aiEnabled = isLLMEnabled();
 
   const pageTitle: Record<string, string> = {
     space: '念头空间',
@@ -84,9 +89,37 @@ export default function Header() {
           </motion.button>
         )}
 
+        {/* AI 设置按钮 */}
+        <motion.button
+          onClick={() => setShowAISettings(true)}
+          whileTap={{ scale: 0.92 }}
+          className="relative flex items-center gap-1 px-2 py-1 rounded-lg"
+          style={{
+            background: aiEnabled
+              ? 'rgba(139,120,255,0.1)'
+              : 'rgba(255,255,255,0.05)',
+            border: `1px solid ${aiEnabled ? 'rgba(139,120,255,0.25)' : 'rgba(255,255,255,0.08)'}`,
+            color: aiEnabled ? 'rgba(139,120,255,0.8)' : 'rgba(200,200,230,0.5)',
+            fontSize: '11px',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+        >
+          <span>🧠</span>
+          {aiEnabled && (
+            <span
+              className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
+              style={{ background: '#4ade80' }}
+            />
+          )}
+        </motion.button>
+
         {/* 主题选择器 */}
         <ThemeSelector />
       </div>
+
+      {/* AI 设置面板 */}
+      <AISettingsPanel isOpen={showAISettings} onClose={() => setShowAISettings(false)} />
     </motion.header>
   );
 }

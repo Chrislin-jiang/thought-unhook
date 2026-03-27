@@ -1,15 +1,17 @@
 /**
- * 解钩操作面板 — Phase 3: 个性化推荐 + 行为建议
+ * 解钩操作面板 — Phase 4: LLM 增强版
  * 🫧 看见 / 🏷️ 贴标签 / ✏️ 改写 / 🎵 变声 / 🔍 缩小 / 💨 吹走 / 🫠 融化 / 📌 暂存
- * ⭐ AI 推荐徽标 + 💡 行为建议
+ * ⭐ AI 推荐徽标 + 💡 行为建议 + 🧠 LLM 智能增强
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThoughtStore } from '../store';
-import { speakThought, FUNNY_VOICES, generateLabel, recommendMethods, generateBehaviorSuggestion } from '../ai-service';
+import { speakThought, FUNNY_VOICES, generateLabel, generateLabelLLM, recommendMethods, generateBehaviorSuggestion, generateBehaviorSuggestionLLM } from '../ai-service';
 import type { VoiceOption } from '../ai-service';
 import { PERSONA_INFO, DISTORTION_NAMES } from '../types';
+import type { BehaviorSuggestion } from '../types';
+import { isLLMEnabled } from '../llm-client';
 
 export default function ActionPanel() {
   const selectedId = useThoughtStore(s => s.selectedThoughtId);
@@ -42,10 +44,28 @@ export default function ActionPanel() {
 
   const topRecommended = recommendations[0]?.method;
 
-  // Phase 3: 行为建议
-  const behaviorSuggestion = useMemo(() => {
-    if (!thought) return null;
-    return generateBehaviorSuggestion(thought);
+  // Phase 4: 行为建议（LLM 优先，失败降级本地）
+  const [behaviorSuggestion, setBehaviorSuggestion] = useState<BehaviorSuggestion | null>(null);
+
+  useEffect(() => {
+    if (!thought) {
+      setBehaviorSuggestion(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    if (isLLMEnabled()) {
+      generateBehaviorSuggestionLLM(thought).then(result => {
+        if (!cancelled) setBehaviorSuggestion(result);
+      }).catch(() => {
+        if (!cancelled) setBehaviorSuggestion(generateBehaviorSuggestion(thought));
+      });
+    } else {
+      setBehaviorSuggestion(generateBehaviorSuggestion(thought));
+    }
+
+    return () => { cancelled = true; };
   }, [thought]);
 
   if (!thought) return null;
@@ -72,10 +92,21 @@ export default function ActionPanel() {
     }, 3000);
   };
 
-  // ===== 🏷️ 贴标签操作 =====
-  const handleLabel = () => {
+  // ===== 🏷️ 贴标签操作（LLM 优先，失败降级本地）=====
+  const handleLabel = async () => {
     resetPanels();
-    const label = generateLabel(thought.content, thought.emotion, thought.cognitiveDistortion);
+
+    let label: string;
+    if (isLLMEnabled()) {
+      try {
+        label = await generateLabelLLM(thought.content, thought.emotion, thought.cognitiveDistortion);
+      } catch {
+        label = generateLabel(thought.content, thought.emotion, thought.cognitiveDistortion);
+      }
+    } else {
+      label = generateLabel(thought.content, thought.emotion, thought.cognitiveDistortion);
+    }
+
     setLabelGenerated(label);
     addTagToThought(thought.uid, label);
   };
@@ -351,7 +382,7 @@ export default function ActionPanel() {
                   ✨
                 </motion.div>
                 <span className="text-sm" style={{ color: 'rgba(200,200,230,0.6)' }}>
-                  AI 正在思考另一种说法...
+                  {isLLMEnabled() ? '🧠 AI 大模型正在深度思考...' : 'AI 正在思考另一种说法...'}
                 </span>
               </div>
             </motion.div>

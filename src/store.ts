@@ -6,7 +6,8 @@
 
 import { create } from 'zustand';
 import type { Thought, ReleaseMethod, EmotionType, CognitiveDistortion, PersonaType, DailyStats, PracticeRecord, ThemeType } from './types';
-import { classifyThought, rewriteThought } from './ai-service';
+import { classifyThought, rewriteThought, classifyThoughtLLM, rewriteThoughtLLM } from './ai-service';
+import { isLLMEnabled } from './llm-client';
 import { addThoughtToDB, updateThoughtInDB, getAllThoughts, clearAllThoughts, migrateFromLocalStorage, getSetting, setSetting } from './db';
 
 // ===== Store 定义 =====
@@ -123,9 +124,22 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
   },
 
   addThought: async (content: string) => {
-    const classification = classifyThought(content);
+    const uid = String(++idCounter);
+
+    // LLM 优先：先尝试 LLM 分类，失败降级到本地
+    let classification: ReturnType<typeof classifyThought>;
+    if (isLLMEnabled()) {
+      try {
+        classification = await classifyThoughtLLM(content);
+      } catch {
+        classification = classifyThought(content);
+      }
+    } else {
+      classification = classifyThought(content);
+    }
+
     const thought: Thought = {
-      uid: String(++idCounter),
+      uid,
       content,
       createdAt: Date.now(),
       emotion: classification.emotion,
@@ -202,13 +216,33 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
 
     set({ isRewriting: true });
 
-    setTimeout(() => {
-      const result = rewriteThought(thought.content);
-      set({
-        isRewriting: false,
-        rewriteVariants: result.variants,
-      });
-    }, 600);
+    if (isLLMEnabled()) {
+      // LLM 增强改写（真实 AI 分析）
+      rewriteThoughtLLM(thought.content, thought.emotion, thought.cognitiveDistortion)
+        .then(result => {
+          set({
+            isRewriting: false,
+            rewriteVariants: result.variants,
+          });
+        })
+        .catch(() => {
+          // LLM 失败，降级到本地
+          const result = rewriteThought(thought.content);
+          set({
+            isRewriting: false,
+            rewriteVariants: result.variants,
+          });
+        });
+    } else {
+      // 本地模板改写（带模拟延迟）
+      setTimeout(() => {
+        const result = rewriteThought(thought.content);
+        set({
+          isRewriting: false,
+          rewriteVariants: result.variants,
+        });
+      }, 600);
+    }
   },
 
   clearRewrite: () => {

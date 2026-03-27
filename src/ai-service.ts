@@ -1,12 +1,13 @@
 /**
- * AI 服务 — Phase 3
+ * AI 服务 — Phase 4: LLM 增强版
  * 
- * Layer 1 完整版: 深度语义分类（多维度加权 + 上下文分析）
- * Layer 2: 自动解钩改写（模板版）
- * Layer 3: 个性化解钩推荐 + 念头→行为建议
- * Layer 4: 念头人格化（角色识别 + 自我介绍 + 昵称）
+ * Layer 1: 深度语义分类（LLM + 本地规则双引擎）
+ * Layer 2: 自动解钩改写（LLM 智能改写 + 模板兜底）
+ * Layer 3: 个性化解钩推荐 + 念头→行为建议（LLM 增强）
+ * Layer 4: 念头人格化（LLM 生成个性化问候）
  * + 语音输入（Web Speech Recognition API）
  * + 增强变声（8种音色）
+ * + LLM 智能增强（DeepSeek / OpenAI 兼容 API）
  */
 
 import type {
@@ -19,6 +20,15 @@ import type {
   Thought,
 } from './types';
 import { PERSONA_INFO, RELEASE_METHOD_INFO } from './types';
+import { isLLMEnabled, chatJSON, chat } from './llm-client';
+import {
+  CLASSIFY_SYSTEM_PROMPT, buildClassifyUserPrompt,
+  REWRITE_SYSTEM_PROMPT, buildRewriteUserPrompt,
+  BEHAVIOR_SYSTEM_PROMPT, buildBehaviorUserPrompt,
+  LABEL_SYSTEM_PROMPT, buildLabelUserPrompt,
+  INSIGHT_SYSTEM_PROMPT, buildInsightUserPrompt,
+  PERSONA_GREETING_SYSTEM_PROMPT, buildPersonaGreetingUserPrompt,
+} from './llm-prompts';
 
 // ===== Layer 1 完整版: 深度语义分类 =====
 
@@ -208,6 +218,61 @@ export function classifyThought(content: string): ClassifyResult {
   };
 }
 
+// ===== LLM 增强版: 深度分类 =====
+
+interface LLMClassifyResult extends ClassifyResult {
+  analysis?: string;  // LLM 附加的分析说明
+}
+
+/**
+ * LLM 增强分类 — 异步
+ * 优先使用 LLM，失败时自动降级到本地规则
+ */
+export async function classifyThoughtLLM(content: string): Promise<LLMClassifyResult> {
+  // 先获取本地结果作为兜底
+  const localResult = classifyThought(content);
+  
+  if (!isLLMEnabled()) {
+    return localResult;
+  }
+
+  try {
+    const llmResult = await chatJSON<{
+      emotion: EmotionType;
+      cognitiveDistortion: CognitiveDistortion;
+      persona: PersonaType;
+      intensity: number;
+      tags: string[];
+      confidence: number;
+      secondaryEmotion?: EmotionType;
+      subDistortions: CognitiveDistortion[];
+      analysis?: string;
+    }>(
+      CLASSIFY_SYSTEM_PROMPT,
+      buildClassifyUserPrompt(content),
+      { maxTokens: 512, temperature: 0.3 }
+    );
+
+    if (llmResult && llmResult.emotion && llmResult.persona) {
+      return {
+        emotion: llmResult.emotion,
+        cognitiveDistortion: llmResult.cognitiveDistortion || 'unknown',
+        persona: llmResult.persona,
+        intensity: Math.min(10, Math.max(1, Math.round(llmResult.intensity || 5))),
+        tags: llmResult.tags || localResult.tags,
+        confidence: Math.min(1, Math.max(0, llmResult.confidence || 0.8)),
+        secondaryEmotion: llmResult.secondaryEmotion,
+        subDistortions: llmResult.subDistortions || [],
+        analysis: llmResult.analysis,
+      };
+    }
+  } catch (err) {
+    console.warn('[AI] LLM classify failed, using local:', err);
+  }
+
+  return localResult;
+}
+
 // ===== Layer 2: 自动解钩改写（增强版）=====
 
 interface RewriteResult {
@@ -247,6 +312,52 @@ export function rewriteThought(content: string): RewriteResult {
   };
 }
 
+// ===== LLM 增强版: 智能改写 =====
+
+/**
+ * LLM 增强改写 — 异步
+ * 使用大模型生成更自然、更有深度的改写
+ */
+export async function rewriteThoughtLLM(
+  content: string,
+  emotion: EmotionType = 'neutral',
+  distortion: CognitiveDistortion = 'unknown',
+): Promise<RewriteResult> {
+  const localResult = rewriteThought(content);
+  
+  if (!isLLMEnabled()) {
+    return localResult;
+  }
+
+  try {
+    const llmResult = await chatJSON<{
+      variants: Array<{
+        text: string;
+        technique: string;
+        techniqueName: string;
+      }>;
+    }>(
+      REWRITE_SYSTEM_PROMPT,
+      buildRewriteUserPrompt(content, emotion, distortion),
+      { maxTokens: 512, temperature: 0.8 }
+    );
+
+    if (llmResult && llmResult.variants && llmResult.variants.length >= 2) {
+      return {
+        variants: llmResult.variants.slice(0, 4).map(v => ({
+          text: v.text || '',
+          technique: v.technique || 'custom',
+          techniqueName: v.techniqueName || '创意改写',
+        })),
+      };
+    }
+  } catch (err) {
+    console.warn('[AI] LLM rewrite failed, using local:', err);
+  }
+
+  return localResult;
+}
+
 // ===== 自动标签生成 =====
 
 export function generateLabel(content: string, emotion: EmotionType, distortion: CognitiveDistortion): string {
@@ -265,6 +376,36 @@ export function generateLabel(content: string, emotion: EmotionType, distortion:
   const dist = distortionMap[distortion];
   
   return dist ? `这是一个关于「${emo}」的${dist}念头` : `这是一个关于「${emo}」的念头`;
+}
+
+// ===== LLM 增强版: 智能标签 =====
+
+export async function generateLabelLLM(
+  content: string,
+  emotion: EmotionType,
+  distortion: CognitiveDistortion,
+): Promise<string> {
+  const localResult = generateLabel(content, emotion, distortion);
+  
+  if (!isLLMEnabled()) {
+    return localResult;
+  }
+
+  try {
+    const result = await chat(
+      LABEL_SYSTEM_PROMPT,
+      buildLabelUserPrompt(content, emotion, distortion),
+      { maxTokens: 100, temperature: 0.6 }
+    );
+
+    if (result && result.length >= 5 && result.length <= 50) {
+      return result;
+    }
+  } catch (err) {
+    console.warn('[AI] LLM label failed, using local:', err);
+  }
+
+  return localResult;
 }
 
 // ===== Layer 4: 念头人格化 =====
@@ -341,6 +482,38 @@ export function generatePersonaGreeting(type: PersonaType, thoughtCount: number,
 
   const options = greetings[type] || [`嗨，我是${displayName}。`];
   return options[Math.floor(Math.random() * options.length)];
+}
+
+// ===== LLM 增强版: 角色问候语 =====
+
+export async function generatePersonaGreetingLLM(
+  type: PersonaType,
+  thoughtCount: number,
+  nickname?: string,
+): Promise<string> {
+  const info = PERSONA_INFO[type];
+  const displayName = nickname || info.name;
+  const localResult = generatePersonaGreeting(type, thoughtCount, nickname);
+  
+  if (!isLLMEnabled()) {
+    return localResult;
+  }
+
+  try {
+    const result = await chat(
+      PERSONA_GREETING_SYSTEM_PROMPT,
+      buildPersonaGreetingUserPrompt(type, displayName, thoughtCount),
+      { maxTokens: 150, temperature: 0.9 }
+    );
+
+    if (result && result.length >= 10) {
+      return result;
+    }
+  } catch (err) {
+    console.warn('[AI] LLM persona greeting failed, using local:', err);
+  }
+
+  return localResult;
 }
 
 // ===== TTS 变声（Web Speech API）— Phase 3 增强版：8种音色 =====
@@ -613,6 +786,75 @@ export function generateBehaviorSuggestion(thought: Thought): BehaviorSuggestion
   }
 
   return null;
+}
+
+// ===== LLM 增强版: 行为建议 =====
+
+export async function generateBehaviorSuggestionLLM(thought: Thought): Promise<BehaviorSuggestion | null> {
+  const localResult = generateBehaviorSuggestion(thought);
+  
+  if (!isLLMEnabled()) {
+    return localResult;
+  }
+
+  try {
+    const result = await chatJSON<{
+      trigger: string | null;
+      suggestion?: string;
+      emoji?: string;
+      actionLabel?: string;
+      duration?: string;
+    }>(
+      BEHAVIOR_SYSTEM_PROMPT,
+      buildBehaviorUserPrompt(thought.content, thought.emotion, thought.intensity),
+      { maxTokens: 256, temperature: 0.7 }
+    );
+
+    if (result && result.trigger && result.suggestion) {
+      return {
+        trigger: result.trigger,
+        suggestion: result.suggestion,
+        emoji: result.emoji || '💡',
+        actionLabel: result.actionLabel || '试试看',
+        duration: result.duration,
+      };
+    }
+  } catch (err) {
+    console.warn('[AI] LLM behavior suggestion failed, using local:', err);
+  }
+
+  return localResult;
+}
+
+// ===== LLM 增强版: 分享洞察 =====
+
+export async function generateShareInsightLLM(
+  totalThoughts: number,
+  releasedCount: number,
+  topEmotion: EmotionType,
+  topPersona?: PersonaType,
+): Promise<string> {
+  const localResult = generateShareInsight(totalThoughts, releasedCount, topEmotion, topPersona);
+  
+  if (!isLLMEnabled()) {
+    return localResult;
+  }
+
+  try {
+    const result = await chat(
+      INSIGHT_SYSTEM_PROMPT,
+      buildInsightUserPrompt(totalThoughts, releasedCount, topEmotion, topPersona),
+      { maxTokens: 100, temperature: 0.8 }
+    );
+
+    if (result && result.length >= 5) {
+      return result;
+    }
+  } catch (err) {
+    console.warn('[AI] LLM insight failed, using local:', err);
+  }
+
+  return localResult;
 }
 
 // ===== Phase 3: 分享报告生成 =====
