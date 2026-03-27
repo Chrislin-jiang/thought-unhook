@@ -126,18 +126,8 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
   addThought: async (content: string) => {
     const uid = String(++idCounter);
 
-    // LLM 优先：先尝试 LLM 分类，失败降级到本地
-    let classification: ReturnType<typeof classifyThought>;
-    if (isLLMEnabled()) {
-      try {
-        classification = await classifyThoughtLLM(content);
-      } catch {
-        classification = classifyThought(content);
-      }
-    } else {
-      classification = classifyThought(content);
-    }
-
+    // 先用本地规则快速分类（同步，零延迟）
+    const classification = classifyThought(content);
     const thought: Thought = {
       uid,
       content,
@@ -156,9 +146,29 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
     const dbId = await addThoughtToDB(thought);
     thought.id = dbId;
 
+    // 立即更新 UI
     set(state => ({
       thoughts: [thought, ...state.thoughts],
     }));
+
+    // 异步 LLM 增强分类（不阻塞 UI）
+    if (isLLMEnabled()) {
+      classifyThoughtLLM(content).then(llmResult => {
+        const updates = {
+          emotion: llmResult.emotion,
+          intensity: llmResult.intensity,
+          cognitiveDistortion: llmResult.cognitiveDistortion,
+          persona: llmResult.persona,
+          tags: llmResult.tags.length > 0 ? llmResult.tags : classification.tags,
+        };
+        set(state => ({
+          thoughts: state.thoughts.map(t =>
+            t.uid === uid ? { ...t, ...updates } : t
+          ),
+        }));
+        updateThoughtInDB(uid, updates);
+      }).catch(() => { /* 静默失败，本地结果已可用 */ });
+    }
 
     return thought;
   },
@@ -217,16 +227,17 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
     set({ isRewriting: true });
 
     if (isLLMEnabled()) {
-      // LLM 增强改写（真实 AI 分析）
+      // LLM 优先改写
       rewriteThoughtLLM(thought.content, thought.emotion, thought.cognitiveDistortion)
         .then(result => {
+          console.log('[Rewrite] LLM success, variants:', result.variants.length);
           set({
             isRewriting: false,
             rewriteVariants: result.variants,
           });
         })
-        .catch(() => {
-          // LLM 失败，降级到本地
+        .catch((err) => {
+          console.warn('[Rewrite] LLM failed, falling back to local:', err?.message || err);
           const result = rewriteThought(thought.content);
           set({
             isRewriting: false,

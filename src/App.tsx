@@ -82,7 +82,7 @@ export default function App() {
             <ThoughtSpace />
 
             {/* 底部操作区 */}
-            <div className="relative z-10 px-4 pb-2 space-y-3">
+            <div className="relative z-10 px-4 pb-1 space-y-1.5 overflow-auto">
               <AnimatePresence>
                 {selectedId && hasActive && <ActionPanel />}
               </AnimatePresence>

@@ -87,7 +87,7 @@ export default function VoiceInput({ onResult, className = '' }: VoiceInputProps
     <div className={`relative ${className}`}>
       <motion.button
         onClick={isListening ? stopListening : startListening}
-        className="w-10 h-10 rounded-full flex items-center justify-center relative"
+        className="w-8 h-8 rounded-full flex items-center justify-center relative"
         style={{
           background: isListening
             ? 'linear-gradient(135deg, rgba(255,100,100,0.6), rgba(255,150,100,0.6))'

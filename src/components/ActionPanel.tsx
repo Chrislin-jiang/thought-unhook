@@ -66,7 +66,8 @@ export default function ActionPanel() {
     }
 
     return () => { cancelled = true; };
-  }, [thought]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [thought?.uid]);
 
   if (!thought) return null;
 
@@ -202,7 +203,7 @@ export default function ActionPanel() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="mb-3 p-3 rounded-xl"
+              className="mb-2 p-2 rounded-xl"
               style={{
                 background: 'linear-gradient(135deg, rgba(255,200,100,0.08), rgba(255,180,100,0.04))',
                 border: '1px solid rgba(255,200,100,0.12)',
@@ -515,9 +516,9 @@ function ActionButton({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '4px',
-        padding: '10px 6px',
-        borderRadius: '14px',
+        gap: '2px',
+        padding: '6px 4px',
+        borderRadius: '12px',
         background: recommended
           ? 'rgba(139,120,255,0.15)'
           : active ? 'rgba(139,120,255,0.1)' : 'rgba(255,255,255,0.05)',
@@ -547,8 +548,8 @@ function ActionButton({
             fontSize: '10px',
             background: 'linear-gradient(135deg, rgba(139,120,255,0.8), rgba(100,180,255,0.8))',
             borderRadius: '50%',
-            width: '16px',
-            height: '16px',
+            width: '14px',
+            height: '14px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -558,8 +559,8 @@ function ActionButton({
           ⭐
         </motion.span>
       )}
-      <span style={{ fontSize: '20px', lineHeight: 1 }}>{emoji}</span>
-      <span style={{ fontSize: '11px' }}>{statusText || label}</span>
+      <span style={{ fontSize: '18px', lineHeight: 1 }}>{emoji}</span>
+      <span style={{ fontSize: '10px' }}>{statusText || label}</span>
     </motion.button>
   );
 }

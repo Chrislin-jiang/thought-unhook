@@ -1,5 +1,5 @@
 // Service Worker for PWA — Phase 1
-const CACHE_NAME = 'thought-unhook-v1';
+const CACHE_NAME = 'thought-unhook-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -30,6 +30,12 @@ self.addEventListener('activate', (event) => {
 
 // Fetch — Network first, fallback to cache
 self.addEventListener('fetch', (event) => {
+  // 跳过非 GET 请求（POST 等 API 调用不应被 SW 拦截）
+  if (event.request.method !== 'GET') return;
+
+  // 跳过 API 代理请求
+  if (event.request.url.includes('/api/')) return;
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {

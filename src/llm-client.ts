@@ -112,7 +112,7 @@ const DEFAULT_CONFIG: LLMConfig = {
   model: 'deepseek-chat',
   maxTokens: 1024,
   temperature: 0.7,
-  timeout: 15000,
+  timeout: 60000,
   enabled: false,
 };
 
@@ -237,19 +237,10 @@ export async function callLLM(
         signal: controller.signal,
       });
 
-      // 如果代理路由本身 404（Vite 没有注册成功），回退到直接请求
+      // 如果代理路由本身 404（Vite 没有注册成功），直接报错
       const contentType = response.headers.get('content-type') || '';
       if (response.status === 404 && contentType.includes('text/html')) {
-        console.warn('[LLM] Proxy route not found, falling back to direct request');
-        response = await fetch(targetUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...apiHeaders,
-          },
-          body: JSON.stringify(requestBody),
-          signal: controller.signal,
-        });
+        throw new Error('LLM 代理未就绪，请重启 dev server');
       }
     } else {
       // 生产模式：直接请求（需要目标 API 支持 CORS，或部署同域服务）
@@ -287,8 +278,15 @@ export async function callLLM(
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content?.trim();
 
+    console.log('[LLM] Response received:', {
+      hasContent: !!content,
+      contentLength: content?.length,
+      contentPreview: content?.slice(0, 80),
+      hasReasoningContent: !!data.choices?.[0]?.message?.reasoning_content,
+    });
+
     if (!content) {
-      console.warn('[LLM] Empty response from model');
+      console.warn('[LLM] Empty response from model, full message:', JSON.stringify(data.choices?.[0]?.message));
       throw new Error('模型返回为空');
     }
 
@@ -342,18 +340,42 @@ export async function chatJSON<T>(
 ): Promise<T | null> {
   const jsonSystemPrompt = systemPrompt + '\n\n请严格以 JSON 格式回复，不要包含 markdown 代码块标记。';
   const content = await chat(jsonSystemPrompt, userMessage, options);
-  if (!content) return null;
+  if (!content) {
+    console.warn('[LLM chatJSON] chat() returned null');
+    return null;
+  }
+
+  console.log('[LLM chatJSON] Raw content:', content.slice(0, 120));
 
   try {
-    // 尝试提取 JSON（处理可能的 markdown 包裹）
-    let jsonStr = content;
-    const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1].trim();
-    }
-    return JSON.parse(jsonStr) as T;
+    // 策略 1：直接解析（理想情况）
+    const parsed = JSON.parse(content) as T;
+    console.log('[LLM chatJSON] Strategy 1 (direct parse) succeeded');
+    return parsed;
   } catch {
-    console.warn('[LLM] Failed to parse JSON response:', content);
+    // 策略 2：提取 markdown 代码块中的 JSON
+    const codeBlockMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (codeBlockMatch) {
+      try {
+        return JSON.parse(codeBlockMatch[1].trim()) as T;
+      } catch { /* 继续尝试 */ }
+    }
+
+    // 策略 3：提取首个 { ... } 或 [ ... ] 块（处理 LLM 在 JSON 前后加了说明文字）
+    const jsonObjectMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonObjectMatch) {
+      try {
+        return JSON.parse(jsonObjectMatch[0]) as T;
+      } catch { /* 继续尝试 */ }
+    }
+    const jsonArrayMatch = content.match(/\[[\s\S]*\]/);
+    if (jsonArrayMatch) {
+      try {
+        return JSON.parse(jsonArrayMatch[0]) as T;
+      } catch { /* 放弃 */ }
+    }
+
+    console.warn('[LLM] Failed to parse JSON response:', content.slice(0, 200));
     return null;
   }
 }
@@ -379,7 +401,7 @@ export async function testConnection(): Promise<{ success: boolean; message: str
     const result = await chat(
       '你是一个简洁的助手。',
       '请回复"连接成功"四个字。',
-      { maxTokens: 20, timeout: 15000, forceCall: true }
+      { maxTokens: 20, timeout: 30000, forceCall: true }
     );
 
     const latency = Date.now() - start;

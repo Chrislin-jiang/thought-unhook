@@ -330,10 +330,20 @@ export async function rewriteThoughtLLM(
   }>(
     REWRITE_SYSTEM_PROMPT,
     buildRewriteUserPrompt(content, emotion, distortion),
-    { maxTokens: 512, temperature: 0.8 }
+    { maxTokens: 1024, temperature: 0.8, timeout: 90000 }
   );
 
-  if (llmResult && llmResult.variants && llmResult.variants.length >= 2) {
+  console.log('[rewriteThoughtLLM] chatJSON result:', {
+    isNull: llmResult === null,
+    hasVariants: !!llmResult?.variants,
+    variantsCount: llmResult?.variants?.length,
+  });
+
+  if (!llmResult) {
+    throw new Error('LLM rewrite: JSON parse failed');
+  }
+
+  if (llmResult.variants && llmResult.variants.length >= 2) {
     return {
       variants: llmResult.variants.slice(0, 4).map(v => ({
         text: v.text || '',
@@ -343,7 +353,17 @@ export async function rewriteThoughtLLM(
     };
   }
 
-  // JSON 解析成功但格式不符——也视为失败，让调用方降级
+  // 格式不符但有 variants（可能只有 1 条），也尝试使用
+  if (llmResult.variants && llmResult.variants.length >= 1) {
+    return {
+      variants: llmResult.variants.map(v => ({
+        text: v.text || '',
+        technique: v.technique || 'custom',
+        techniqueName: v.techniqueName || '创意改写',
+      })),
+    };
+  }
+
   throw new Error('LLM rewrite returned invalid format');
 }
 

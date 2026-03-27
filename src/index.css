@@ -100,9 +100,9 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   color: #e0e0f0;
-  padding: 14px 18px;
-  font-size: 16px;
-  line-height: 1.6;
+  padding: 10px 16px;
+  font-size: 15px;
+  line-height: 1.5;
   resize: none;
   outline: none;
   transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
