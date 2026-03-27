@@ -1,5 +1,5 @@
 /**
- * 念头输入区组件
+ * 念头输入区 — 赛博终端风
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -8,11 +8,11 @@ import { useThoughtStore } from '../store';
 import VoiceInput from './VoiceInput';
 
 const PLACEHOLDER_TEXTS = [
-  '脑子里在想什么？写下来...',
-  '此刻有什么念头在转？',
-  '把那个声音写出来...',
-  '现在最大声的那个想法是什么？',
-  '脑内弹幕是什么？',
+  '输入你的念头数据...',
+  '捕获脑内信号...',
+  '记录意识流...',
+  '解码内心声音...',
+  '扫描思维碎片...',
 ];
 
 export default function ThoughtInput() {
@@ -58,6 +58,16 @@ export default function ThoughtInput() {
   return (
     <div className="input-area relative z-10">
       <div className="relative">
+        {/* 左侧竖线装饰 */}
+        <div
+          className="absolute left-0 top-2 bottom-2 w-[2px]"
+          style={{
+            background: text.trim()
+              ? 'linear-gradient(180deg, #00f0ff, rgba(0,240,255,0.1))'
+              : 'linear-gradient(180deg, rgba(0,240,255,0.15), rgba(0,240,255,0.03))',
+            transition: 'background 0.3s',
+          }}
+        />
         <textarea
           ref={textareaRef}
           value={text}
@@ -66,26 +76,29 @@ export default function ThoughtInput() {
           placeholder={placeholder}
           rows={2}
           maxLength={200}
-          className="w-full pr-20"
+          className="w-full pr-20 pl-4"
           style={{ minHeight: '44px' }}
         />
 
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
           <motion.button
             onClick={handleSubmit}
-            className="w-8 h-8 rounded-full flex items-center justify-center"
+            className="w-8 h-8 flex items-center justify-center"
             style={{
               background: text.trim()
-                ? 'linear-gradient(135deg, rgba(139,124,247,0.8), rgba(108,180,238,0.7))'
-                : 'rgba(200,200,230,0.06)',
-              border: 'none',
+                ? 'rgba(0,240,255,0.15)'
+                : 'rgba(0,240,255,0.03)',
+              border: `1px solid ${text.trim() ? 'rgba(0,240,255,0.4)' : 'rgba(0,240,255,0.06)'}`,
+              borderRadius: '2px',
               cursor: text.trim() ? 'pointer' : 'default',
-              color: text.trim() ? '#fff' : 'rgba(200,200,230,0.2)',
+              color: text.trim() ? '#00f0ff' : 'rgba(0,240,255,0.15)',
+              boxShadow: text.trim() ? '0 0 12px rgba(0,240,255,0.15)' : 'none',
+              transition: 'all 0.2s',
             }}
-            whileHover={text.trim() ? { scale: 1.1 } : {}}
+            whileHover={text.trim() ? { scale: 1.1, boxShadow: '0 0 20px rgba(0,240,255,0.25)' } : {}}
             whileTap={text.trim() ? { scale: 0.9 } : {}}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="19" x2="12" y2="5" />
               <polyline points="5 12 12 5 19 12" />
             </svg>
@@ -98,30 +111,30 @@ export default function ThoughtInput() {
           {justAdded ? (
             <motion.span
               key="added"
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
-              className="text-xs"
-              style={{ color: 'rgba(124,197,168,0.7)' }}
+              className="text-xs font-mono"
+              style={{ color: 'rgba(0,255,136,0.7)' }}
             >
-              ✦ 念头已物化
+              {'>'} 数据已捕获
             </motion.span>
           ) : (
             <motion.span
               key="hint"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-xs"
-              style={{ color: 'rgba(200,200,230,0.35)' }}
+              className="text-xs font-mono"
+              style={{ color: 'rgba(0,240,255,0.2)' }}
             >
-              按 Enter 释放念头
+              ENTER 释放念头
             </motion.span>
           )}
         </AnimatePresence>
 
         {todayCount > 0 && (
-          <span className="text-xs" style={{ color: 'rgba(200,200,230,0.35)' }}>
-            今日 {todayCount} 个念头
+          <span className="text-xs font-mono" style={{ color: 'rgba(0,240,255,0.2)' }}>
+            [{todayCount}] captured
           </span>
         )}
       </div>

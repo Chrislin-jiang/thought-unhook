@@ -41,14 +41,14 @@ export default function ThemeSelector() {
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         whileTap={{ scale: 0.92 }}
-        className="flex items-center gap-1 px-2 py-1 rounded-lg"
+        className="flex items-center gap-1 px-2.5 py-1 rounded-xl font-mono"
         style={{
-          background: 'rgba(200,200,230,0.04)',
-          border: '1px solid rgba(200,200,230,0.06)',
-          color: 'rgba(200,200,230,0.5)',
+          background: 'rgba(0,240,255,0.04)',
+          border: '1px solid rgba(0,240,255,0.12)',
+          color: 'rgba(0,240,255,0.5)',
           fontSize: '11px',
           cursor: 'pointer',
-          fontFamily: 'inherit',
+          fontFamily: "'JetBrains Mono', monospace",
         }}
       >
         <span>{currentInfo.emoji}</span>

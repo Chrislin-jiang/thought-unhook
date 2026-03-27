@@ -487,7 +487,7 @@ export default function ActionPanel() {
   );
 }
 
-// ===== 操作按钮子组件 =====
+// ===== 操作按钮子组件 — 赛博风 =====
 function ActionButton({
   emoji,
   label,
@@ -520,23 +520,23 @@ function ActionButton({
         padding: '6px 4px',
         borderRadius: '12px',
         background: recommended
-          ? 'rgba(139,120,255,0.15)'
-          : active ? 'rgba(139,120,255,0.1)' : 'rgba(255,255,255,0.05)',
+          ? 'rgba(0,240,255,0.08)'
+          : active ? 'rgba(0,240,255,0.05)' : 'rgba(0,240,255,0.02)',
         border: `1px solid ${
           recommended
-            ? 'rgba(139,120,255,0.4)'
-            : active ? 'rgba(139,120,255,0.3)' : 'rgba(255,255,255,0.08)'
+            ? 'rgba(0,240,255,0.35)'
+            : active ? 'rgba(0,240,255,0.2)' : 'rgba(0,240,255,0.06)'
         }`,
-        color: '#c0c0e0',
+        color: '#c0d8e8',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.4 : 1,
         fontSize: '12px',
         fontFamily: 'inherit',
         transition: 'all 0.2s ease',
         position: 'relative',
+        boxShadow: recommended ? '0 0 12px rgba(0,240,255,0.12)' : 'none',
       }}
     >
-      {/* AI 推荐徽标 */}
       {recommended && (
         <motion.span
           initial={{ scale: 0 }}
@@ -546,14 +546,16 @@ function ActionButton({
             top: '-4px',
             right: '-4px',
             fontSize: '10px',
-            background: 'linear-gradient(135deg, rgba(139,120,255,0.8), rgba(100,180,255,0.8))',
+            background: 'linear-gradient(135deg, #00f0ff, #00d4ff)',
             borderRadius: '50%',
-            width: '14px',
-            height: '14px',
+            width: '16px',
+            height: '16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            lineHeight: 1,
+            color: '#050510',
+            fontWeight: 700,
+            boxShadow: '0 0 8px rgba(0,240,255,0.6), 0 0 16px rgba(0,240,255,0.2)',
           }}
         >
           ⭐

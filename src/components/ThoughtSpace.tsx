@@ -1,5 +1,5 @@
 /**
- * 念头空间 — 气泡漂浮区域
+ * 念头空间 — 赛博科技风
  */
 
 import { AnimatePresence, motion } from 'framer-motion';
@@ -29,28 +29,36 @@ export default function ThoughtSpace() {
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-8">
+    <div className="flex flex-col items-center justify-center h-full gap-6">
+      {/* 六边形装饰 */}
       <motion.div
         animate={{
-          y: [0, -10, 0],
-          opacity: [0.15, 0.3, 0.15],
+          rotate: [0, 360],
+          opacity: [0.08, 0.15, 0.08],
         }}
         transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: 'easeInOut',
+          rotate: { duration: 30, repeat: Infinity, ease: 'linear' },
+          opacity: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
         }}
-        className=""
-        style={{ fontSize: '48px', color: 'rgba(139,124,247,0.18)', fontWeight: 300 }}
-      >
-        念
-      </motion.div>
-      <div className="text-center space-y-3">
-        <p className="text-sm font-light tracking-wider" style={{ color: 'rgba(200,200,230,0.35)' }}>
-          此刻脑海里，有什么声音？
-        </p>
-        <p className="text-[11px] tracking-widest" style={{ color: 'rgba(200,200,230,0.15)', letterSpacing: '0.15em' }}>
-          写下来，让念头从脑内飘到眼前
+        style={{
+          width: '120px',
+          height: '120px',
+          border: '1px solid rgba(0,240,255,0.1)',
+          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+        }}
+      />
+
+      <div className="text-center space-y-3 -mt-16">
+        <motion.p
+          animate={{ opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity }}
+          className="text-sm font-mono tracking-wider"
+          style={{ color: 'rgba(0,240,255,0.35)' }}
+        >
+          AWAITING INPUT_
+        </motion.p>
+        <p className="text-[11px]" style={{ color: 'rgba(200,220,240,0.2)' }}>
+          输入念头数据，开始解码内心
         </p>
       </div>
     </div>

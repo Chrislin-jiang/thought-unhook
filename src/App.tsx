@@ -3,7 +3,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import ThemeBackground from './components/ThemeBackground';
 import Header from './components/Header';
 import ThoughtSpace from './components/ThoughtSpace';
@@ -43,10 +43,24 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center" style={{ background: '#08080f' }}>
+      <div className="h-screen flex items-center justify-center" style={{ background: '#050510' }}>
         <div className="text-center">
-          <div className="text-4xl mb-4 animate-breathe" style={{ color: 'rgba(139,124,247,0.5)' }}>🫧</div>
-          <p style={{ color: 'rgba(200,200,230,0.3)', letterSpacing: '0.2em', fontSize: '12px' }}>静候片刻...</p>
+          <motion.div
+            animate={{ opacity: [0.3, 0.8, 0.3] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="font-mono text-sm mb-4"
+            style={{ color: '#00f0ff', textShadow: '0 0 10px rgba(0,240,255,0.3)' }}
+          >
+            INITIALIZING...
+          </motion.div>
+          <div className="w-32 h-[2px] mx-auto overflow-hidden" style={{ background: 'rgba(0,240,255,0.1)' }}>
+            <motion.div
+              animate={{ x: ['-100%', '100%'] }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              className="w-1/2 h-full"
+              style={{ background: 'linear-gradient(90deg, transparent, #00f0ff, transparent)' }}
+            />
+          </div>
         </div>
       </div>
     );
@@ -62,7 +76,7 @@ export default function App() {
       style={{
         background: themeInfo.bgColor,
         minHeight: '100dvh',
-        color: '#d0d0e8',
+        color: '#e0e8f0',
         transition: 'background 0.8s ease, color 0.8s ease',
       }}
     >
