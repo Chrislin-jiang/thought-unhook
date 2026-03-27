@@ -229,48 +229,41 @@ interface LLMClassifyResult extends ClassifyResult {
  * 优先使用 LLM，失败时自动降级到本地规则
  */
 export async function classifyThoughtLLM(content: string): Promise<LLMClassifyResult> {
-  // 先获取本地结果作为兜底
-  const localResult = classifyThought(content);
-  
   if (!isLLMEnabled()) {
-    return localResult;
+    throw new Error('LLM not enabled');
   }
 
-  try {
-    const llmResult = await chatJSON<{
-      emotion: EmotionType;
-      cognitiveDistortion: CognitiveDistortion;
-      persona: PersonaType;
-      intensity: number;
-      tags: string[];
-      confidence: number;
-      secondaryEmotion?: EmotionType;
-      subDistortions: CognitiveDistortion[];
-      analysis?: string;
-    }>(
-      CLASSIFY_SYSTEM_PROMPT,
-      buildClassifyUserPrompt(content),
-      { maxTokens: 512, temperature: 0.3 }
-    );
+  const llmResult = await chatJSON<{
+    emotion: EmotionType;
+    cognitiveDistortion: CognitiveDistortion;
+    persona: PersonaType;
+    intensity: number;
+    tags: string[];
+    confidence: number;
+    secondaryEmotion?: EmotionType;
+    subDistortions: CognitiveDistortion[];
+    analysis?: string;
+  }>(
+    CLASSIFY_SYSTEM_PROMPT,
+    buildClassifyUserPrompt(content),
+    { maxTokens: 512, temperature: 0.3 }
+  );
 
-    if (llmResult && llmResult.emotion && llmResult.persona) {
-      return {
-        emotion: llmResult.emotion,
-        cognitiveDistortion: llmResult.cognitiveDistortion || 'unknown',
-        persona: llmResult.persona,
-        intensity: Math.min(10, Math.max(1, Math.round(llmResult.intensity || 5))),
-        tags: llmResult.tags || localResult.tags,
-        confidence: Math.min(1, Math.max(0, llmResult.confidence || 0.8)),
-        secondaryEmotion: llmResult.secondaryEmotion,
-        subDistortions: llmResult.subDistortions || [],
-        analysis: llmResult.analysis,
-      };
-    }
-  } catch (err) {
-    console.warn('[AI] LLM classify failed, using local:', err);
+  if (llmResult && llmResult.emotion && llmResult.persona) {
+    return {
+      emotion: llmResult.emotion,
+      cognitiveDistortion: llmResult.cognitiveDistortion || 'unknown',
+      persona: llmResult.persona,
+      intensity: Math.min(10, Math.max(1, Math.round(llmResult.intensity || 5))),
+      tags: llmResult.tags || [],
+      confidence: Math.min(1, Math.max(0, llmResult.confidence || 0.8)),
+      secondaryEmotion: llmResult.secondaryEmotion,
+      subDistortions: llmResult.subDistortions || [],
+      analysis: llmResult.analysis,
+    };
   }
 
-  return localResult;
+  throw new Error('LLM classify returned invalid result');
 }
 
 // ===== Layer 2: 自动解钩改写（增强版）=====
@@ -317,45 +310,41 @@ export function rewriteThought(content: string): RewriteResult {
 /**
  * LLM 增强改写 — 异步
  * 使用大模型生成更自然、更有深度的改写
+ * 失败时抛出异常，由调用方决定降级策略
  */
 export async function rewriteThoughtLLM(
   content: string,
   emotion: EmotionType = 'neutral',
   distortion: CognitiveDistortion = 'unknown',
 ): Promise<RewriteResult> {
-  const localResult = rewriteThought(content);
-  
   if (!isLLMEnabled()) {
-    return localResult;
+    throw new Error('LLM not enabled');
   }
 
-  try {
-    const llmResult = await chatJSON<{
-      variants: Array<{
-        text: string;
-        technique: string;
-        techniqueName: string;
-      }>;
-    }>(
-      REWRITE_SYSTEM_PROMPT,
-      buildRewriteUserPrompt(content, emotion, distortion),
-      { maxTokens: 512, temperature: 0.8 }
-    );
+  const llmResult = await chatJSON<{
+    variants: Array<{
+      text: string;
+      technique: string;
+      techniqueName: string;
+    }>;
+  }>(
+    REWRITE_SYSTEM_PROMPT,
+    buildRewriteUserPrompt(content, emotion, distortion),
+    { maxTokens: 512, temperature: 0.8 }
+  );
 
-    if (llmResult && llmResult.variants && llmResult.variants.length >= 2) {
-      return {
-        variants: llmResult.variants.slice(0, 4).map(v => ({
-          text: v.text || '',
-          technique: v.technique || 'custom',
-          techniqueName: v.techniqueName || '创意改写',
-        })),
-      };
-    }
-  } catch (err) {
-    console.warn('[AI] LLM rewrite failed, using local:', err);
+  if (llmResult && llmResult.variants && llmResult.variants.length >= 2) {
+    return {
+      variants: llmResult.variants.slice(0, 4).map(v => ({
+        text: v.text || '',
+        technique: v.technique || 'custom',
+        techniqueName: v.techniqueName || '创意改写',
+      })),
+    };
   }
 
-  return localResult;
+  // JSON 解析成功但格式不符——也视为失败，让调用方降级
+  throw new Error('LLM rewrite returned invalid format');
 }
 
 // ===== 自动标签生成 =====
@@ -493,27 +482,22 @@ export async function generatePersonaGreetingLLM(
 ): Promise<string> {
   const info = PERSONA_INFO[type];
   const displayName = nickname || info.name;
-  const localResult = generatePersonaGreeting(type, thoughtCount, nickname);
-  
+
   if (!isLLMEnabled()) {
-    return localResult;
+    throw new Error('LLM not enabled');
   }
 
-  try {
-    const result = await chat(
-      PERSONA_GREETING_SYSTEM_PROMPT,
-      buildPersonaGreetingUserPrompt(type, displayName, thoughtCount),
-      { maxTokens: 150, temperature: 0.9 }
-    );
+  const result = await chat(
+    PERSONA_GREETING_SYSTEM_PROMPT,
+    buildPersonaGreetingUserPrompt(type, displayName, thoughtCount),
+    { maxTokens: 150, temperature: 0.9 }
+  );
 
-    if (result && result.length >= 10) {
-      return result;
-    }
-  } catch (err) {
-    console.warn('[AI] LLM persona greeting failed, using local:', err);
+  if (result && result.length >= 10) {
+    return result;
   }
 
-  return localResult;
+  throw new Error('LLM persona greeting returned invalid result');
 }
 
 // ===== TTS 变声（Web Speech API）— Phase 3 增强版：8种音色 =====
@@ -791,39 +775,33 @@ export function generateBehaviorSuggestion(thought: Thought): BehaviorSuggestion
 // ===== LLM 增强版: 行为建议 =====
 
 export async function generateBehaviorSuggestionLLM(thought: Thought): Promise<BehaviorSuggestion | null> {
-  const localResult = generateBehaviorSuggestion(thought);
-  
   if (!isLLMEnabled()) {
-    return localResult;
+    throw new Error('LLM not enabled');
   }
 
-  try {
-    const result = await chatJSON<{
-      trigger: string | null;
-      suggestion?: string;
-      emoji?: string;
-      actionLabel?: string;
-      duration?: string;
-    }>(
-      BEHAVIOR_SYSTEM_PROMPT,
-      buildBehaviorUserPrompt(thought.content, thought.emotion, thought.intensity),
-      { maxTokens: 256, temperature: 0.7 }
-    );
+  const result = await chatJSON<{
+    trigger: string | null;
+    suggestion?: string;
+    emoji?: string;
+    actionLabel?: string;
+    duration?: string;
+  }>(
+    BEHAVIOR_SYSTEM_PROMPT,
+    buildBehaviorUserPrompt(thought.content, thought.emotion, thought.intensity),
+    { maxTokens: 256, temperature: 0.7 }
+  );
 
-    if (result && result.trigger && result.suggestion) {
-      return {
-        trigger: result.trigger,
-        suggestion: result.suggestion,
-        emoji: result.emoji || '💡',
-        actionLabel: result.actionLabel || '试试看',
-        duration: result.duration,
-      };
-    }
-  } catch (err) {
-    console.warn('[AI] LLM behavior suggestion failed, using local:', err);
+  if (result && result.trigger && result.suggestion) {
+    return {
+      trigger: result.trigger,
+      suggestion: result.suggestion,
+      emoji: result.emoji || '💡',
+      actionLabel: result.actionLabel || '试试看',
+      duration: result.duration,
+    };
   }
 
-  return localResult;
+  throw new Error('LLM behavior suggestion returned invalid result');
 }
 
 // ===== LLM 增强版: 分享洞察 =====
@@ -834,27 +812,21 @@ export async function generateShareInsightLLM(
   topEmotion: EmotionType,
   topPersona?: PersonaType,
 ): Promise<string> {
-  const localResult = generateShareInsight(totalThoughts, releasedCount, topEmotion, topPersona);
-  
   if (!isLLMEnabled()) {
-    return localResult;
+    throw new Error('LLM not enabled');
   }
 
-  try {
-    const result = await chat(
-      INSIGHT_SYSTEM_PROMPT,
-      buildInsightUserPrompt(totalThoughts, releasedCount, topEmotion, topPersona),
-      { maxTokens: 100, temperature: 0.8 }
-    );
+  const result = await chat(
+    INSIGHT_SYSTEM_PROMPT,
+    buildInsightUserPrompt(totalThoughts, releasedCount, topEmotion, topPersona),
+    { maxTokens: 100, temperature: 0.8 }
+  );
 
-    if (result && result.length >= 5) {
-      return result;
-    }
-  } catch (err) {
-    console.warn('[AI] LLM insight failed, using local:', err);
+  if (result && result.length >= 5) {
+    return result;
   }
 
-  return localResult;
+  throw new Error('LLM insight returned invalid result');
 }
 
 // ===== Phase 3: 分享报告生成 =====
