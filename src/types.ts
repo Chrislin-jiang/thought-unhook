@@ -89,7 +89,7 @@ export interface DailyStats {
 }
 
 // Phase 3: 主题类型
-export type ThemeType = 'starry' | 'ocean' | 'forest' | 'void';
+export type ThemeType = 'cosmos' | 'starry' | 'ocean' | 'forest' | 'void';
 
 // Phase 3: 行为建议
 export interface BehaviorSuggestion {
@@ -167,16 +167,16 @@ export interface PracticeInfo {
 
 // ===== 视觉常量 =====
 
-// 气泡的情绪颜色映射
+// 气泡的情绪颜色映射 — 星空蓝紫色调
 export const EMOTION_COLORS: Record<EmotionType, { bg: string; glow: string; text: string }> = {
-  anxiety:  { bg: 'rgba(255, 107, 107, 0.15)', glow: 'rgba(255, 107, 107, 0.3)',  text: '#ff9b9b' },
-  anger:    { bg: 'rgba(255, 71, 87, 0.15)',   glow: 'rgba(255, 71, 87, 0.3)',    text: '#ff7b87' },
-  sadness:  { bg: 'rgba(95, 158, 200, 0.15)',  glow: 'rgba(95, 158, 200, 0.3)',   text: '#8fcef0' },
-  fear:     { bg: 'rgba(221, 160, 221, 0.15)', glow: 'rgba(221, 160, 221, 0.3)',  text: '#edc0ed' },
-  guilt:    { bg: 'rgba(205, 133, 63, 0.15)',  glow: 'rgba(205, 133, 63, 0.3)',   text: '#dda573' },
-  shame:    { bg: 'rgba(188, 143, 143, 0.15)', glow: 'rgba(188, 143, 143, 0.3)',  text: '#ccafaf' },
-  neutral:  { bg: 'rgba(135, 206, 235, 0.12)', glow: 'rgba(135, 206, 235, 0.25)', text: '#a7d6eb' },
-  mixed:    { bg: 'rgba(177, 156, 217, 0.15)', glow: 'rgba(177, 156, 217, 0.3)',  text: '#c1acf7' },
+  anxiety:  { bg: 'rgba(224, 128, 128, 0.12)', glow: 'rgba(224, 128, 128, 0.2)',  text: '#e09090' },
+  anger:    { bg: 'rgba(208, 96, 96, 0.12)',   glow: 'rgba(208, 96, 96, 0.2)',    text: '#d08080' },
+  sadness:  { bg: 'rgba(112, 168, 192, 0.12)', glow: 'rgba(112, 168, 192, 0.2)',  text: '#90c0d8' },
+  fear:     { bg: 'rgba(176, 144, 208, 0.12)', glow: 'rgba(176, 144, 208, 0.2)',  text: '#c0a8e0' },
+  guilt:    { bg: 'rgba(192, 160, 112, 0.12)', glow: 'rgba(192, 160, 112, 0.2)',  text: '#c8b898' },
+  shame:    { bg: 'rgba(168, 144, 144, 0.12)', glow: 'rgba(168, 144, 144, 0.2)',  text: '#b8a0a0' },
+  neutral:  { bg: 'rgba(128, 176, 192, 0.10)', glow: 'rgba(128, 176, 192, 0.18)', text: '#a0c8d8' },
+  mixed:    { bg: 'rgba(160, 144, 192, 0.12)', glow: 'rgba(160, 144, 192, 0.2)',  text: '#b8a8d0' },
 };
 
 // 认知扭曲中文名
@@ -228,12 +228,13 @@ export const RELEASE_METHOD_INFO: Record<ReleaseMethod, { emoji: string; name: s
   store:    { emoji: '📌', name: '暂存', description: '放进念头罐，不急着处理' },
 };
 
-// Phase 3: 主题信息
+// Phase 3: 主题信息 — 暖色调
 export const THEME_INFO: Record<ThemeType, { name: string; emoji: string; description: string; bgColor: string }> = {
-  starry:  { name: '星空', emoji: '✨', description: '深邃宁静的星空', bgColor: '#0a0a1a' },
-  ocean:   { name: '海底', emoji: '🌊', description: '平静的深海世界', bgColor: '#0a1628' },
-  forest:  { name: '森林', emoji: '🌿', description: '安宁的森林深处', bgColor: '#0a1a12' },
-  void:    { name: '暖夜', emoji: '🕯️', description: '柔和温暖的夜灯', bgColor: '#1a1510' },
+  cosmos:  { name: '星空', emoji: '✨', description: '深邃星河，繁星闪烁', bgColor: '#08080f' },
+  starry:  { name: '墨夜', emoji: '🌙', description: '深邃静谧的墨色夜空', bgColor: '#111010' },
+  ocean:   { name: '深海', emoji: '🌊', description: '沉静的深蓝世界', bgColor: '#0f1520' },
+  forest:  { name: '森林', emoji: '🌿', description: '静谧的森林深处', bgColor: '#0f1810' },
+  void:    { name: '烛夜', emoji: '🕯️', description: '暖如烛光的长夜', bgColor: '#171411' },
 };
 
 // Phase 2.1: 解钩实验室练习列表

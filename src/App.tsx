@@ -1,10 +1,5 @@
 /**
  * App 主组件 — Phase 3
- * 
- * 多页面（Tab导航）：念头空间 / 觉察日志 / 解钩实验室 / 睡前模式
- * + Onboarding 引导流程
- * + 多主题背景系统
- * + 分享功能
  */
 
 import { useEffect, useState } from 'react';
@@ -37,7 +32,6 @@ export default function App() {
   const [showStored, setShowStored] = useState(false);
 
   const themeInfo = THEME_INFO[currentTheme];
-  const isVoidTheme = currentTheme === 'void';
 
   useEffect(() => {
     init();
@@ -49,10 +43,10 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center" style={{ background: '#0a0a1a' }}>
+      <div className="h-screen flex items-center justify-center" style={{ background: '#08080f' }}>
         <div className="text-center">
-          <div className="text-4xl mb-4 animate-pulse">🫧</div>
-          <p style={{ color: 'rgba(200,200,230,0.5)' }}>正在加载...</p>
+          <div className="text-4xl mb-4 animate-breathe" style={{ color: 'rgba(139,124,247,0.5)' }}>🫧</div>
+          <p style={{ color: 'rgba(200,200,230,0.3)', letterSpacing: '0.2em', fontSize: '12px' }}>静候片刻...</p>
         </div>
       </div>
     );
@@ -68,37 +62,34 @@ export default function App() {
       style={{
         background: themeInfo.bgColor,
         minHeight: '100dvh',
-        color: isVoidTheme ? '#e8dcc8' : '#e0e0f0',
+        color: '#d0d0e8',
         transition: 'background 0.8s ease, color 0.8s ease',
       }}
     >
       <ThemeBackground theme={currentTheme} />
       <Header />
 
-      {/* 主内容区 */}
       <AnimatePresence mode="wait">
         {currentPage === 'space' && (
           <div className="flex-1 flex flex-col overflow-hidden" key="space">
             <ThoughtSpace />
 
-            {/* 底部操作区 */}
             <div className="relative z-10 px-4 pb-1 space-y-1.5 overflow-auto">
               <AnimatePresence>
                 {selectedId && hasActive && <ActionPanel />}
               </AnimatePresence>
               <ThoughtInput />
-              
-              {/* 暂存按钮 */}
+
               {thoughts.some(t => t.status === 'stored') && (
                 <button
                   onClick={() => setShowStored(!showStored)}
                   className="w-full text-center py-1"
                   style={{
-                    color: isVoidTheme ? 'rgba(220,200,170,0.3)' : 'rgba(200,200,230,0.3)',
+                    color: 'rgba(139,124,247,0.4)',
                     fontSize: '12px',
                   }}
                 >
-                  📌 念头罐（{thoughts.filter(t => t.status === 'stored').length}）
+                  念头罐（{thoughts.filter(t => t.status === 'stored').length}）
                   {showStored ? ' ▲' : ' ▼'}
                 </button>
               )}
@@ -129,10 +120,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* 底部 Tab 栏 */}
       <TabBar />
-
-      {/* Phase 3: 分享面板 */}
       <SharePanel />
     </div>
   );

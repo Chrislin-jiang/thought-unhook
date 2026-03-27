@@ -1,15 +1,51 @@
+/* ===== 字体 ===== */
+@import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@300;400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;600&display=swap');
-
+/* ===== 设计系统变量 — 深蓝紫星空色调 ===== */
 :root {
-  --color-space-900: #0a0a1a;
-  --color-space-800: #111133;
-  --color-space-700: #1a1a4e;
+  /* 深空底色 */
+  --ink-deep: #06060d;
+  --ink-900: #08080f;
+  --ink-800: #0e0e1a;
+  --ink-700: #161625;
+  --ink-600: #222235;
+
+  /* 主色 — 柔紫/星蓝 */
+  --accent: #8b7cf7;
+  --accent-soft: rgba(139, 124, 247, 0.7);
+  --accent-muted: rgba(139, 124, 247, 0.35);
+  --accent-ghost: rgba(139, 124, 247, 0.12);
+
+  /* 副色 — 星蓝 */
+  --star-blue: #6cb4ee;
+  --star-blue-soft: rgba(108, 180, 238, 0.6);
+
+  /* 文字层次 — 冷白蓝 */
+  --text-primary: #d0d0e8;
+  --text-secondary: rgba(200, 200, 230, 0.6);
+  --text-tertiary: rgba(200, 200, 230, 0.35);
+  --text-ghost: rgba(200, 200, 230, 0.18);
+
+  /* 成功色 — 冷绿 */
+  --success: #7cc5a8;
+  --success-soft: rgba(124, 197, 168, 0.6);
+
+  /* 玻璃质感 */
+  --glass-border: rgba(200, 200, 230, 0.06);
+  --glass-bg: rgba(200, 200, 230, 0.03);
+  --glass-bg-hover: rgba(200, 200, 230, 0.06);
+
+  /* 向后兼容 */
+  --color-space-900: #08080f;
+  --color-space-800: #0e0e1a;
+  --color-space-700: #161625;
 }
 
+/* ===== 全局重置 ===== */
 * {
   margin: 0;
   padding: 0;
@@ -17,15 +53,16 @@
 }
 
 body {
-  font-family: 'Noto Sans SC', 'Inter', system-ui, -apple-system, sans-serif;
-  background: var(--color-space-900);
-  color: #e0e0f0;
+  font-family: 'LXGW WenKai', system-ui, -apple-system, sans-serif;
+  background: var(--ink-900);
+  color: var(--text-primary);
   min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  letter-spacing: 0.02em;
 }
 
 #root {
@@ -35,7 +72,115 @@ body {
   flex-direction: column;
 }
 
-/* 星空背景粒子 */
+/* ===== 噪点纹理 ===== */
+#root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+}
+
+/* ===== 星空主题 — 深邃宇宙 ===== */
+.cosmos-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(15, 20, 55, 0.6) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(30, 15, 50, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 10% 70%, rgba(10, 20, 45, 0.3) 0%, transparent 50%);
+  overflow: hidden;
+}
+
+.cosmos-star {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  animation: cosmos-twinkle var(--twinkle-duration) ease-in-out infinite;
+  opacity: 0;
+}
+
+@keyframes cosmos-twinkle {
+  0%, 100% { opacity: 0.05; transform: scale(1); }
+  50% { opacity: var(--twinkle-peak); transform: scale(1.2); }
+}
+
+.cosmos-star--bright {
+  box-shadow:
+    0 0 3px 1px rgba(200, 220, 255, 0.4),
+    0 0 8px 2px rgba(150, 180, 255, 0.15);
+}
+
+.cosmos-star--bright::before,
+.cosmos-star--bright::after {
+  content: '';
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(200, 220, 255, 0.5), transparent);
+  top: 50%;
+  left: 50%;
+}
+
+.cosmos-star--bright::before {
+  width: 16px;
+  height: 1px;
+  transform: translate(-50%, -50%);
+}
+
+.cosmos-star--bright::after {
+  width: 1px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+}
+
+.cosmos-nebula {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0;
+  animation: cosmos-nebula-pulse 20s ease-in-out infinite;
+}
+
+.cosmos-nebula--1 {
+  width: 50vw;
+  height: 50vw;
+  top: -10%;
+  right: -15%;
+  background: radial-gradient(circle, rgba(40, 60, 140, 0.18) 0%, transparent 70%);
+  animation-delay: 0s;
+}
+
+.cosmos-nebula--2 {
+  width: 40vw;
+  height: 40vw;
+  bottom: 10%;
+  left: -10%;
+  background: radial-gradient(circle, rgba(90, 50, 120, 0.12) 0%, transparent 70%);
+  animation-delay: 7s;
+}
+
+.cosmos-nebula--3 {
+  width: 35vw;
+  height: 35vw;
+  top: 40%;
+  left: 30%;
+  background: radial-gradient(circle, rgba(25, 55, 100, 0.1) 0%, transparent 70%);
+  animation-delay: 13s;
+}
+
+@keyframes cosmos-nebula-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+/* ===== 墨夜背景 ===== */
 .stars-bg {
   position: absolute;
   top: 0;
@@ -43,16 +188,16 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  background: 
-    radial-gradient(ellipse at 20% 50%, rgba(40, 40, 120, 0.3) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(60, 30, 90, 0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(20, 50, 100, 0.2) 0%, transparent 60%);
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(40, 40, 120, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 85% 25%, rgba(60, 30, 90, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 85%, rgba(20, 50, 100, 0.05) 0%, transparent 60%);
 }
 
 .star {
   position: absolute;
   border-radius: 50%;
-  background: white;
+  background: rgba(200, 210, 255, 0.8);
   animation: twinkle var(--duration) ease-in-out infinite;
   opacity: 0;
 }
@@ -62,7 +207,7 @@ body {
   50% { opacity: var(--max-opacity); }
 }
 
-/* 气泡样式 */
+/* ===== 念头气泡 ===== */
 .thought-bubble {
   position: relative;
   cursor: pointer;
@@ -75,52 +220,52 @@ body {
   position: absolute;
   inset: -2px;
   border-radius: inherit;
-  background: linear-gradient(135deg, 
-    rgba(255,255,255,0.15) 0%, 
-    rgba(255,255,255,0.05) 50%, 
-    rgba(255,255,255,0) 100%
+  background: linear-gradient(135deg,
+    rgba(200, 200, 230, 0.08) 0%,
+    rgba(200, 200, 230, 0.02) 50%,
+    rgba(200, 200, 230, 0) 100%
   );
   z-index: -1;
   filter: blur(1px);
 }
 
-/* 气泡光晕 */
 .bubble-glow {
   position: absolute;
   inset: -20%;
   border-radius: 50%;
   filter: blur(30px);
-  opacity: 0.3;
+  opacity: 0.2;
   z-index: -2;
 }
 
-/* 输入区域样式 */
+/* ===== 输入区域 ===== */
 .input-area textarea {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
-  color: #e0e0f0;
+  color: var(--text-primary);
   padding: 10px 16px;
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.6;
   resize: none;
   outline: none;
-  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+  transition: border-color 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
   font-family: inherit;
   width: 100%;
 }
 
 .input-area textarea:focus {
-  border-color: rgba(139, 120, 255, 0.5);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 20px rgba(139, 120, 255, 0.1);
+  border-color: rgba(139, 124, 247, 0.15);
+  background: rgba(139, 124, 247, 0.02);
+  box-shadow: 0 0 20px rgba(139, 124, 247, 0.03);
 }
 
 .input-area textarea::placeholder {
-  color: rgba(200, 200, 230, 0.4);
+  color: rgba(200, 200, 230, 0.3);
+  font-style: italic;
 }
 
-/* 操作按钮 */
+/* ===== 操作按钮 ===== */
 .action-btn {
   display: flex;
   flex-direction: column;
@@ -128,20 +273,21 @@ body {
   gap: 6px;
   padding: 12px 16px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #c0c0e0;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 13px;
   min-width: 80px;
   font-family: inherit;
 }
 
 .action-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--glass-bg-hover);
+  border-color: rgba(200, 200, 230, 0.1);
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .action-btn:active {
@@ -153,59 +299,59 @@ body {
   line-height: 1;
 }
 
-/* 小号操作按钮（8宫格） */
 .action-btn-sm {
   font-family: inherit;
 }
 
 .action-btn-sm:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: var(--glass-bg-hover) !important;
+  border-color: rgba(200, 200, 230, 0.1) !important;
 }
 
-/* 改写结果面板 */
+/* ===== 改写面板 ===== */
 .rewrite-panel {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(12, 12, 24, 0.88);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
 }
 
-/* Range slider 样式 */
+/* ===== Range Slider ===== */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(200, 200, 230, 0.08);
   outline: none;
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(139,120,255,0.9), rgba(100,180,255,0.9));
+  background: linear-gradient(135deg, var(--accent), var(--star-blue));
   cursor: pointer;
-  border: 2px solid rgba(255,255,255,0.2);
+  border: 2px solid rgba(200, 200, 230, 0.15);
+  box-shadow: 0 2px 12px rgba(139, 124, 247, 0.25);
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(139,120,255,0.9), rgba(100,180,255,0.9));
+  background: linear-gradient(135deg, var(--accent), var(--star-blue));
   cursor: pointer;
-  border: 2px solid rgba(255,255,255,0.2);
+  border: 2px solid rgba(200, 200, 230, 0.15);
 }
 
-/* 滚动条 */
+/* ===== 滚动条 ===== */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 ::-webkit-scrollbar-track {
@@ -213,15 +359,14 @@ input[type="range"]::-moz-range-thumb {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.1);
+  background: rgba(200, 200, 230, 0.08);
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.2);
+  background: rgba(200, 200, 230, 0.15);
 }
 
-/* Toast 提示 */
 .toast {
   position: fixed;
   top: 20px;
@@ -230,12 +375,11 @@ input[type="range"]::-moz-range-thumb {
   z-index: 1000;
 }
 
-/* 选择控件无样式 */
 button {
   font-family: inherit;
 }
 
-/* ===== Phase 3: 海底主题 ===== */
+/* ===== 海底主题 ===== */
 .ocean-bg {
   position: absolute;
   top: 0;
@@ -244,261 +388,183 @@ button {
   height: 100%;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 30% 60%, rgba(20, 60, 120, 0.4) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 30%, rgba(10, 80, 100, 0.3) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 90%, rgba(15, 40, 80, 0.3) 0%, transparent 60%);
+    radial-gradient(ellipse at 30% 60%, rgba(20, 50, 80, 0.35) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 30%, rgba(10, 60, 70, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(15, 35, 60, 0.25) 0%, transparent 60%);
   overflow: hidden;
 }
 
 .ocean-light {
   position: absolute;
-  width: 2px;
-  background: linear-gradient(to bottom, rgba(100, 200, 255, 0.3), transparent);
+  width: 1px;
+  background: linear-gradient(to bottom, rgba(180, 210, 230, 0.2), transparent);
   pointer-events: none;
 }
 
-.ocean-light-1 {
-  left: 25%;
-  top: 0;
-  height: 40%;
-  animation: ocean-ray 8s ease-in-out infinite;
-  opacity: 0.3;
-}
-
-.ocean-light-2 {
-  left: 55%;
-  top: 0;
-  height: 55%;
-  animation: ocean-ray 10s ease-in-out infinite 2s;
-  opacity: 0.2;
-}
-
-.ocean-light-3 {
-  left: 75%;
-  top: 0;
-  height: 35%;
-  animation: ocean-ray 7s ease-in-out infinite 4s;
-  opacity: 0.25;
-}
+.ocean-light-1 { left: 25%; top: 0; height: 40%; animation: ocean-ray 8s ease-in-out infinite; opacity: 0.3; }
+.ocean-light-2 { left: 55%; top: 0; height: 55%; animation: ocean-ray 10s ease-in-out infinite 2s; opacity: 0.2; }
+.ocean-light-3 { left: 75%; top: 0; height: 35%; animation: ocean-ray 7s ease-in-out infinite 4s; opacity: 0.25; }
 
 @keyframes ocean-ray {
   0%, 100% { opacity: 0.1; transform: scaleX(1) rotate(-2deg); }
-  50% { opacity: 0.4; transform: scaleX(1.5) rotate(2deg); }
+  50% { opacity: 0.3; transform: scaleX(1.5) rotate(2deg); }
 }
 
 .ocean-bubble {
   position: absolute;
   border-radius: 50%;
-  background: rgba(100, 200, 255, 0.15);
-  border: 1px solid rgba(100, 200, 255, 0.1);
+  background: rgba(180, 210, 230, 0.1);
+  border: 1px solid rgba(180, 210, 230, 0.06);
   animation: ocean-rise var(--rise-duration) ease-in infinite;
 }
 
 @keyframes ocean-rise {
-  0% {
-    transform: translateY(0) translateX(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.6;
-  }
-  90% {
-    opacity: 0.3;
-  }
-  100% {
-    transform: translateY(-110vh) translateX(var(--sway));
-    opacity: 0;
-  }
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 0.5; }
+  90% { opacity: 0.2; }
+  100% { transform: translateY(-110vh) translateX(var(--sway)); opacity: 0; }
 }
 
-/* ===== Phase 3: 森林主题 ===== */
-.forest-bg {
+/* 海洋生物漂游 */
+.ocean-creature {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  left: var(--swim-from);
+  opacity: 0;
   pointer-events: none;
+  filter: blur(0.5px);
+  animation:
+    ocean-swim var(--swim-duration) linear infinite,
+    ocean-sway 4s ease-in-out infinite;
+}
+
+@keyframes ocean-swim {
+  0% { left: var(--swim-from); opacity: 0; }
+  3% { opacity: 0.25; }
+  50% { opacity: 0.2; }
+  97% { opacity: 0.25; }
+  100% { left: var(--swim-to); opacity: 0; }
+}
+
+@keyframes ocean-sway {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(calc(var(--swim-sway) * -1)); }
+}
+
+/* ===== 森林主题 ===== */
+.forest-bg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden;
   background:
-    radial-gradient(ellipse at 20% 80%, rgba(20, 80, 40, 0.3) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 30%, rgba(30, 60, 30, 0.25) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(10, 40, 20, 0.2) 0%, transparent 70%);
-  overflow: hidden;
+    radial-gradient(ellipse at 20% 80%, rgba(20, 60, 35, 0.25) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 30%, rgba(25, 50, 25, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(10, 35, 18, 0.15) 0%, transparent 70%);
 }
 
 .forest-mist {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 40%;
-  background: linear-gradient(to top, rgba(10, 26, 18, 0.6), transparent);
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
+  background: linear-gradient(to top, rgba(10, 20, 14, 0.5), transparent);
   animation: forest-mist-drift 20s ease-in-out infinite;
 }
 
 @keyframes forest-mist-drift {
-  0%, 100% { opacity: 0.6; transform: translateX(0); }
-  50% { opacity: 0.8; transform: translateX(10px); }
+  0%, 100% { opacity: 0.5; transform: translateX(0); }
+  50% { opacity: 0.7; transform: translateX(10px); }
 }
 
 .forest-firefly {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(200, 255, 150, 0.8);
-  box-shadow: 0 0 6px rgba(200, 255, 150, 0.5), 0 0 12px rgba(200, 255, 150, 0.2);
+  position: absolute; border-radius: 50%;
+  background: rgba(200, 230, 150, 0.7);
+  box-shadow: 0 0 6px rgba(200, 230, 150, 0.4), 0 0 12px rgba(200, 230, 150, 0.15);
   animation: firefly-glow var(--glow-duration) ease-in-out infinite, firefly-drift 8s ease-in-out infinite;
 }
 
-@keyframes firefly-glow {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 0.9; }
-}
+@keyframes firefly-glow { 0%, 100% { opacity: 0; } 50% { opacity: 0.8; } }
 
 @keyframes firefly-drift {
-  0%, 100% {
-    transform: translate(0, 0);
-  }
-  25% {
-    transform: translate(var(--drift-x), calc(var(--drift-y) * -1));
-  }
-  50% {
-    transform: translate(calc(var(--drift-x) * 0.5), var(--drift-y));
-  }
-  75% {
-    transform: translate(calc(var(--drift-x) * -0.5), calc(var(--drift-y) * -0.5));
-  }
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(var(--drift-x), calc(var(--drift-y) * -1)); }
+  50% { transform: translate(calc(var(--drift-x) * 0.5), var(--drift-y)); }
+  75% { transform: translate(calc(var(--drift-x) * -0.5), calc(var(--drift-y) * -0.5)); }
 }
 
 .forest-leaf {
-  position: absolute;
-  font-size: 16px;
+  position: absolute; font-size: 16px; opacity: 0; pointer-events: none;
   animation: leaf-fall var(--fall-duration) linear infinite;
-  opacity: 0;
-  pointer-events: none;
 }
 
 @keyframes leaf-fall {
-  0% {
-    transform: translateY(0) translateX(0) rotate(0deg);
-    opacity: 0;
-  }
-  5% {
-    opacity: 0.5;
-  }
-  50% {
-    transform: translateY(50vh) translateX(var(--sway-amount)) rotate(180deg);
-    opacity: 0.4;
-  }
-  95% {
-    opacity: 0.2;
-  }
-  100% {
-    transform: translateY(110vh) translateX(0) rotate(360deg);
-    opacity: 0;
-  }
+  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+  5% { opacity: 0.4; }
+  50% { transform: translateY(50vh) translateX(var(--sway-amount)) rotate(180deg); opacity: 0.3; }
+  95% { opacity: 0.15; }
+  100% { transform: translateY(110vh) translateX(0) rotate(360deg); opacity: 0; }
 }
 
-/* ===== Phase 3: 暖夜主题 ===== */
+/* ===== 暖夜主题 ===== */
 .void-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
   background:
-    radial-gradient(ellipse at 30% 40%, rgba(180, 120, 60, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 60%, rgba(200, 150, 80, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(160, 100, 50, 0.06) 0%, transparent 60%);
+    radial-gradient(ellipse at 30% 40%, rgba(180, 120, 60, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 60%, rgba(200, 150, 80, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(160, 100, 50, 0.05) 0%, transparent 60%);
 }
 
 .void-circle {
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(200, 160, 100, 0.08) 0%, transparent 70%);
+  position: absolute; width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(200, 160, 100, 0.06) 0%, transparent 70%);
 }
 
-/* ===== Phase 3: 动画细节打磨 ===== */
-
-/* 增强气泡出现动画 */
+/* ===== 动画 ===== */
 .thought-bubble {
-  animation: bubble-appear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: ink-bloom 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes bubble-appear {
-  0% {
-    opacity: 0;
-    transform: scale(0.3) translateY(20px);
-    filter: blur(4px);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.05) translateY(-5px);
-    filter: blur(0);
-  }
-  100% {
-    transform: scale(1) translateY(0);
-  }
+@keyframes ink-bloom {
+  0% { opacity: 0; transform: scale(0.5) translateY(15px); filter: blur(6px); }
+  50% { opacity: 0.8; filter: blur(1px); }
+  80% { transform: scale(1.02) translateY(-3px); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* 操作按钮悬浮增强 */
 .action-btn-sm:not(:disabled):hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(139, 120, 255, 0.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
 .action-btn-sm:not(:disabled):active {
   transform: translateY(0);
 }
 
-/* 平滑的主题过渡 */
-.stars-bg,
-.ocean-bg,
-.forest-bg,
-.void-bg {
-  transition: opacity 0.6s ease;
+.cosmos-bg, .stars-bg, .ocean-bg, .forest-bg, .void-bg {
+  transition: opacity 0.8s ease;
 }
 
-/* 改写面板增强 */
 .rewrite-panel {
-  animation: panel-slide-up 0.3s ease-out;
+  animation: panel-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes panel-slide-up {
-  0% {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes panel-rise {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
-/* 分享卡片渐变边框 */
-.share-card {
-  position: relative;
-}
-
+.share-card { position: relative; }
 .share-card::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(139, 120, 255, 0.3), rgba(100, 180, 255, 0.2));
+  content: ''; position: absolute; inset: -1px; border-radius: inherit;
+  background: linear-gradient(135deg, rgba(139, 124, 247, 0.2), rgba(108, 180, 238, 0.15));
   z-index: -1;
 }
 
-/* 推荐徽标脉冲 */
 @keyframes recommend-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 120, 255, 0.4); }
-  50% { box-shadow: 0 0 0 4px rgba(139, 120, 255, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 124, 247, 0.3); }
+  50% { box-shadow: 0 0 0 4px rgba(139, 124, 247, 0); }
 }
 
-/* 增强滚动平滑度 */
 .overflow-y-auto {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+}
+
+@keyframes gentle-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 1; }
 }

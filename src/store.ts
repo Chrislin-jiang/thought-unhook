@@ -91,7 +91,7 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
   currentPage: 'space',
   personaNicknames: {},
   practiceRecords: [],
-  currentTheme: 'starry' as ThemeType,
+  currentTheme: 'cosmos' as ThemeType,
   showSharePanel: false,
 
   init: async () => {
@@ -111,7 +111,7 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
     const records = await getSetting<PracticeRecord[]>('practice-records', []);
 
     // Phase 3: 加载主题
-    const theme = await getSetting<ThemeType>('current-theme', 'starry');
+    const theme = await getSetting<ThemeType>('current-theme', 'cosmos');
 
     set({ 
       thoughts, 

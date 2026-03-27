@@ -1,5 +1,5 @@
 /**
- * 念头输入区组件 — Phase 2.1（含语音输入）
+ * 念头输入区组件
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -25,7 +25,6 @@ export default function ThoughtInput() {
   const addThought = useThoughtStore(s => s.addThought);
   const todayCount = useThoughtStore(s => s.getTodayCount());
 
-  // 语音识别结果追加到文本
   const handleVoiceResult = useCallback((voiceText: string) => {
     setText(prev => {
       const separator = prev.trim() ? ' ' : '';
@@ -71,19 +70,17 @@ export default function ThoughtInput() {
           style={{ minHeight: '44px' }}
         />
 
-        {/* 右侧按钮组 */}
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-          {/* <VoiceInput onResult={handleVoiceResult} /> */}
           <motion.button
             onClick={handleSubmit}
             className="w-8 h-8 rounded-full flex items-center justify-center"
             style={{
               background: text.trim()
-                ? 'linear-gradient(135deg, rgba(139,120,255,0.8), rgba(100,180,255,0.8))'
-                : 'rgba(255,255,255,0.08)',
+                ? 'linear-gradient(135deg, rgba(139,124,247,0.8), rgba(108,180,238,0.7))'
+                : 'rgba(200,200,230,0.06)',
               border: 'none',
               cursor: text.trim() ? 'pointer' : 'default',
-              color: text.trim() ? '#fff' : 'rgba(255,255,255,0.3)',
+              color: text.trim() ? '#fff' : 'rgba(200,200,230,0.2)',
             }}
             whileHover={text.trim() ? { scale: 1.1 } : {}}
             whileTap={text.trim() ? { scale: 0.9 } : {}}
@@ -105,9 +102,9 @@ export default function ThoughtInput() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               className="text-xs"
-              style={{ color: 'rgba(139,220,180,0.8)' }}
+              style={{ color: 'rgba(124,197,168,0.7)' }}
             >
-              ✨ 念头已物化
+              ✦ 念头已物化
             </motion.span>
           ) : (
             <motion.span
@@ -115,7 +112,7 @@ export default function ThoughtInput() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-xs"
-              style={{ color: 'rgba(200,200,230,0.3)' }}
+              style={{ color: 'rgba(200,200,230,0.35)' }}
             >
               按 Enter 释放念头
             </motion.span>
@@ -123,7 +120,7 @@ export default function ThoughtInput() {
         </AnimatePresence>
 
         {todayCount > 0 && (
-          <span className="text-xs" style={{ color: 'rgba(200,200,230,0.3)' }}>
+          <span className="text-xs" style={{ color: 'rgba(200,200,230,0.35)' }}>
             今日 {todayCount} 个念头
           </span>
         )}
