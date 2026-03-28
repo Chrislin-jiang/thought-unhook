@@ -1,7 +1,7 @@
 {
-  "name": "念头解钩器",
-  "short_name": "念头解钩器",
-  "description": "把脑内的声音物化出来，看见它、触碰它、放下它。",
+  "name": "出戏",
+  "short_name": "出戏",
+  "description": "从念头的剧本里，出戏。一款基于认知解离的日常心理卫生工具。",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a1a",

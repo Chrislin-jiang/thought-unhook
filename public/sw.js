@@ -1,5 +1,5 @@
 // Service Worker for PWA — Phase 1
-const CACHE_NAME = 'thought-unhook-v2';
+const CACHE_NAME = 'offstage-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

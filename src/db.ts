@@ -7,12 +7,12 @@ import Dexie, { type Table } from 'dexie';
 import type { Thought, EmotionType, CognitiveDistortion, PersonaType, ReleaseMethod } from './types';
 
 // 数据库定义
-class ThoughtUnhookDB extends Dexie {
+class OffStageDB extends Dexie {
   thoughts!: Table<Thought, number>;
   settings!: Table<{ key: string; value: unknown }, string>;
 
   constructor() {
-    super('ThoughtUnhookDB');
+    super('OffStageDB');
     this.version(1).stores({
       thoughts: '++id, uid, createdAt, status, emotion, persona, cognitiveDistortion',
       settings: 'key',
@@ -20,7 +20,7 @@ class ThoughtUnhookDB extends Dexie {
   }
 }
 
-const db = new ThoughtUnhookDB();
+const db = new OffStageDB();
 
 export { db };
 
@@ -74,9 +74,14 @@ export async function setSetting(key: string, value: unknown): Promise<void> {
 // ===== 迁移: localStorage → IndexedDB =====
 
 export async function migrateFromLocalStorage(): Promise<boolean> {
-  const STORAGE_KEY = 'thought-unhook-data';
+  // 先迁移旧品牌的 IndexedDB 数据
+  await migrateFromOldDB();
+
+  const STORAGE_KEY = 'offstage-data';
+  const OLD_STORAGE_KEY = 'thought-unhook-data';
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    // 兼容旧键名
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(OLD_STORAGE_KEY);
     if (!raw) return false;
     
     const oldThoughts = JSON.parse(raw);
@@ -108,9 +113,65 @@ export async function migrateFromLocalStorage(): Promise<boolean> {
     
     // 清理旧数据
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(OLD_STORAGE_KEY);
     
     return true;
   } catch {
     return false;
+  }
+}
+
+// ===== 迁移: 旧品牌 IndexedDB (ThoughtUnhookDB) → 新品牌 (OffStageDB) =====
+
+async function migrateFromOldDB(): Promise<void> {
+  const OLD_DB_NAME = 'ThoughtUnhookDB';
+  try {
+    // 检查旧数据库是否存在
+    const databases = await Dexie.getDatabaseNames();
+    if (!databases.includes(OLD_DB_NAME)) return;
+
+    // 新数据库已有数据则跳过
+    const newCount = await db.thoughts.count();
+    if (newCount > 0) {
+      // 已有数据，删除旧库
+      await Dexie.delete(OLD_DB_NAME);
+      return;
+    }
+
+    // 打开旧数据库读取数据
+    const oldDb = new Dexie(OLD_DB_NAME);
+    oldDb.version(1).stores({
+      thoughts: '++id, uid, createdAt, status, emotion, persona, cognitiveDistortion',
+      settings: 'key',
+    });
+
+    const oldThoughts = await oldDb.table('thoughts').toArray();
+    const oldSettings = await oldDb.table('settings').toArray();
+
+    // 写入新数据库
+    if (oldThoughts.length > 0) {
+      await db.thoughts.bulkAdd(oldThoughts);
+    }
+    if (oldSettings.length > 0) {
+      await db.settings.bulkPut(oldSettings);
+    }
+
+    oldDb.close();
+    await Dexie.delete(OLD_DB_NAME);
+
+    // 迁移 localStorage 键名
+    const onboarding = localStorage.getItem('thought-unhook-onboarding');
+    if (onboarding !== null) {
+      localStorage.setItem('offstage-onboarding', onboarding);
+      localStorage.removeItem('thought-unhook-onboarding');
+    }
+
+    const llmConfig = localStorage.getItem('thought-unhook-llm-config');
+    if (llmConfig !== null) {
+      localStorage.setItem('offstage-llm-config', llmConfig);
+      localStorage.removeItem('thought-unhook-llm-config');
+    }
+  } catch {
+    // 静默失败，不影响新用户体验
   }
 }

@@ -118,7 +118,7 @@ const DEFAULT_CONFIG: LLMConfig = {
 
 // ===== 配置管理 =====
 
-const CONFIG_STORAGE_KEY = 'thought-unhook-llm-config';
+const CONFIG_STORAGE_KEY = 'offstage-llm-config';
 
 export function getLLMConfig(): LLMConfig {
   try {

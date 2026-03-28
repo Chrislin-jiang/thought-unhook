@@ -469,7 +469,7 @@ export default function Onboarding() {
                   className="text-lg"
                   style={{ color: 'rgba(230,230,250,0.9)' }}
                 >
-                  这就是「解钩」。
+                  这就是「出戏」——从念头的剧本里，退后一步。
                 </motion.p>
                 <motion.p
                   initial={{ opacity: 0 }}

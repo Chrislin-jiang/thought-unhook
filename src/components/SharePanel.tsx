@@ -296,7 +296,7 @@ function DailyReport() {
     ctx.font = '12px "Noto Sans SC", sans-serif';
     ctx.fillStyle = 'rgba(200,200,230,0.2)';
     ctx.textAlign = 'center';
-    ctx.fillText('念头解钩器 · Thought Unhook', w / 2, h - 30);
+    ctx.fillText('出戏 · OffStage', w / 2, h - 30);
 
     // 下载
     canvas.toBlob((blob) => {
@@ -304,7 +304,7 @@ function DailyReport() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `unhook-report-${new Date().toISOString().split('T')[0]}.png`;
+        a.download = `offstage-report-${new Date().toISOString().split('T')[0]}.png`;
         a.click();
         URL.revokeObjectURL(url);
         setSaved(true);
@@ -504,7 +504,7 @@ function ThoughtArtCard() {
     // 水印
     ctx.fillStyle = 'rgba(200,200,230,0.15)';
     ctx.font = '10px "Noto Sans SC", sans-serif';
-    ctx.fillText('念头解钩器 · Thought Unhook', w / 2, h - 25);
+    ctx.fillText('出戏 · OffStage', w / 2, h - 25);
 
     // 下载
     canvas.toBlob((blob) => {
@@ -512,7 +512,7 @@ function ThoughtArtCard() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `thought-art-${Date.now()}.png`;
+        a.download = `offstage-art-${Date.now()}.png`;
         a.click();
         URL.revokeObjectURL(url);
         setSaved(true);

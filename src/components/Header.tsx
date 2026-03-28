@@ -24,7 +24,7 @@ export default function Header() {
     night:   { emoji: '🌙', title: '睡前模式' },
   };
 
-  const current = pageConfig[currentPage] || { emoji: '🫧', title: '念头解钩器' };
+  const current = pageConfig[currentPage] || { emoji: '🫧', title: '出戏' };
 
   return (
     <motion.header

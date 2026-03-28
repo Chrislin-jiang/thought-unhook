@@ -102,7 +102,7 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
     const thoughts = await getAllThoughts();
     
     // 检查 onboarding 状态
-    const onboardingDone = localStorage.getItem('thought-unhook-onboarding') === 'true';
+    const onboardingDone = localStorage.getItem('offstage-onboarding') === 'true' || localStorage.getItem('thought-unhook-onboarding') === 'true';
 
     // 加载角色昵称
     const nicknames = await getSetting<Record<string, string>>('persona-nicknames', {});
@@ -281,7 +281,7 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
   setPage: (page) => set({ currentPage: page }),
 
   setOnboardingCompleted: (completed) => {
-    localStorage.setItem('thought-unhook-onboarding', String(completed));
+    localStorage.setItem('offstage-onboarding', String(completed));
     set({ onboardingCompleted: completed });
   },
 
