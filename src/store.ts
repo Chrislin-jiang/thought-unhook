@@ -14,6 +14,7 @@ import { addThoughtToDB, updateThoughtInDB, getAllThoughts, clearAllThoughts, mi
 interface ThoughtStore {
   thoughts: Thought[];
   selectedThoughtId: string | null;
+  releasingMethod: ReleaseMethod | null;
   isRewriting: boolean;
   rewriteVariants: Array<{ text: string; technique: string; techniqueName: string }> | null;
   isLoading: boolean;
@@ -84,6 +85,7 @@ let idCounter = Date.now();
 export const useThoughtStore = create<ThoughtStore>((set, get) => ({
   thoughts: [],
   selectedThoughtId: null,
+  releasingMethod: null,
   isRewriting: false,
   rewriteVariants: null,
   isLoading: true,
@@ -174,7 +176,7 @@ export const useThoughtStore = create<ThoughtStore>((set, get) => ({
   },
 
   selectThought: (id) => {
-    set({ selectedThoughtId: id, rewriteVariants: null, isRewriting: false });
+    set({ selectedThoughtId: id, releasingMethod: null, rewriteVariants: null, isRewriting: false });
   },
 
   releaseThought: (id, method) => {

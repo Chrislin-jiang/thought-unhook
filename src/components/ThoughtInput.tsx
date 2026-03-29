@@ -8,11 +8,11 @@ import { useThoughtStore } from '../store';
 import VoiceInput from './VoiceInput';
 
 const PLACEHOLDER_TEXTS = [
-  '输入你的念头数据...',
-  '捕获脑内信号...',
-  '记录意识流...',
-  '解码内心声音...',
-  '扫描思维碎片...',
+  '脑子里在上演什么...',
+  '今天的剧本写了什么...',
+  '哪个角色又在念台词...',
+  '记录这出戏的台词...',
+  '舞台上正在发生什么...',
 ];
 
 export default function ThoughtInput() {
@@ -117,7 +117,7 @@ export default function ThoughtInput() {
               className="text-xs font-mono"
               style={{ color: 'rgba(0,255,136,0.7)' }}
             >
-              {'>'} 数据已捕获
+              {'>'} 台词已记录
             </motion.span>
           ) : (
             <motion.span
@@ -127,14 +127,14 @@ export default function ThoughtInput() {
               className="text-xs font-mono"
               style={{ color: 'rgba(0,240,255,0.2)' }}
             >
-              ENTER 释放念头
+              ENTER 记录台词
             </motion.span>
           )}
         </AnimatePresence>
 
         {todayCount > 0 && (
           <span className="text-xs font-mono" style={{ color: 'rgba(0,240,255,0.2)' }}>
-            [{todayCount}] captured
+            [{todayCount}] 场戏
           </span>
         )}
       </div>

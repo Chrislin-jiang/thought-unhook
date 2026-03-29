@@ -115,7 +115,7 @@ export default function NightMode() {
               className="text-center text-sm mb-6"
               style={{ color: 'rgba(200,200,230,0.5)' }}
             >
-              把今天还在脑子里转的东西都倒出来 🌙
+              今天的戏都演完了，把台词都清空吧 🌙
             </motion.p>
 
             {/* 萤火虫区域 */}
@@ -184,7 +184,7 @@ export default function NightMode() {
                       addFirefly();
                     }
                   }}
-                  placeholder="写下一个念头，按回车..."
+                  placeholder="写下一句还没散场的台词..."
                   rows={2}
                   maxLength={100}
                   className="w-full"
@@ -211,7 +211,7 @@ export default function NightMode() {
                   className="text-center mt-4"
                 >
                   <p className="text-xs mb-3" style={{ color: 'rgba(200,200,230,0.3)' }}>
-                    {fireflies.length} 个念头已化为光点
+                    {fireflies.length} 句台词已化为烛光
                   </p>
                   <motion.button
                     onClick={startBreathing}
@@ -225,7 +225,7 @@ export default function NightMode() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    准备好了，开始呼吸 🌬️
+                    准备好了，开始散场 🌬️
                   </motion.button>
                 </motion.div>
               )}
@@ -303,7 +303,7 @@ export default function NightMode() {
                 className="text-xs mt-4 text-center"
                 style={{ color: 'rgba(255,220,100,0.5)' }}
               >
-                让这个念头熄灭... 🕯️
+                让这句台词谢幕... 🕯️
               </motion.p>
             )}
           </motion.div>
@@ -333,7 +333,7 @@ export default function NightMode() {
               className="text-lg text-center mb-3"
               style={{ color: 'rgba(200,200,230,0.7)' }}
             >
-              晚安，你已经放下了今天
+              晚安，今天的戏已经散场
             </motion.p>
 
             <motion.p
@@ -343,7 +343,7 @@ export default function NightMode() {
               className="text-xs text-center"
               style={{ color: 'rgba(200,200,230,0.3)' }}
             >
-              {fireflies.length} 个念头已安息 · {breathCount} 次呼吸
+              {fireflies.length} 场戏已散场 · {breathCount} 次呼吸
             </motion.p>
 
             <motion.button

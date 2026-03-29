@@ -6,10 +6,10 @@ import { motion } from 'framer-motion';
 import { useThoughtStore } from '../store';
 
 const TABS = [
-  { id: 'space' as const, emoji: '🫧', label: '念头空间' },
-  { id: 'journal' as const, emoji: '📊', label: '觉察日志' },
-  { id: 'lab' as const, emoji: '🧪', label: '解钩实验室' },
-  { id: 'night' as const, emoji: '🌙', label: '睡前模式' },
+  { id: 'space' as const, emoji: '🎭', label: '内心剧场' },
+  { id: 'journal' as const, emoji: '📜', label: '演出记录' },
+  { id: 'lab' as const, emoji: '🎪', label: '出戏练习' },
+  { id: 'night' as const, emoji: '🌙', label: '散场时分' },
 ];
 
 export default function TabBar() {

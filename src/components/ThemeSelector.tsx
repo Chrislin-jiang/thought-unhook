@@ -17,7 +17,7 @@ export default function ThemeSelector() {
   const setTheme = useThoughtStore(s => s.setTheme);
   const currentInfo = THEME_INFO[currentTheme];
 
-  const themes: ThemeType[] = ['cosmos', 'starry', 'ocean', 'forest', 'void'];
+  const themes: ThemeType[] = ['cosmos', 'starry', 'ocean', 'forest', 'void', 'theater'];
 
   const updatePosition = useCallback(() => {
     if (buttonRef.current) {

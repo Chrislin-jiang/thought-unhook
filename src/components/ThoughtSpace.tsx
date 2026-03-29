@@ -5,17 +5,34 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useThoughtStore } from '../store';
 import ThoughtBubble from './ThoughtBubble';
+import type { MouseEvent } from 'react';
 
 export default function ThoughtSpace() {
   const thoughts = useThoughtStore(s => s.thoughts);
+  const selectedId = useThoughtStore(s => s.selectedThoughtId);
+  const selectThought = useThoughtStore(s => s.selectThought);
   const activeThoughts = thoughts.filter(t => t.status === 'active');
 
+  /** 点击空白区域取消选中，关闭操作面板 */
+  const handleBackgroundClick = (e: MouseEvent) => {
+    // 只在点击的是容器本身（空白处）时触发，气泡内部点击由自身处理
+    if (e.target === e.currentTarget && selectedId) {
+      selectThought(null);
+    }
+  };
+
   return (
-    <div className="flex-1 relative overflow-y-auto overflow-x-hidden px-5 py-4">
+    <div
+      className="flex-1 relative overflow-y-auto overflow-x-hidden px-5 py-4"
+      onClick={handleBackgroundClick}
+    >
       {activeThoughts.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="flex flex-col items-center gap-5 pb-4">
+        <div
+          className="flex flex-col items-center gap-5 pb-4"
+          onClick={handleBackgroundClick}
+        >
           <AnimatePresence mode="popLayout">
             {activeThoughts.map((thought, index) => (
               <ThoughtBubble key={thought.uid} thought={thought} index={index} />
@@ -55,10 +72,10 @@ function EmptyState() {
           className="text-sm font-mono tracking-wider"
           style={{ color: 'rgba(0,240,255,0.35)' }}
         >
-          AWAITING INPUT_
+          CURTAIN UP_
         </motion.p>
         <p className="text-[11px]" style={{ color: 'rgba(200,220,240,0.2)' }}>
-          输入念头数据，开始解码内心
+          幕布已拉开，等待第一句台词
         </p>
       </div>
     </div>

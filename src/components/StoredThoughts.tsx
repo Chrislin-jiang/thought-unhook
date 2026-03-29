@@ -51,7 +51,7 @@ export default function StoredThoughts() {
                   cursor: 'pointer',
                 }}
               >
-                💨 释放
+                💨 散场
               </button>
             </motion.div>
           );

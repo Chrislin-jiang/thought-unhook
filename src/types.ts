@@ -89,7 +89,7 @@ export interface DailyStats {
 }
 
 // Phase 3: 主题类型
-export type ThemeType = 'cosmos' | 'starry' | 'ocean' | 'forest' | 'void';
+export type ThemeType = 'cosmos' | 'starry' | 'ocean' | 'forest' | 'void' | 'theater';
 
 // Phase 3: 行为建议
 export interface BehaviorSuggestion {
@@ -218,14 +218,14 @@ export const EMOTION_NAMES: Record<EmotionType, string> = {
 
 // 解钩操作信息
 export const RELEASE_METHOD_INFO: Record<ReleaseMethod, { emoji: string; name: string; description: string }> = {
-  observe:  { emoji: '🫧', name: '看见', description: '念头从脑内文字变为眼前漂浮物' },
-  label:    { emoji: '🏷️', name: '贴标签', description: '"这是一个关于未来的担忧"' },
-  rewrite:  { emoji: '✏️', name: '改写', description: '"我注意到我在想…"' },
-  voice:    { emoji: '🎵', name: '变声', description: '用卡通音重新播放念头' },
-  resize:   { emoji: '🔍', name: '缩小', description: '让念头变得越来越小' },
-  blow:     { emoji: '💨', name: '吹走', description: '让气泡飘走' },
-  melt:     { emoji: '🫠', name: '融化', description: '看着念头慢慢变透明消失' },
-  store:    { emoji: '📌', name: '暂存', description: '放进念头罐，不急着处理' },
+  observe:  { emoji: '🫧', name: '看见', description: '从台上走到台下，看这出戏' },
+  label:    { emoji: '🏷️', name: '贴标签', description: '给这出戏标注类型：悲剧？闹剧？' },
+  rewrite:  { emoji: '✏️', name: '改写', description: '给角色换一份新台词' },
+  voice:    { emoji: '🎵', name: '变声', description: '让角色用滑稽腔重新念台词' },
+  resize:   { emoji: '🔍', name: '缩小', description: '舞台渐渐缩小，戏也变远了' },
+  blow:     { emoji: '💨', name: '吹走', description: '幕布落下，这场戏散了' },
+  melt:     { emoji: '🫠', name: '融化', description: '灯光渐暗，布景慢慢融入黑暗' },
+  store:    { emoji: '📌', name: '暂存', description: '先存进剧本库，不急着上演' },
 };
 
 // Phase 3: 主题信息 — 暖色调
@@ -235,6 +235,7 @@ export const THEME_INFO: Record<ThemeType, { name: string; emoji: string; descri
   ocean:   { name: '深海', emoji: '🌊', description: '沉静的深蓝世界', bgColor: '#0f1520' },
   forest:  { name: '森林', emoji: '🌿', description: '静谧的森林深处', bgColor: '#0f1810' },
   void:    { name: '烛夜', emoji: '🕯️', description: '暖如烛光的长夜', bgColor: '#171411' },
+  theater: { name: '剧场', emoji: '🎭', description: '帷幕之下，聚光灯亮', bgColor: '#140a0e' },
 };
 
 // Phase 2.1: 解钩实验室练习列表

@@ -71,10 +71,10 @@ export default function AwarenessJournal() {
         <div className="text-center">
           <span className="text-4xl block mb-4">📊</span>
           <p className="text-sm" style={{ color: 'rgba(200,200,230,0.5)' }}>
-            还没有觉察记录
+            还没有演出记录
           </p>
           <p className="text-xs mt-2" style={{ color: 'rgba(200,200,230,0.3)' }}>
-            去「念头空间」捕捉一些念头吧
+            去「内心剧场」记录一些台词吧
           </p>
         </div>
       </div>
@@ -104,9 +104,9 @@ export default function AwarenessJournal() {
 
       {/* 总览数据 */}
       <div className="grid grid-cols-3 gap-3">
-        <StatCard label="总念头数" value={totalThoughts} emoji="🫧" />
-        <StatCard label="已释放" value={releasedThoughts.length} emoji="💨" />
-        <StatCard label="释放率" value={`${releaseRate}%`} emoji="📈" />
+        <StatCard label="总场次" value={totalThoughts} emoji="🎭" />
+        <StatCard label="已散场" value={releasedThoughts.length} emoji="💨" />
+        <StatCard label="出戏率" value={`${releaseRate}%`} emoji="📈" />
       </div>
 
       {/* 7天时间线 */}
@@ -220,7 +220,7 @@ export default function AwarenessJournal() {
 
       {/* 👥 角色出场频率 — Phase 2.1 增强（可展开角色卡片）*/}
       {personaDistribution.length > 0 && (
-        <Section title="👥 脑内角色">
+        <Section title="👥 剧团成员">
           <div className="space-y-2">
             {personaDistribution.map(([persona, count]) => {
               const pct = Math.round((count / totalThoughts) * 100);
@@ -394,31 +394,31 @@ function generateInsight(thoughts: Array<{ status: string; emotion: string; pers
   const insights: string[] = [];
 
   if (thoughts.length >= 3 && releaseRate >= 0.5) {
-    insights.push(`你已经解钩了 ${released.length} 个念头，做得很好 ✨`);
+    insights.push(`你已经从 ${released.length} 场戏里出来了，做得很好 ✨`);
   }
   if (thoughts.length >= 5 && releaseRate < 0.3) {
-    insights.push(`你捕捉了很多念头，试试选择一些释放掉？不需要抓住每一个 🍃`);
+    insights.push(`你记录了很多台词，试试让一些戏散场？不需要每出戏都入戏 🍃`);
   }
   if (topPersonaInfo && topPersona[1] >= 3) {
-    insights.push(`${topPersonaInfo.emoji}「${topPersonaInfo.name}」是你最常听到的声音（${topPersona[1]}次），下次它说话时，跟它打个招呼 👋`);
+    insights.push(`${topPersonaInfo.emoji}「${topPersonaInfo.name}」是你剧团里最活跃的演员（${topPersona[1]}次），下次它登台时，跟它打个招呼 👋`);
   }
   if (topMethod) {
     const methodNames: Record<string, string> = {
       blow: '吹走', melt: '融化', rewrite: '改写', voice: '变声',
       resize: '缩小', observe: '看见', label: '贴标签', store: '暂存',
     };
-    insights.push(`你最擅长的解钩方式是「${methodNames[topMethod[0]] || topMethod[0]}」，试试其他方式可能有新感受 🌱`);
+    insights.push(`你最擅长的出戏方式是「${methodNames[topMethod[0]] || topMethod[0]}」，试试其他方式可能有新感受 🌱`);
   }
   if (topDistortion && topDistortion[1] >= 2) {
     const distortionName = DISTORTION_NAMES[topDistortion[0] as CognitiveDistortion];
     insights.push(`你的大脑最爱使用「${distortionName}」模式。认识到这一点，就是觉察的开始 🔍`);
   }
   if (thoughts.length >= 10) {
-    insights.push(`你已经捕捉了 ${thoughts.length} 个念头。每一次写下来，都是一次对自己的觉察 🌿`);
+    insights.push(`你已经记录了 ${thoughts.length} 场戏。每一次写下来，都是一次走到台下 🌿`);
   }
 
   if (insights.length === 0) {
-    insights.push('每一次写下念头，都是一次对自己的觉察 🌿');
+    insights.push('每一次记录台词，都是一次成功的出戏 🌿');
   }
 
   return insights[Math.floor(Math.random() * insights.length)];

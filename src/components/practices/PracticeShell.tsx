@@ -37,17 +37,20 @@ export default function PracticeShell({
 }: PracticeShellProps) {
   const [phase, setPhase] = useState<'intro' | 'input' | 'animation' | 'breathe' | 'done'>('intro');
   const [thoughts, setThoughts] = useState<string[]>([]);
+  const [thoughtUids, setThoughtUids] = useState<string[]>([]);
   const [input, setInput] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [startTime] = useState(Date.now());
   const addThought = useThoughtStore(s => s.addThought);
+  const releaseThought = useThoughtStore(s => s.releaseThought);
   const addPracticeRecord = useThoughtStore(s => s.addPracticeRecord);
 
   const handleAddThought = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
     
-    await addThought(trimmed);
+    const t = await addThought(trimmed);
+    setThoughtUids(prev => [...prev, t.uid]);
     setThoughts(prev => [...prev, trimmed]);
     setInput('');
     inputRef.current?.focus();
@@ -60,6 +63,10 @@ export default function PracticeShell({
 
   const handleComplete = () => {
     const duration = Math.round((Date.now() - startTime) / 1000);
+    // 练习完成后，将所有练习中的念头标记为已释放
+    for (const uid of thoughtUids) {
+      releaseThought(uid, 'observe');
+    }
     addPracticeRecord({
       id: String(Date.now()),
       type,
@@ -84,7 +91,7 @@ export default function PracticeShell({
             cursor: 'pointer',
           }}
         >
-          ← 返回实验室
+          ← 返回练习
         </button>
       </div>
 

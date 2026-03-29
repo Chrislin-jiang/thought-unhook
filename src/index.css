@@ -54,17 +54,25 @@ body {
   font-family: 'LXGW WenKai', 'JetBrains Mono', monospace;
   background: var(--cyber-black);
   color: var(--text-primary);
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100%;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  /* 防止 iOS 键盘弹起时页面整体缩放 */
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
 }
 
 #root {
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -461,7 +469,7 @@ button { font-family: inherit; }
 
 .action-btn-sm:not(:disabled):active { transform: translateY(0); }
 
-.cosmos-bg, .stars-bg, .ocean-bg, .forest-bg, .void-bg {
+.cosmos-bg, .stars-bg, .ocean-bg, .forest-bg, .void-bg, .theater-bg {
   transition: opacity 0.8s ease;
 }
 
@@ -503,4 +511,259 @@ button { font-family: inherit; }
 .cyber-border {
   border: 1px solid rgba(0, 240, 255, 0.15);
   box-shadow: 0 0 8px rgba(0, 240, 255, 0.05), inset 0 0 8px rgba(0, 240, 255, 0.02);
+}
+
+/* ===== 剧场主题 ===== */
+.theater-bg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(160, 60, 60, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 20% 50%, rgba(120, 40, 40, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 60%, rgba(140, 50, 50, 0.06) 0%, transparent 50%);
+}
+
+/* 顶部帷幕横幅 — 弧形流苏 */
+.theater-valance {
+  position: absolute; top: 0; left: 0; width: 100%; height: 8%;
+  background:
+    linear-gradient(180deg, rgba(100, 20, 25, 0.6) 0%, rgba(80, 15, 20, 0.3) 60%, transparent 100%);
+  /* 弧形底边 */
+  mask-image: linear-gradient(180deg, black 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, black 50%, transparent 100%);
+  animation: valance-breathe 8s ease-in-out infinite;
+}
+
+.theater-valance::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0; width: 100%; height: 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 18px,
+    rgba(200, 160, 80, 0.15) 18px,
+    rgba(200, 160, 80, 0.15) 20px
+  );
+  animation: valance-fringe-shimmer 6s ease-in-out infinite;
+}
+
+@keyframes valance-breathe {
+  0%, 100% { transform: scaleY(1); opacity: 0.8; }
+  50% { transform: scaleY(1.06); opacity: 1; }
+}
+
+@keyframes valance-fringe-shimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* 帷幕 — 两侧深红渐变 + 呼吸动画 */
+.theater-curtain {
+  position: absolute; top: 0; width: 18%; height: 100%;
+  pointer-events: none;
+}
+
+.theater-curtain--left {
+  left: 0;
+  background:
+    linear-gradient(90deg, rgba(80, 15, 20, 0.5) 0%, rgba(80, 15, 20, 0.15) 40%, transparent 100%),
+    repeating-linear-gradient(90deg,
+      rgba(100, 25, 30, 0.06) 0px, rgba(100, 25, 30, 0.06) 3px,
+      transparent 3px, transparent 12px
+    );
+  transform-origin: left center;
+  animation: curtain-breathe-left 12s ease-in-out infinite;
+}
+
+.theater-curtain--right {
+  right: 0;
+  background:
+    linear-gradient(270deg, rgba(80, 15, 20, 0.5) 0%, rgba(80, 15, 20, 0.15) 40%, transparent 100%),
+    repeating-linear-gradient(90deg,
+      rgba(100, 25, 30, 0.06) 0px, rgba(100, 25, 30, 0.06) 3px,
+      transparent 3px, transparent 12px
+    );
+  transform-origin: right center;
+  animation: curtain-breathe-right 12s ease-in-out infinite;
+}
+
+@keyframes curtain-breathe-left {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.08); }
+}
+
+@keyframes curtain-breathe-right {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.08); }
+}
+
+/* 聚光灯 — 锥形光束 */
+.theater-spotlight {
+  position: absolute; top: -5%; pointer-events: none;
+  width: 120px; height: 110%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 220, 140, 0.12) 0%,
+    rgba(255, 210, 120, 0.04) 40%,
+    transparent 80%
+  );
+  clip-path: polygon(40% 0%, 60% 0%, 85% 100%, 15% 100%);
+  filter: blur(8px);
+}
+
+.theater-spotlight--1 {
+  left: 20%;
+  animation: spotlight-sway-1 10s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+.theater-spotlight--2 {
+  left: 45%;
+  animation: spotlight-sway-2 12s ease-in-out infinite;
+  opacity: 0.9;
+  width: 140px;
+}
+
+.theater-spotlight--3 {
+  left: 72%;
+  animation: spotlight-sway-3 9s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes spotlight-sway-1 {
+  0%, 100% { transform: rotate(-3deg) translateX(0); opacity: 0.6; }
+  30% { transform: rotate(1deg) translateX(8px); opacity: 0.7; }
+  50% { transform: rotate(3deg) translateX(15px); opacity: 0.8; }
+  70% { transform: rotate(1deg) translateX(8px); opacity: 0.7; }
+}
+
+@keyframes spotlight-sway-2 {
+  0%, 100% { transform: rotate(2deg) translateX(0); opacity: 0.8; }
+  25% { transform: rotate(0deg) translateX(-5px); opacity: 0.9; }
+  50% { transform: rotate(-2deg) translateX(-10px); opacity: 1; }
+  75% { transform: rotate(0deg) translateX(-5px); opacity: 0.9; }
+}
+
+@keyframes spotlight-sway-3 {
+  0%, 100% { transform: rotate(3deg) translateX(0); opacity: 0.5; }
+  40% { transform: rotate(-1deg) translateX(-12px); opacity: 0.65; }
+  50% { transform: rotate(-4deg) translateX(-20px); opacity: 0.7; }
+  60% { transform: rotate(-1deg) translateX(-12px); opacity: 0.65; }
+}
+
+/* 舞台地板 */
+.theater-stage {
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 25%;
+  background: linear-gradient(
+    to top,
+    rgba(40, 18, 12, 0.6) 0%,
+    rgba(40, 18, 12, 0.2) 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* 舞台反光 — 暖金色光晕 */
+.theater-stage-glow {
+  position: absolute; bottom: 0; left: 50%; width: 60%; height: 12%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at 50% 100%,
+    rgba(255, 200, 100, 0.06) 0%,
+    rgba(255, 180, 80, 0.02) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: stage-glow-pulse 8s ease-in-out infinite;
+}
+
+@keyframes stage-glow-pulse {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scaleX(1); }
+  50% { opacity: 0.9; transform: translateX(-50%) scaleX(1.15); }
+}
+
+/* 金色光尘 */
+.theater-dust {
+  position: absolute; border-radius: 50%;
+  background: rgba(255, 220, 140, 0.6);
+  box-shadow: 0 0 4px rgba(255, 220, 140, 0.3), 0 0 8px rgba(255, 200, 100, 0.1);
+  animation:
+    theater-dust-glow var(--float-duration) ease-in-out infinite,
+    theater-dust-float var(--float-duration) ease-in-out infinite;
+}
+
+@keyframes theater-dust-glow {
+  0%, 100% { opacity: 0; }
+  30% { opacity: 0.7; }
+  70% { opacity: 0.5; }
+}
+
+@keyframes theater-dust-float {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(var(--float-x), calc(var(--float-y) * -1)); }
+  50% { transform: translate(calc(var(--float-x) * 0.5), var(--float-y)); }
+  75% { transform: translate(calc(var(--float-x) * -0.3), calc(var(--float-y) * -0.5)); }
+}
+
+/* 飘落的玫瑰花瓣 — 真实花瓣形状 */
+.theater-petal {
+  position: absolute; top: -20px; opacity: 0; pointer-events: none;
+  border-radius: 50% 0 50% 50%;
+  box-shadow: inset 0 0 3px rgba(255,255,255,0.08);
+  transform: rotate(var(--petal-init-rotate, 0deg));
+  animation: petal-fall var(--petal-duration) linear infinite;
+}
+
+@keyframes petal-fall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg) rotateX(0deg) rotateY(0deg);
+    opacity: 0;
+  }
+  4% { opacity: 0.6; }
+  15% {
+    transform: translateY(15vh) translateX(calc(var(--petal-sway) * 0.4)) rotate(60deg) rotateX(30deg) rotateY(20deg);
+    opacity: 0.55;
+  }
+  30% {
+    transform: translateY(30vh) translateX(var(--petal-sway)) rotate(120deg) rotateX(-20deg) rotateY(60deg);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(50vh) translateX(calc(var(--petal-sway) * -0.3)) rotate(200deg) rotateX(40deg) rotateY(120deg);
+    opacity: 0.4;
+  }
+  70% {
+    transform: translateY(70vh) translateX(calc(var(--petal-sway) * 0.6)) rotate(280deg) rotateX(-30deg) rotateY(200deg);
+    opacity: 0.25;
+  }
+  90% {
+    transform: translateY(95vh) translateX(calc(var(--petal-sway) * -0.2)) rotate(340deg) rotateX(20deg) rotateY(300deg);
+    opacity: 0.08;
+  }
+  100% {
+    transform: translateY(110vh) translateX(0) rotate(var(--petal-rotate)) rotateX(0deg) rotateY(360deg);
+    opacity: 0;
+  }
+}
+
+/* 剧场道具 — 缓慢横向飘过 */
+.theater-prop {
+  position: absolute; left: var(--prop-from); opacity: 0; pointer-events: none;
+  filter: blur(0.5px) drop-shadow(0 0 4px rgba(200, 160, 80, 0.2));
+  animation: prop-drift var(--prop-duration) linear infinite, prop-bob 5s ease-in-out infinite;
+}
+
+@keyframes prop-drift {
+  0% { left: var(--prop-from); opacity: 0; }
+  3% { opacity: 0.2; }
+  50% { opacity: 0.15; }
+  97% { opacity: 0.2; }
+  100% { left: var(--prop-to); opacity: 0; }
+}
+
+@keyframes prop-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(calc(var(--prop-bob) * -0.5)) rotate(3deg); }
+  50% { transform: translateY(calc(var(--prop-bob) * -1)) rotate(-2deg); }
+  75% { transform: translateY(calc(var(--prop-bob) * -0.3)) rotate(1deg); }
 }

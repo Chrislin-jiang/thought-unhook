@@ -35,6 +35,7 @@ export default function ThemeBackground({ theme }: Props) {
         {theme === 'ocean' && <OceanBg />}
         {theme === 'forest' && <ForestBg />}
         {theme === 'void' && <VoidBg />}
+        {theme === 'theater' && <TheaterBg />}
       </motion.div>
     </AnimatePresence>
   );
@@ -490,6 +491,123 @@ function VoidBg() {
           }}
         />
       ))}
+    </div>
+  );
+}
+
+// ===== 剧场主题 — 帷幕 + 聚光灯 =====
+function TheaterBg() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const elements: HTMLElement[] = [];
+
+    // 金色光尘粒子
+    for (let i = 0; i < 20; i++) {
+      const dust = document.createElement('div');
+      dust.className = 'theater-dust';
+      const size = Math.random() * 3 + 1;
+      dust.style.width = `${size}px`;
+      dust.style.height = `${size}px`;
+      dust.style.left = `${10 + Math.random() * 80}%`;
+      dust.style.top = `${5 + Math.random() * 70}%`;
+      dust.style.setProperty('--float-x', `${(Math.random() - 0.5) * 50}px`);
+      dust.style.setProperty('--float-y', `${(Math.random() - 0.5) * 40}px`);
+      dust.style.setProperty('--float-duration', `${6 + Math.random() * 8}s`);
+      dust.style.animationDelay = `${Math.random() * 8}s`;
+      container.appendChild(dust);
+      elements.push(dust);
+    }
+
+    // 飘落的玫瑰花瓣 — CSS 绘制真实花瓣形状
+    const petalColors = [
+      // [主色, 边缘色] — 深红/玫红/粉色变化
+      ['rgba(180,40,60,0.7)', 'rgba(140,25,45,0.5)'],
+      ['rgba(200,60,80,0.65)', 'rgba(160,35,55,0.45)'],
+      ['rgba(160,30,50,0.7)', 'rgba(120,20,40,0.5)'],
+      ['rgba(190,50,70,0.6)', 'rgba(150,30,50,0.4)'],
+      ['rgba(210,70,90,0.55)', 'rgba(170,45,65,0.35)'],
+      ['rgba(170,35,55,0.7)', 'rgba(130,22,42,0.5)'],
+    ];
+    for (let i = 0; i < 15; i++) {
+      const petal = document.createElement('div');
+      petal.className = 'theater-petal';
+      const colors = petalColors[i % petalColors.length];
+      const w = 8 + Math.random() * 8;   // 8-16px 宽
+      const h = w * (1.2 + Math.random() * 0.4); // 略长于宽
+      petal.style.width = `${w}px`;
+      petal.style.height = `${h}px`;
+      petal.style.background = `radial-gradient(ellipse at 30% 30%, ${colors[0]}, ${colors[1]} 70%, transparent 100%)`;
+      petal.style.left = `${3 + Math.random() * 94}%`;
+      petal.style.setProperty('--petal-duration', `${9 + Math.random() * 14}s`);
+      petal.style.setProperty('--petal-sway', `${(Math.random() - 0.5) * 120}px`);
+      petal.style.setProperty('--petal-rotate', `${Math.random() * 720 - 360}deg`);
+      petal.style.setProperty('--petal-init-rotate', `${Math.random() * 360}deg`);
+      petal.style.animationDelay = `${Math.random() * 16}s`;
+      container.appendChild(petal);
+      elements.push(petal);
+    }
+
+    // 点缀几朵完整的 🌹 — 和其他emoji道具一样横向飘过
+    for (let i = 0; i < 2; i++) {
+      const rose = document.createElement('div');
+      rose.className = 'theater-prop';
+      rose.textContent = '🌹';
+      rose.style.top = `${25 + Math.random() * 45}%`;
+      rose.style.fontSize = `${14 + Math.random() * 5}px`;
+      const goLeft = Math.random() > 0.5;
+      rose.style.setProperty('--prop-from', goLeft ? '105%' : '-10%');
+      rose.style.setProperty('--prop-to', goLeft ? '-10%' : '105%');
+      rose.style.setProperty('--prop-duration', `${35 + Math.random() * 25}s`);
+      rose.style.setProperty('--prop-bob', `${8 + Math.random() * 12}px`);
+      rose.style.animationDelay = `${8 + i * 18 + Math.random() * 10}s`;
+      container.appendChild(rose);
+      elements.push(rose);
+    }
+
+    // 剧场道具 — 缓慢飘过的符号
+    const props = ['🎭', '🎪', '🎩', '🎻', '📜', '🪄'];
+    for (let i = 0; i < 3; i++) {
+      const prop = document.createElement('div');
+      prop.className = 'theater-prop';
+      prop.textContent = props[i % props.length];
+      prop.style.top = `${20 + Math.random() * 50}%`;
+      prop.style.fontSize = `${16 + Math.random() * 8}px`;
+      const goLeft = Math.random() > 0.5;
+      prop.style.setProperty('--prop-from', goLeft ? '105%' : '-10%');
+      prop.style.setProperty('--prop-to', goLeft ? '-10%' : '105%');
+      prop.style.setProperty('--prop-duration', `${40 + Math.random() * 30}s`);
+      prop.style.setProperty('--prop-bob', `${10 + Math.random() * 15}px`);
+      prop.style.animationDelay = `${i * 12 + Math.random() * 8}s`;
+      container.appendChild(prop);
+      elements.push(prop);
+    }
+
+    return () => {
+      elements.forEach(el => el.remove());
+    };
+  }, []);
+
+  return (
+    <div ref={containerRef} className="theater-bg">
+      {/* 顶部帷幕横幅 */}
+      <div className="theater-valance" />
+
+      {/* 帷幕褶皱纹理 */}
+      <div className="theater-curtain theater-curtain--left" />
+      <div className="theater-curtain theater-curtain--right" />
+
+      {/* 聚光灯 */}
+      <div className="theater-spotlight theater-spotlight--1" />
+      <div className="theater-spotlight theater-spotlight--2" />
+      <div className="theater-spotlight theater-spotlight--3" />
+
+      {/* 舞台地板 + 反光 */}
+      <div className="theater-stage" />
+      <div className="theater-stage-glow" />
     </div>
   );
 }

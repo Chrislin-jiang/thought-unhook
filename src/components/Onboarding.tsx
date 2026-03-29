@@ -14,7 +14,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import StarryBackground from './StarryBackground';
-import { classifyThought, rewriteThought } from '../ai-service';
+import { classifyThought, rewriteThought, classifyThoughtLLM, rewriteThoughtLLM } from '../ai-service';
+import { isLLMEnabled } from '../llm-client';
 import { PERSONA_INFO } from '../types';
 import { useThoughtStore } from '../store';
 
@@ -26,20 +27,54 @@ export default function Onboarding() {
   const [classification, setClassification] = useState<ReturnType<typeof classifyThought> | null>(null);
   const [rewritten, setRewritten] = useState('');
   const [blown, setBlown] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const setOnboardingCompleted = useThoughtStore(s => s.setOnboardingCompleted);
   const addThought = useThoughtStore(s => s.addThought);
 
-  const handleInputSubmit = useCallback(() => {
-    if (!inputText.trim()) return;
+  const handleInputSubmit = useCallback(async () => {
+    if (!inputText.trim() || isProcessing) return;
     const text = inputText.trim();
     setSubmittedText(text);
-    const cls = classifyThought(text);
-    setClassification(cls);
-    const rw = rewriteThought(text);
-    setRewritten(rw.variants[0].text);
+    setIsProcessing(true);
+
+    // 先用本地规则快速得到分类结果（作为兜底）
+    const localCls = classifyThought(text);
+    setClassification(localCls);
+
+    if (isLLMEnabled()) {
+      // LLM 模式：并行调用分类和改写
+      try {
+        const [llmCls, llmRw] = await Promise.all([
+          classifyThoughtLLM(text).catch(() => null),
+          rewriteThoughtLLM(text, localCls.emotion, localCls.cognitiveDistortion).catch(() => null),
+        ]);
+
+        if (llmCls) {
+          setClassification(llmCls);
+        }
+
+        if (llmRw && llmRw.variants.length > 0) {
+          setRewritten(llmRw.variants[0].text);
+        } else {
+          // LLM 改写失败，降级到本地
+          const rw = rewriteThought(text);
+          setRewritten(rw.variants[0].text);
+        }
+      } catch {
+        // 全部失败，降级到本地
+        const rw = rewriteThought(text);
+        setRewritten(rw.variants[0].text);
+      }
+    } else {
+      // 本地模式
+      const rw = rewriteThought(text);
+      setRewritten(rw.variants[0].text);
+    }
+
+    setIsProcessing(false);
     setStep(3);
-  }, [inputText]);
+  }, [inputText, isProcessing]);
 
   const handleBlow = () => {
     setBlown(true);
@@ -76,10 +111,10 @@ export default function Onboarding() {
                 transition={{ duration: 3, repeat: Infinity }}
                 className="text-6xl mb-8"
               >
-                🧠
+                🎭
               </motion.div>
               <h1 className="text-xl font-medium mb-4" style={{ color: 'rgba(230,230,250,0.9)' }}>
-                你的脑子里，现在有多嘈杂？
+                你脑子里的戏，现在有多热闹？
               </h1>
               
               {/* 滑动条 */}
@@ -96,7 +131,7 @@ export default function Onboarding() {
                 <div className="flex justify-between mt-2">
                   <span className="text-xs" style={{ color: 'rgba(200,200,230,0.4)' }}>安静</span>
                   <span className="text-lg" style={{ color: 'rgba(139,120,255,0.8)' }}>{noiseLevel}</span>
-                  <span className="text-xs" style={{ color: 'rgba(200,200,230,0.4)' }}>嘈杂</span>
+                  <span className="text-xs" style={{ color: 'rgba(200,200,230,0.4)' }}>好多出戏</span>
                 </div>
               </div>
 
@@ -134,7 +169,7 @@ export default function Onboarding() {
                   className="text-lg leading-relaxed"
                   style={{ color: 'rgba(230,230,250,0.85)' }}
                 >
-                  那些声音<strong style={{ color: 'rgba(139,180,255,0.9)' }}>不是你</strong>。
+                  那些台词<strong style={{ color: 'rgba(139,180,255,0.9)' }}>不是你</strong>。
                 </motion.p>
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -143,7 +178,7 @@ export default function Onboarding() {
                   className="text-lg leading-relaxed"
                   style={{ color: 'rgba(230,230,250,0.7)' }}
                 >
-                  它们只是路过的念头。
+                  它们只是舞台上的表演。
                 </motion.p>
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -152,7 +187,7 @@ export default function Onboarding() {
                   className="text-lg leading-relaxed"
                   style={{ color: 'rgba(230,230,250,0.55)' }}
                 >
-                  你不需要抓住每一个。
+                  你不需要每出戏都入戏。
                 </motion.p>
               </div>
 
@@ -186,7 +221,7 @@ export default function Onboarding() {
               className="w-full max-w-sm"
             >
               <p className="text-center text-sm mb-6" style={{ color: 'rgba(200,200,230,0.6)' }}>
-                试试输入一个现在脑子里的想法
+                试试写下一句脑子里正在上演的台词
               </p>
 
               <div className="relative">
@@ -195,7 +230,7 @@ export default function Onboarding() {
                   value={inputText}
                   onChange={e => setInputText(e.target.value)}
                   onKeyDown={e => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
+                    if (e.key === 'Enter' && !e.shiftKey && !isProcessing) {
                       e.preventDefault();
                       handleInputSubmit();
                     }
@@ -228,17 +263,33 @@ export default function Onboarding() {
                 >
                   <motion.button
                     onClick={handleInputSubmit}
+                    disabled={isProcessing}
                     className="px-8 py-3 rounded-full text-sm font-medium"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(139,120,255,0.8), rgba(100,180,255,0.8))',
+                      background: isProcessing
+                        ? 'linear-gradient(135deg, rgba(139,120,255,0.4), rgba(100,180,255,0.4))'
+                        : 'linear-gradient(135deg, rgba(139,120,255,0.8), rgba(100,180,255,0.8))',
                       color: '#fff',
                       border: 'none',
-                      cursor: 'pointer',
+                      cursor: isProcessing ? 'wait' : 'pointer',
                     }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={isProcessing ? {} : { scale: 1.05 }}
+                    whileTap={isProcessing ? {} : { scale: 0.95 }}
                   >
-                    物化这个念头 🫧
+                    {isProcessing ? (
+                      <span className="flex items-center gap-2">
+                        <motion.span
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          className="inline-block"
+                        >
+                          ⏳
+                        </motion.span>
+                        AI 正在分析...
+                      </span>
+                    ) : (
+                      '把它搬上舞台 🎭'
+                    )}
                   </motion.button>
                 </motion.div>
               )}
@@ -336,7 +387,7 @@ export default function Onboarding() {
               className="text-center max-w-sm"
             >
               <p className="text-sm mb-6" style={{ color: 'rgba(200,200,230,0.6)' }}>
-                现在，试着把它吹走 💨
+                现在，让这出戏落幕 🎭
               </p>
 
               <AnimatePresence>
@@ -372,7 +423,7 @@ export default function Onboarding() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  💨 吹走它
+                  🎭 落幕
                 </motion.button>
               ) : (
                 <motion.div
@@ -381,7 +432,7 @@ export default function Onboarding() {
                   transition={{ delay: 0.5 }}
                 >
                   <p className="text-lg" style={{ color: 'rgba(139,220,180,0.8)' }}>
-                    它飘走了... 🍃
+                    幕布落下了... 🎭
                   </p>
                 </motion.div>
               )}
@@ -405,7 +456,7 @@ export default function Onboarding() {
                 {persona.emoji}
               </motion.div>
               <p className="text-sm mb-3" style={{ color: 'rgba(200,200,230,0.6)' }}>
-                刚才说话的，可能是你脑子里的
+                刚才念台词的，可能是你脑子里的
               </p>
               <h2 className="text-xl font-medium mb-2" style={{ color: 'rgba(139,180,255,0.9)' }}>
                 「{persona.name}」{persona.emoji}
@@ -414,7 +465,7 @@ export default function Onboarding() {
                 {persona.description}
               </p>
               <p className="text-xs mb-6" style={{ color: 'rgba(200,200,230,0.3)' }}>
-                别担心，以后你会越来越认识它们
+                别担心，以后你会越来越认识这些演员
               </p>
 
               <motion.button
@@ -497,7 +548,7 @@ export default function Onboarding() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                开始使用 🫧
+                开始出戏 🎭
               </motion.button>
             </motion.div>
           )}

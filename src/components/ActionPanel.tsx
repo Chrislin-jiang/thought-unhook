@@ -143,28 +143,32 @@ export default function ActionPanel() {
   const handleShrink = () => {
     resetPanels();
     setShrinkingId(thought.uid);
+    useThoughtStore.setState({ releasingMethod: 'resize' });
     setTimeout(() => {
       releaseThought(thought.uid, 'resize');
       setShrinkingId(null);
       selectThought(null);
-    }, 1500);
+    }, 1100);
   };
 
   // ===== 💨 吹走操作 =====
   const handleBlow = () => {
     resetPanels();
     setReleasingId(thought.uid);
+    useThoughtStore.setState({ releasingMethod: 'blow' });
+    // 0.7s 变形为云朵，然后触发 exit 飘走动画(2s)
     setTimeout(() => {
       releaseThought(thought.uid, 'blow');
       setReleasingId(null);
       selectThought(null);
-    }, 700);
+    }, 2800);
   };
 
   // ===== 🫠 融化操作 =====
   const handleMelt = () => {
     resetPanels();
     setMeltingId(thought.uid);
+    useThoughtStore.setState({ releasingMethod: 'melt' });
     setTimeout(() => {
       releaseThought(thought.uid, 'melt');
       setMeltingId(null);
@@ -322,10 +326,10 @@ export default function ActionPanel() {
                 🫧
               </motion.div>
               <p className="text-sm" style={{ color: 'rgba(200,200,230,0.6)' }}>
-                安静地看着这个念头...
+                坐在观众席，安静地看着这场戏...
               </p>
               <p className="text-xs mt-1" style={{ color: 'rgba(200,200,230,0.3)' }}>
-                它只是一个气泡，不是一个事实
+                它只是一段台词，不是你的人生
               </p>
               <motion.div
                 className="mt-3 h-1 rounded-full overflow-hidden"
@@ -359,7 +363,7 @@ export default function ActionPanel() {
                 "{labelGenerated}"
               </p>
               <p className="text-xs mt-2" style={{ color: 'rgba(200,200,230,0.3)' }}>
-                给念头分类，帮助你从中退一步
+                给这出戏贴个类型标签，帮你从剧情中抽身
               </p>
             </motion.div>
           )}
@@ -397,7 +401,7 @@ export default function ActionPanel() {
               className="rewrite-panel p-4 mb-3"
             >
               <p className="text-xs mb-3" style={{ color: 'rgba(200,200,230,0.4)' }}>
-                换一种说法，感觉可能不一样了 ✏️
+                换一种台词，这出戏的味道就不一样了 ✏️
               </p>
               <div className="space-y-2">
                 {rewriteVariants.map((variant, i) => (
@@ -440,7 +444,7 @@ export default function ActionPanel() {
               className="rewrite-panel p-4 mb-3"
             >
               <p className="text-xs mb-3" style={{ color: 'rgba(200,200,230,0.4)' }}>
-                用搞笑的声音读一遍，念头就没那么可怕了 🎵
+                让角色换个腔调念台词，严肃的戏也能变喜剧 🎵
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {FUNNY_VOICES.map(voice => (
@@ -479,7 +483,7 @@ export default function ActionPanel() {
         {/* 引导语 */}
         <div className="text-center">
           <p className="text-xs" style={{ color: 'rgba(200,200,230,0.25)' }}>
-            不是反驳它，而是让它"变轻"
+            不是消灭这出戏，而是走到台下去看
           </p>
         </div>
       </motion.div>

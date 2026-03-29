@@ -54,7 +54,7 @@ export default function SharePanel() {
                 borderBottom: activeTab === 'report' ? '2px solid rgba(139,120,255,0.6)' : '2px solid transparent',
               }}
             >
-              📊 今日报告
+              📊 今日出戏报告
             </button>
             <button
               onClick={() => setActiveTab('art')}
@@ -68,7 +68,7 @@ export default function SharePanel() {
                 borderBottom: activeTab === 'art' ? '2px solid rgba(139,120,255,0.6)' : '2px solid transparent',
               }}
             >
-              🎨 念头艺术
+              🎨 剧照生成
             </button>
           </div>
 
@@ -189,7 +189,7 @@ function DailyReport() {
     ctx.fillStyle = 'rgba(200,200,230,0.9)';
     ctx.font = '24px "Noto Sans SC", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🫧 今日解钩报告', w / 2, 80);
+    ctx.fillText('🎭 今日出戏报告', w / 2, 80);
 
     // 日期
     ctx.fillStyle = 'rgba(200,200,230,0.4)';
@@ -219,7 +219,7 @@ function DailyReport() {
       ctx.fillText(label, x + 80, y + 82);
     };
 
-    drawCard(40, 150, '捕捉念头', `${totalToday}`, '🫧');
+    drawCard(40, 150, '记录场次', `${totalToday}`, '🎭');
     drawCard(220, 150, '已释放', `${releasedToday}`, '💨');
     drawCard(400, 150, '连续天数', `${streak}`, '🔥');
 
@@ -290,7 +290,7 @@ function DailyReport() {
     ctx.fillText(`${Math.round(releaseRate * 100)}%`, centerX, centerY + 6);
     ctx.font = '11px "Noto Sans SC", sans-serif';
     ctx.fillStyle = 'rgba(200,200,230,0.4)';
-    ctx.fillText('释放率', centerX, centerY + 24);
+    ctx.fillText('出戏率', centerX, centerY + 24);
 
     // 底部水印
     ctx.font = '12px "Noto Sans SC", sans-serif';
@@ -325,7 +325,7 @@ function DailyReport() {
       >
         <div className="text-center mb-4">
           <p className="text-lg font-medium" style={{ color: 'rgba(200,200,230,0.9)' }}>
-            🫧 今日解钩报告
+            🎭 今日出戏报告
           </p>
           <p className="text-[10px] mt-1" style={{ color: 'rgba(200,200,230,0.4)' }}>
             {new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -333,8 +333,8 @@ function DailyReport() {
         </div>
 
         <div className="grid grid-cols-3 gap-2 mb-3">
-          <MiniStat emoji="🫧" value={totalToday} label="念头" />
-          <MiniStat emoji="💨" value={releasedToday} label="释放" />
+          <MiniStat emoji="🎭" value={totalToday} label="场戏" />
+          <MiniStat emoji="💨" value={releasedToday} label="散场" />
           <MiniStat emoji="🔥" value={streak} label="连续" />
         </div>
 
@@ -526,7 +526,7 @@ function ThoughtArtCard() {
       <div className="text-center py-8">
         <span className="text-3xl block mb-2">🎨</span>
         <p className="text-sm" style={{ color: 'rgba(200,200,230,0.5)' }}>
-          还没有念头可以变成艺术画
+          还没有台词可以变成剧照
         </p>
       </div>
     );
@@ -538,7 +538,7 @@ function ThoughtArtCard() {
     <div>
       {/* 念头选择 */}
       <p className="text-[10px] mb-2" style={{ color: 'rgba(200,200,230,0.4)' }}>
-        选择一个念头生成艺术画
+        选择一句台词生成剧照
       </p>
       <div className="space-y-1.5 max-h-32 overflow-y-auto mb-4">
         {thoughts.slice(0, 10).map(t => (
@@ -595,7 +595,7 @@ function ThoughtArtCard() {
           fontFamily: 'inherit',
         }}
       >
-        {saved ? '✅ 已保存' : '🎨 生成并保存艺术画'}
+        {saved ? '✅ 已保存' : '🎨 生成并保存剧照'}
       </motion.button>
 
       <canvas ref={canvasRef} style={{ display: 'none' }} />

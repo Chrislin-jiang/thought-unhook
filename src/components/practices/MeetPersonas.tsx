@@ -20,17 +20,20 @@ export default function MeetPersonas({ onBack }: { onBack: () => void }) {
   const [nicknameInput, setNicknameInput] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const addThought = useThoughtStore(s => s.addThought);
+  const releaseThought = useThoughtStore(s => s.releaseThought);
   const setPersonaNickname = useThoughtStore(s => s.setPersonaNickname);
   const personaNicknames = useThoughtStore(s => s.personaNicknames);
   const addPracticeRecord = useThoughtStore(s => s.addPracticeRecord);
   const [startTime] = useState(Date.now());
+  const [thoughtUids, setThoughtUids] = useState<string[]>([]);
 
   const handleAddThought = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
 
     const classification = classifyThought(trimmed);
-    await addThought(trimmed);
+    const t = await addThought(trimmed);
+    setThoughtUids(prev => [...prev, t.uid]);
     setThoughts(prev => [...prev, { content: trimmed, persona: classification.persona }]);
     setInput('');
     inputRef.current?.focus();
@@ -92,6 +95,10 @@ export default function MeetPersonas({ onBack }: { onBack: () => void }) {
   };
 
   const handleComplete = () => {
+    // 练习完成后，将所有练习中的念头标记为已释放
+    for (const uid of thoughtUids) {
+      releaseThought(uid, 'observe');
+    }
     addPracticeRecord({
       id: String(Date.now()),
       type: 'meet-personas',
@@ -109,7 +116,7 @@ export default function MeetPersonas({ onBack }: { onBack: () => void }) {
         <button onClick={onBack} className="text-xs px-3 py-1.5 rounded-full" style={{
           background: 'rgba(255,255,255,0.05)', color: 'rgba(200,200,230,0.5)',
           border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer',
-        }}>← 返回实验室</button>
+        }}>← 返回练习</button>
       </div>
 
       <AnimatePresence mode="wait">

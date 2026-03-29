@@ -43,10 +43,10 @@ export default function UnhookLab() {
         className="text-center mb-6"
       >
         <p className="text-sm" style={{ color: 'rgba(200,200,230,0.6)' }}>
-          基于ACT和正念的结构化练习
+          7种从戏里走出来的方式
         </p>
         <p className="text-xs mt-1" style={{ color: 'rgba(200,200,230,0.3)' }}>
-          每个练习都是一次认知解离的旅程
+          每次练习都是一次成功的出戏
         </p>
       </motion.div>
 

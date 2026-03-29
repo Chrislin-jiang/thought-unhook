@@ -18,13 +18,13 @@ export default function Header() {
   const aiEnabled = isLLMEnabled();
 
   const pageConfig: Record<string, { emoji: string; title: string }> = {
-    space:   { emoji: '🫧', title: '念头空间' },
-    journal: { emoji: '📊', title: '觉察日志' },
-    lab:     { emoji: '🧪', title: '解钩实验室' },
-    night:   { emoji: '🌙', title: '睡前模式' },
+    space:   { emoji: '🎭', title: '内心剧场' },
+    journal: { emoji: '📜', title: '演出记录' },
+    lab:     { emoji: '🎪', title: '出戏练习' },
+    night:   { emoji: '🌙', title: '散场时分' },
   };
 
-  const current = pageConfig[currentPage] || { emoji: '🫧', title: '出戏' };
+  const current = pageConfig[currentPage] || { emoji: '🎭', title: '出戏' };
 
   return (
     <motion.header
