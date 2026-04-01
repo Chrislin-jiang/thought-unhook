@@ -73,13 +73,13 @@ function MicroscopeAnimation({
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }} className="text-5xl mb-6">✨</motion.div>
-        <p className="text-lg text-center mb-2" style={{ color: 'rgba(200,200,230,0.8)' }}>什么都没有了</p>
-        <p className="text-xs text-center mb-6" style={{ color: 'rgba(200,200,230,0.4)' }}>
+        <p className="text-lg text-center mb-2" style={{ color: 'rgba(45,43,85,0.8)' }}>什么都没有了</p>
+        <p className="text-xs text-center mb-6" style={{ color: 'rgba(45,43,85,0.35)' }}>
           放大到最后，念头只是一堆像素。再放大，连像素都消失了。它从来就不是一个"事实"。
         </p>
         <button onClick={onBack} className="px-6 py-2.5 rounded-full text-sm" style={{
-          background: 'rgba(255,255,255,0.05)', color: 'rgba(200,200,230,0.5)',
-          border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer',
+          background: 'rgba(139,124,247,0.04)', color: 'rgba(45,43,85,0.45)',
+          border: '1px solid rgba(139,124,247,0.08)', cursor: 'pointer',
         }}>返回实验室</button>
       </div>
     );
@@ -94,7 +94,7 @@ function MicroscopeAnimation({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-base text-center leading-relaxed"
-            style={{ color: 'rgba(230,230,250,0.85)' }}
+            style={{ color: '#2D2B55' }}
           >
             {thought}
           </motion.p>
@@ -116,8 +116,8 @@ function MicroscopeAnimation({
                 transition={{ delay: i * 0.1 }}
                 className="text-lg px-2 py-1 rounded-lg"
                 style={{
-                  background: 'rgba(139,120,255,0.1)',
-                  color: 'rgba(200,200,230,0.7)',
+                  background: 'rgba(139,124,247,0.1)',
+                  color: 'rgba(45,43,85,0.65)',
                 }}
               >
                 {w}
@@ -141,7 +141,7 @@ function MicroscopeAnimation({
                 animate={{ opacity: [0.3, 0.8, 0.3], rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity, delay: i * 0.05 }}
                 className="text-2xl font-mono"
-                style={{ color: 'rgba(200,200,230,0.5)' }}
+                style={{ color: 'rgba(45,43,85,0.45)' }}
               >
                 {c === ' ' ? '·' : c}
               </motion.span>
@@ -185,7 +185,7 @@ function MicroscopeAnimation({
             >
               ·
             </motion.p>
-            <p className="text-xs" style={{ color: 'rgba(200,200,230,0.3)' }}>
+            <p className="text-xs" style={{ color: 'rgba(45,43,85,0.25)' }}>
               什么都没有了
             </p>
           </motion.div>
@@ -206,10 +206,10 @@ function MicroscopeAnimation({
 
       {/* 放大倍数 */}
       <div className="text-center mb-4">
-        <span className="text-lg font-mono" style={{ color: 'rgba(139,120,255,0.6)' }}>
+        <span className="text-lg font-mono" style={{ color: 'rgba(139,124,247,0.6)' }}>
           🔬 {zoomLabels[zoom].magnification}
         </span>
-        <p className="text-xs mt-1" style={{ color: 'rgba(200,200,230,0.4)' }}>
+        <p className="text-xs mt-1" style={{ color: 'rgba(45,43,85,0.35)' }}>
           {zoomLabels[zoom].label}
         </p>
       </div>
@@ -222,7 +222,7 @@ function MicroscopeAnimation({
             onClick={() => { setAutoProgress(false); setZoom(level); }}
             className="w-8 h-1.5 rounded-full transition-all"
             style={{
-              background: i <= currentLevelIndex ? 'rgba(139,120,255,0.6)' : 'rgba(255,255,255,0.1)',
+              background: i <= currentLevelIndex ? 'rgba(139,120,255,0.6)' : 'rgba(139,124,247,0.1)',
               cursor: 'pointer',
               border: 'none',
             }}

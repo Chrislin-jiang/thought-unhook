@@ -52,13 +52,13 @@ function BottleAnimation({
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }} className="text-5xl mb-6">🌅</motion.div>
-        <p className="text-lg text-center mb-2" style={{ color: 'rgba(200,200,230,0.8)' }}>瓶子都漂远了</p>
-        <p className="text-xs text-center mb-6" style={{ color: 'rgba(200,200,230,0.4)' }}>
+        <p className="text-lg text-center mb-2" style={{ color: 'rgba(45,43,85,0.8)' }}>瓶子都漂远了</p>
+        <p className="text-xs text-center mb-6" style={{ color: 'rgba(45,43,85,0.35)' }}>
           也许在某个遥远的海岸，有人会捡到它。但此刻，你可以放手了。
         </p>
         <button onClick={onBack} className="px-6 py-2.5 rounded-full text-sm" style={{
-          background: 'rgba(255,255,255,0.05)', color: 'rgba(200,200,230,0.5)',
-          border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer',
+          background: 'rgba(139,124,247,0.04)', color: 'rgba(45,43,85,0.45)',
+          border: '1px solid rgba(139,124,247,0.08)', cursor: 'pointer',
         }}>返回实验室</button>
       </div>
     );
@@ -66,7 +66,7 @@ function BottleAnimation({
 
   return (
     <div className="flex-1 flex flex-col relative overflow-hidden">
-      <p className="text-center text-xs py-3 relative z-10" style={{ color: 'rgba(200,200,230,0.4)' }}>
+      <p className="text-center text-xs py-3 relative z-10" style={{ color: 'rgba(45,43,85,0.35)' }}>
         点击瓶子将它放入海浪 🌊
       </p>
 
@@ -120,7 +120,7 @@ function BottleAnimation({
                   onClick={() => handleDrift(i)}
                   className="flex flex-col items-center gap-2 p-4 rounded-2xl cursor-pointer"
                   style={{
-                    background: 'rgba(255,255,255,0.03)',
+                    background: 'rgba(139,124,247,0.03)',
                     border: '1px solid rgba(100,150,200,0.15)',
                     maxWidth: '160px',
                   }}
@@ -134,7 +134,7 @@ function BottleAnimation({
                   >
                     🍾
                   </motion.span>
-                  <p className="text-[10px] text-center leading-tight" style={{ color: 'rgba(200,200,230,0.6)' }}>
+                  <p className="text-[10px] text-center leading-tight" style={{ color: 'rgba(45,43,85,0.5)' }}>
                     {thought.length > 30 ? thought.slice(0, 30) + '...' : thought}
                   </p>
                   <span className="text-[9px]" style={{ color: 'rgba(100,180,255,0.4)' }}>

@@ -55,13 +55,13 @@ function TrainAnimation({
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }} className="text-5xl mb-6">🌿</motion.div>
-        <p className="text-lg text-center mb-2" style={{ color: 'rgba(200,200,230,0.8)' }}>列车已经远去了</p>
-        <p className="text-xs text-center mb-6" style={{ color: 'rgba(200,200,230,0.4)' }}>
+        <p className="text-lg text-center mb-2" style={{ color: 'rgba(45,43,85,0.8)' }}>列车已经远去了</p>
+        <p className="text-xs text-center mb-6" style={{ color: 'rgba(45,43,85,0.35)' }}>
           {thoughts.length} 节车厢载着你的念头驶向了远方。你还在这里。
         </p>
         <button onClick={onBack} className="px-6 py-2.5 rounded-full text-sm" style={{
-          background: 'rgba(255,255,255,0.05)', color: 'rgba(200,200,230,0.5)',
-          border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer',
+          background: 'rgba(139,124,247,0.04)', color: 'rgba(45,43,85,0.45)',
+          border: '1px solid rgba(139,124,247,0.08)', cursor: 'pointer',
         }}>返回实验室</button>
       </div>
     );
@@ -75,7 +75,7 @@ function TrainAnimation({
       {/* 站台标识 */}
       <motion.p
         className="absolute bottom-36 text-xs"
-        style={{ color: 'rgba(200,200,230,0.3)' }}
+        style={{ color: 'rgba(45,43,85,0.25)' }}
       >
         🚏 你站在这里，安静地观察
       </motion.p>
@@ -93,16 +93,16 @@ function TrainAnimation({
               className="absolute inset-0 flex items-center justify-center"
             >
               <div className="p-5 rounded-2xl max-w-xs w-full" style={{
-                background: 'rgba(139,120,255,0.08)',
-                border: '1px solid rgba(139,120,255,0.2)',
+                background: 'rgba(139,124,247,0.08)',
+                border: '1px solid rgba(139,124,247,0.2)',
               }}>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">🚃</span>
-                  <span className="text-[10px]" style={{ color: 'rgba(200,200,230,0.4)' }}>
+                  <span className="text-[10px]" style={{ color: 'rgba(45,43,85,0.35)' }}>
                     车厢 #{currentIndex + 1}
                   </span>
                 </div>
-                <p className="text-sm" style={{ color: 'rgba(230,230,250,0.8)' }}>
+                <p className="text-sm" style={{ color: '#2D2B55' }}>
                   {thoughts[currentIndex]}
                 </p>
               </div>
@@ -115,7 +115,7 @@ function TrainAnimation({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="absolute inset-0 flex items-center justify-center text-sm"
-            style={{ color: 'rgba(200,200,230,0.5)' }}
+            style={{ color: 'rgba(45,43,85,0.45)' }}
           >
             列车渐行渐远... 🌫️
           </motion.p>
@@ -129,13 +129,13 @@ function TrainAnimation({
             key={i}
             className="w-2 h-2 rounded-full transition-all duration-500"
             style={{
-              background: i < currentIndex ? 'rgba(139,220,180,0.5)' : i === currentIndex ? 'rgba(139,120,255,0.8)' : 'rgba(255,255,255,0.1)',
+              background: i < currentIndex ? 'rgba(139,220,180,0.5)' : i === currentIndex ? 'rgba(139,120,255,0.8)' : 'rgba(139,124,247,0.1)',
             }}
           />
         ))}
       </div>
 
-      <p className="text-xs mt-4" style={{ color: 'rgba(200,200,230,0.3)' }}>
+      <p className="text-xs mt-4" style={{ color: 'rgba(45,43,85,0.25)' }}>
         只是看着，不需要做什么
       </p>
     </div>

@@ -1,5 +1,5 @@
 /**
- * 暂存念头列表 — 念头罐
+ * 暂存念头列表 — 柔和治愈风
  */
 
 import { motion } from 'framer-motion';
@@ -28,26 +28,19 @@ export default function StoredThoughts() {
             <motion.div
               key={thought.uid}
               layout
-              className="flex items-center gap-3 p-3 rounded-xl"
-              style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,200,100,0.1)',
-              }}
+              className="flex items-center gap-3 p-3 glass-card"
             >
               <span className="text-sm">{persona.emoji}</span>
-              <p
-                className="flex-1 text-xs truncate"
-                style={{ color: colors.text }}
-              >
+              <p className="flex-1 text-xs truncate" style={{ color: colors.text }}>
                 {thought.content}
               </p>
               <button
                 onClick={() => releaseThought(thought.uid, 'blow')}
-                className="text-xs px-2 py-1 rounded-lg"
+                className="text-xs px-2.5 py-1 rounded-full font-medium"
                 style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  color: 'rgba(200,200,230,0.5)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(139,124,247,0.08)',
+                  color: '#8B7CF7',
+                  border: '1px solid rgba(139,124,247,0.12)',
                   cursor: 'pointer',
                 }}
               >

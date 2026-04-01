@@ -1,10 +1,9 @@
 /**
- * App 主组件 — Phase 3
+ * App 主组件 — 柔和治愈风
  */
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import ThemeBackground from './components/ThemeBackground';
 import Header from './components/Header';
 import ThoughtSpace from './components/ThoughtSpace';
 import ThoughtInput from './components/ThoughtInput';
@@ -26,7 +25,6 @@ function useKeyboardVisible() {
   const [layoutHeight, setLayoutHeight] = useState<number | null>(null);
 
   useEffect(() => {
-    // 记录初始的 viewport 高度（无键盘时）
     const initialHeight = window.innerHeight;
     setLayoutHeight(initialHeight);
 
@@ -35,7 +33,6 @@ function useKeyboardVisible() {
 
     const handleResize = () => {
       const currentHeight = vv.height;
-      // 键盘弹起时 visualViewport 高度会明显小于初始高度
       const keyboardUp = initialHeight - currentHeight > 100;
       setIsKeyboardVisible(keyboardUp);
     };
@@ -60,6 +57,7 @@ export default function App() {
   const { isKeyboardVisible, layoutHeight } = useKeyboardVisible();
 
   const themeInfo = THEME_INFO[currentTheme];
+  const isDarkTheme = currentTheme === 'starry';
 
   useEffect(() => {
     init();
@@ -71,24 +69,23 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center" style={{ background: '#050510' }}>
+      <div className="h-screen flex items-center justify-center" style={{ background: '#F8F6FF' }}>
         <div className="text-center">
           <motion.div
-            animate={{ opacity: [0.3, 0.8, 0.3] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="font-mono text-sm mb-4"
-            style={{ color: '#00f0ff', textShadow: '0 0 10px rgba(0,240,255,0.3)' }}
+            animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-5xl mb-6"
           >
-            INITIALIZING...
+            🎭
           </motion.div>
-          <div className="w-32 h-[2px] mx-auto overflow-hidden" style={{ background: 'rgba(0,240,255,0.1)' }}>
-            <motion.div
-              animate={{ x: ['-100%', '100%'] }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-1/2 h-full"
-              style={{ background: 'linear-gradient(90deg, transparent, #00f0ff, transparent)' }}
-            />
-          </div>
+          <motion.p
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="text-sm"
+            style={{ color: '#8B7CF7' }}
+          >
+            正在准备...
+          </motion.p>
         </div>
       </div>
     );
@@ -104,11 +101,13 @@ export default function App() {
       style={{
         background: themeInfo.bgColor,
         height: layoutHeight ? `${layoutHeight}px` : '100dvh',
-        color: '#e0e8f0',
-        transition: 'background 0.8s ease, color 0.8s ease',
+        color: isDarkTheme ? '#e0e8f0' : '#2D2B55',
+        transition: 'background 0.6s ease, color 0.6s ease',
       }}
     >
-      <ThemeBackground theme={currentTheme} />
+      {/* 柔和背景装饰 */}
+      {!isDarkTheme && <div className="soft-bg" />}
+
       <Header />
 
       <AnimatePresence mode="wait">
@@ -127,7 +126,7 @@ export default function App() {
                   onClick={() => setShowStored(!showStored)}
                   className="w-full text-center py-1"
                   style={{
-                    color: 'rgba(139,124,247,0.4)',
+                    color: 'rgba(139,124,247,0.5)',
                     fontSize: '12px',
                   }}
                 >

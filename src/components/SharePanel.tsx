@@ -26,7 +26,7 @@ export default function SharePanel() {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)' }}
+        style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(10px)' }}
         onClick={() => setShowSharePanel(false)}
       >
         <motion.div
@@ -35,23 +35,23 @@ export default function SharePanel() {
           exit={{ scale: 0.9, y: 20 }}
           className="w-full max-w-sm rounded-2xl overflow-hidden"
           style={{
-            background: 'rgba(15,15,35,0.98)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.95)',
+            border: '1px solid rgba(139,124,247,0.1)',
           }}
           onClick={e => e.stopPropagation()}
         >
           {/* Tab 切换 */}
-          <div className="flex border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+          <div className="flex border-b" style={{ borderColor: 'rgba(139,124,247,0.08)' }}>
             <button
               onClick={() => setActiveTab('report')}
               className="flex-1 py-3 text-sm"
               style={{
-                background: activeTab === 'report' ? 'rgba(139,120,255,0.1)' : 'transparent',
-                color: activeTab === 'report' ? 'rgba(200,200,230,0.9)' : 'rgba(200,200,230,0.4)',
+                background: activeTab === 'report' ? 'rgba(139,124,247,0.06)' : 'transparent',
+                color: activeTab === 'report' ? '#8B7CF7' : 'rgba(45,43,85,0.4)',
                 border: 'none',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                borderBottom: activeTab === 'report' ? '2px solid rgba(139,120,255,0.6)' : '2px solid transparent',
+                borderBottom: activeTab === 'report' ? '2px solid #8B7CF7' : '2px solid transparent',
               }}
             >
               📊 今日出戏报告
@@ -60,12 +60,12 @@ export default function SharePanel() {
               onClick={() => setActiveTab('art')}
               className="flex-1 py-3 text-sm"
               style={{
-                background: activeTab === 'art' ? 'rgba(139,120,255,0.1)' : 'transparent',
-                color: activeTab === 'art' ? 'rgba(200,200,230,0.9)' : 'rgba(200,200,230,0.4)',
+                background: activeTab === 'art' ? 'rgba(139,124,247,0.06)' : 'transparent',
+                color: activeTab === 'art' ? '#8B7CF7' : 'rgba(45,43,85,0.4)',
                 border: 'none',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
-                borderBottom: activeTab === 'art' ? '2px solid rgba(139,120,255,0.6)' : '2px solid transparent',
+                borderBottom: activeTab === 'art' ? '2px solid #8B7CF7' : '2px solid transparent',
               }}
             >
               🎨 剧照生成
@@ -83,9 +83,9 @@ export default function SharePanel() {
               onClick={() => setShowSharePanel(false)}
               className="w-full py-2.5 rounded-xl text-sm"
               style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                color: 'rgba(200,200,230,0.5)',
+                background: 'rgba(139,124,247,0.06)',
+                border: '1px solid rgba(139,124,247,0.1)',
+                color: 'var(--text-secondary)',
                 cursor: 'pointer',
                 fontFamily: 'inherit',
               }}
@@ -186,23 +186,23 @@ function DailyReport() {
     }
 
     // 标题
-    ctx.fillStyle = 'rgba(200,200,230,0.9)';
+    ctx.fillStyle = '#2D2B55';
     ctx.font = '24px "Noto Sans SC", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('🎭 今日出戏报告', w / 2, 80);
 
     // 日期
-    ctx.fillStyle = 'rgba(200,200,230,0.4)';
+    ctx.fillStyle = 'rgba(45,43,85,0.4)';
     ctx.font = '14px "Noto Sans SC", sans-serif';
     ctx.fillText(new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }), w / 2, 115);
 
     // 数据卡片
     const drawCard = (x: number, y: number, label: string, value: string, emoji: string) => {
-      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillStyle = 'rgba(139,124,247,0.04)';
       ctx.beginPath();
       ctx.roundRect(x, y, 160, 90, 12);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.strokeStyle = 'rgba(139,124,247,0.08)';
       ctx.stroke();
 
       ctx.font = '28px sans-serif';
@@ -211,11 +211,11 @@ function DailyReport() {
       ctx.fillText(emoji, x + 80, y + 35);
 
       ctx.font = 'bold 20px "Noto Sans SC", sans-serif';
-      ctx.fillStyle = 'rgba(230,230,250,0.9)';
+      ctx.fillStyle = '#2D2B55';
       ctx.fillText(value, x + 80, y + 62);
 
       ctx.font = '12px "Noto Sans SC", sans-serif';
-      ctx.fillStyle = 'rgba(200,200,230,0.5)';
+      ctx.fillStyle = 'rgba(45,43,85,0.5)';
       ctx.fillText(label, x + 80, y + 82);
     };
 
@@ -230,7 +230,7 @@ function DailyReport() {
     ctx.fill();
 
     ctx.font = '14px "Noto Sans SC", sans-serif';
-    ctx.fillStyle = 'rgba(200,200,230,0.8)';
+    ctx.fillStyle = 'rgba(45,43,85,0.8)';
     ctx.textAlign = 'center';
     ctx.fillText(insight, w / 2, 305);
 
@@ -267,7 +267,7 @@ function DailyReport() {
     const centerY = infoY + 80;
     const radius = 50;
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.strokeStyle = 'rgba(139,124,247,0.06)';
     ctx.lineWidth = 8;
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -285,11 +285,11 @@ function DailyReport() {
     }
 
     ctx.font = 'bold 18px "Noto Sans SC", sans-serif';
-    ctx.fillStyle = 'rgba(230,230,250,0.9)';
+    ctx.fillStyle = '#2D2B55';
     ctx.textAlign = 'center';
     ctx.fillText(`${Math.round(releaseRate * 100)}%`, centerX, centerY + 6);
     ctx.font = '11px "Noto Sans SC", sans-serif';
-    ctx.fillStyle = 'rgba(200,200,230,0.4)';
+    ctx.fillStyle = 'rgba(45,43,85,0.4)';
     ctx.fillText('出戏率', centerX, centerY + 24);
 
     // 底部水印
@@ -319,15 +319,15 @@ function DailyReport() {
       <div
         className="rounded-xl p-4 mb-4"
         style={{
-          background: 'linear-gradient(135deg, rgba(10,10,46,0.9), rgba(18,18,58,0.9))',
-          border: '1px solid rgba(139,120,255,0.15)',
+          background: 'linear-gradient(135deg, rgba(139,124,247,0.06), rgba(78,205,196,0.04))',
+          border: '1px solid rgba(139,124,247,0.12)',
         }}
       >
         <div className="text-center mb-4">
-          <p className="text-lg font-medium" style={{ color: 'rgba(200,200,230,0.9)' }}>
+          <p className="text-lg font-medium" style={{ color: '#2D2B55' }}>
             🎭 今日出戏报告
           </p>
-          <p className="text-[10px] mt-1" style={{ color: 'rgba(200,200,230,0.4)' }}>
+          <p className="text-[10px] mt-1" style={{ color: 'rgba(45,43,85,0.4)' }}>
             {new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
@@ -342,13 +342,13 @@ function DailyReport() {
           background: 'rgba(139,120,255,0.08)',
           border: '1px solid rgba(139,120,255,0.1)',
         }}>
-          <p className="text-xs text-center" style={{ color: 'rgba(200,200,230,0.7)' }}>
+          <p className="text-xs text-center" style={{ color: 'rgba(45,43,85,0.65)' }}>
             {insight}
           </p>
         </div>
 
         {totalToday > 0 && (
-          <div className="space-y-1.5 text-[11px]" style={{ color: 'rgba(200,200,230,0.5)' }}>
+          <div className="space-y-1.5 text-[11px]" style={{ color: 'rgba(45,43,85,0.5)' }}>
             {topEmotion && (
               <p>主要情绪：{EMOTION_NAMES[topEmotion[0] as EmotionType]}</p>
             )}
@@ -373,7 +373,7 @@ function DailyReport() {
             ? 'rgba(139,220,180,0.2)'
             : 'linear-gradient(135deg, rgba(139,120,255,0.3), rgba(100,180,255,0.3))',
           border: '1px solid rgba(139,120,255,0.2)',
-          color: saved ? 'rgba(139,220,180,0.9)' : 'rgba(200,200,230,0.9)',
+          color: saved ? 'rgba(139,220,180,0.9)' : '#2D2B55',
           cursor: 'pointer',
           fontFamily: 'inherit',
         }}
@@ -497,7 +497,7 @@ function ThoughtArtCard() {
     }
 
     // 风格标签
-    ctx.fillStyle = 'rgba(200,200,230,0.3)';
+    ctx.fillStyle = 'rgba(45,43,85,0.3)';
     ctx.font = '12px "Noto Sans SC", sans-serif';
     ctx.fillText(`「${palette.style}」`, w / 2, h - 50);
 
@@ -525,7 +525,7 @@ function ThoughtArtCard() {
     return (
       <div className="text-center py-8">
         <span className="text-3xl block mb-2">🎨</span>
-        <p className="text-sm" style={{ color: 'rgba(200,200,230,0.5)' }}>
+        <p className="text-sm" style={{ color: 'rgba(45,43,85,0.5)' }}>
           还没有台词可以变成剧照
         </p>
       </div>
@@ -537,7 +537,7 @@ function ThoughtArtCard() {
   return (
     <div>
       {/* 念头选择 */}
-      <p className="text-[10px] mb-2" style={{ color: 'rgba(200,200,230,0.4)' }}>
+      <p className="text-[10px] mb-2" style={{ color: 'rgba(45,43,85,0.4)' }}>
         选择一句台词生成剧照
       </p>
       <div className="space-y-1.5 max-h-32 overflow-y-auto mb-4">
@@ -547,9 +547,9 @@ function ThoughtArtCard() {
             onClick={() => setSelectedThought(t)}
             className="w-full text-left p-2 rounded-lg text-xs truncate"
             style={{
-              background: selectedThought?.uid === t.uid ? 'rgba(139,120,255,0.12)' : 'rgba(255,255,255,0.03)',
-              border: `1px solid ${selectedThought?.uid === t.uid ? 'rgba(139,120,255,0.2)' : 'rgba(255,255,255,0.05)'}`,
-              color: 'rgba(200,200,230,0.7)',
+              background: selectedThought?.uid === t.uid ? 'rgba(139,120,255,0.12)' : 'rgba(139,124,247,0.03)',
+              border: `1px solid ${selectedThought?.uid === t.uid ? 'rgba(139,120,255,0.2)' : 'rgba(139,124,247,0.04)'}`,
+              color: 'rgba(45,43,85,0.65)',
               cursor: 'pointer',
               fontFamily: 'inherit',
             }}
@@ -563,17 +563,17 @@ function ThoughtArtCard() {
       {selectedThought && palette && (
         <div className="rounded-xl p-4 mb-4 text-center" style={{
           background: `linear-gradient(135deg, ${palette.colors[3]}cc, ${palette.colors[0]}33)`,
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: '1px solid rgba(139,124,247,0.08)',
         }}>
           <div className="flex justify-center gap-2 mb-3">
             {palette.colors.map((c, i) => (
               <div key={i} className="w-6 h-6 rounded-full" style={{ background: c, opacity: 0.8 }} />
             ))}
           </div>
-          <p className="text-xs" style={{ color: 'rgba(200,200,230,0.7)' }}>
+          <p className="text-xs" style={{ color: 'rgba(45,43,85,0.65)' }}>
             风格：{palette.style}
           </p>
-          <p className="text-[10px] mt-1 truncate px-4" style={{ color: 'rgba(200,200,230,0.4)' }}>
+          <p className="text-[10px] mt-1 truncate px-4" style={{ color: 'rgba(45,43,85,0.4)' }}>
             「{selectedThought.content}」
           </p>
         </div>
@@ -590,7 +590,7 @@ function ThoughtArtCard() {
             ? 'rgba(139,220,180,0.2)'
             : 'linear-gradient(135deg, rgba(139,120,255,0.3), rgba(100,180,255,0.3))',
           border: '1px solid rgba(139,120,255,0.2)',
-          color: saved ? 'rgba(139,220,180,0.9)' : 'rgba(200,200,230,0.9)',
+          color: saved ? 'rgba(139,220,180,0.9)' : '#2D2B55',
           cursor: 'pointer',
           fontFamily: 'inherit',
         }}
@@ -608,12 +608,12 @@ function ThoughtArtCard() {
 function MiniStat({ emoji, value, label }: { emoji: string; value: number; label: string }) {
   return (
     <div className="text-center p-2 rounded-lg" style={{
-      background: 'rgba(255,255,255,0.03)',
-      border: '1px solid rgba(255,255,255,0.05)',
+      background: 'rgba(139,124,247,0.03)',
+      border: '1px solid rgba(139,124,247,0.04)',
     }}>
       <span className="text-sm">{emoji}</span>
-      <p className="text-lg font-medium" style={{ color: 'rgba(230,230,250,0.9)' }}>{value}</p>
-      <p className="text-[9px]" style={{ color: 'rgba(200,200,230,0.4)' }}>{label}</p>
+      <p className="text-lg font-medium" style={{ color: '#2D2B55' }}>{value}</p>
+      <p className="text-[9px]" style={{ color: 'rgba(45,43,85,0.4)' }}>{label}</p>
     </div>
   );
 }

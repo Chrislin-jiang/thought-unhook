@@ -91,10 +91,10 @@ export default function VoiceInput({ onResult, className = '' }: VoiceInputProps
         style={{
           background: isListening
             ? 'linear-gradient(135deg, rgba(255,100,100,0.6), rgba(255,150,100,0.6))'
-            : 'rgba(255,255,255,0.08)',
+            : 'rgba(139,124,247,0.08)',
           border: 'none',
           cursor: 'pointer',
-          color: isListening ? '#fff' : 'rgba(200,200,230,0.5)',
+          color: isListening ? '#fff' : 'rgba(45,43,85,0.5)',
         }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -137,7 +137,7 @@ export default function VoiceInput({ onResult, className = '' }: VoiceInputProps
             style={{
               background: error ? 'rgba(255,100,100,0.15)' : 'rgba(139,120,255,0.15)',
               border: `1px solid ${error ? 'rgba(255,100,100,0.2)' : 'rgba(139,120,255,0.2)'}`,
-              color: error ? 'rgba(255,150,150,0.8)' : 'rgba(200,200,230,0.7)',
+              color: error ? 'rgba(255,150,150,0.8)' : 'rgba(45,43,85,0.65)',
               fontSize: '11px',
               maxWidth: '200px',
             }}

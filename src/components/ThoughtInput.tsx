@@ -1,5 +1,5 @@
 /**
- * 念头输入区 — 赛博终端风
+ * 念头输入区 — 柔和治愈风
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -58,16 +58,6 @@ export default function ThoughtInput() {
   return (
     <div className="input-area relative z-10">
       <div className="relative">
-        {/* 左侧竖线装饰 */}
-        <div
-          className="absolute left-0 top-2 bottom-2 w-[2px]"
-          style={{
-            background: text.trim()
-              ? 'linear-gradient(180deg, #00f0ff, rgba(0,240,255,0.1))'
-              : 'linear-gradient(180deg, rgba(0,240,255,0.15), rgba(0,240,255,0.03))',
-            transition: 'background 0.3s',
-          }}
-        />
         <textarea
           ref={textareaRef}
           value={text}
@@ -76,29 +66,28 @@ export default function ThoughtInput() {
           placeholder={placeholder}
           rows={2}
           maxLength={200}
-          className="w-full pr-20 pl-4"
-          style={{ minHeight: '44px' }}
+          className="w-full pr-20"
+          style={{ minHeight: '48px' }}
         />
 
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
           <motion.button
             onClick={handleSubmit}
-            className="w-8 h-8 flex items-center justify-center"
+            className="w-9 h-9 flex items-center justify-center rounded-full"
             style={{
               background: text.trim()
-                ? 'rgba(0,240,255,0.15)'
-                : 'rgba(0,240,255,0.03)',
-              border: `1px solid ${text.trim() ? 'rgba(0,240,255,0.4)' : 'rgba(0,240,255,0.06)'}`,
-              borderRadius: '2px',
+                ? 'linear-gradient(135deg, #8B7CF7, #A78BFA)'
+                : 'rgba(139,124,247,0.08)',
               cursor: text.trim() ? 'pointer' : 'default',
-              color: text.trim() ? '#00f0ff' : 'rgba(0,240,255,0.15)',
-              boxShadow: text.trim() ? '0 0 12px rgba(0,240,255,0.15)' : 'none',
-              transition: 'all 0.2s',
+              color: text.trim() ? '#fff' : 'rgba(139,124,247,0.3)',
+              boxShadow: text.trim() ? '0 4px 12px rgba(139,124,247,0.25)' : 'none',
+              transition: 'all 0.25s ease',
+              border: 'none',
             }}
-            whileHover={text.trim() ? { scale: 1.1, boxShadow: '0 0 20px rgba(0,240,255,0.25)' } : {}}
+            whileHover={text.trim() ? { scale: 1.1 } : {}}
             whileTap={text.trim() ? { scale: 0.9 } : {}}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="19" x2="12" y2="5" />
               <polyline points="5 12 12 5 19 12" />
             </svg>
@@ -106,7 +95,7 @@ export default function ThoughtInput() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-1 px-1">
+      <div className="flex items-center justify-between mt-1.5 px-1">
         <AnimatePresence mode="wait">
           {justAdded ? (
             <motion.span
@@ -114,27 +103,27 @@ export default function ThoughtInput() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
-              className="text-xs font-mono"
-              style={{ color: 'rgba(0,255,136,0.7)' }}
+              className="text-xs font-medium"
+              style={{ color: '#4ECDC4' }}
             >
-              {'>'} 台词已记录
+              ✓ 台词已记录
             </motion.span>
           ) : (
             <motion.span
               key="hint"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-xs font-mono"
-              style={{ color: 'rgba(0,240,255,0.2)' }}
+              className="text-xs"
+              style={{ color: 'var(--text-hint)' }}
             >
-              ENTER 记录台词
+              按 Enter 记录
             </motion.span>
           )}
         </AnimatePresence>
 
         {todayCount > 0 && (
-          <span className="text-xs font-mono" style={{ color: 'rgba(0,240,255,0.2)' }}>
-            [{todayCount}] 场戏
+          <span className="text-xs" style={{ color: 'var(--text-hint)' }}>
+            今日 {todayCount} 场戏
           </span>
         )}
       </div>

@@ -79,7 +79,7 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-end justify-center"
-        style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
+        style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)' }}
         onClick={onClose}
       >
         <motion.div
@@ -89,7 +89,7 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className="w-full max-w-lg rounded-t-3xl overflow-hidden"
           style={{
-            background: 'linear-gradient(180deg, rgba(25,20,40,0.98), rgba(15,12,30,0.99))',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,246,255,0.99))',
             maxHeight: '85vh',
             overflowY: 'auto',
           }}
@@ -97,17 +97,17 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
         >
           {/* 顶部手柄 */}
           <div className="flex justify-center pt-3 pb-2">
-            <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.2)' }} />
+            <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(139,124,247,0.2)' }} />
           </div>
 
           {/* 标题 */}
           <div className="px-5 pb-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold" style={{ color: 'rgba(230,230,250,0.9)' }}>
+                <h2 className="text-lg font-semibold" style={{ color: '#2D2B55' }}>
                   🧠 AI 大模型设置
                 </h2>
-                <p className="text-xs mt-1" style={{ color: 'rgba(200,200,230,0.4)' }}>
+                <p className="text-xs mt-1" style={{ color: 'rgba(45,43,85,0.4)' }}>
                   接入 AI 大模型，获得更深度的念头分析和改写
                 </p>
               </div>
@@ -118,7 +118,7 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
                 style={{
                   background: config.enabled
                     ? 'linear-gradient(135deg, rgba(139,120,255,0.8), rgba(100,180,255,0.8))'
-                    : 'rgba(255,255,255,0.1)',
+                    : 'rgba(139,124,247,0.1)',
                 }}
               >
                 <motion.div
@@ -136,7 +136,7 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
                 className="w-2 h-2 rounded-full"
                 style={{ background: aiEnabled ? '#4ade80' : 'rgba(255,255,255,0.2)' }}
               />
-              <span className="text-xs" style={{ color: aiEnabled ? 'rgba(74,222,128,0.8)' : 'rgba(200,200,230,0.4)' }}>
+              <span className="text-xs" style={{ color: aiEnabled ? 'rgba(74,222,128,0.8)' : 'rgba(45,43,85,0.4)' }}>
                 {aiEnabled ? 'AI 增强已启用' : config.enabled ? '需要配置 API Key' : 'AI 增强未启用（使用本地规则）'}
               </span>
             </div>
@@ -144,7 +144,7 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
 
           {/* 模型预设选择 */}
           <div className="px-5 pb-4">
-            <label className="text-xs block mb-2" style={{ color: 'rgba(200,200,230,0.5)' }}>
+            <label className="text-xs block mb-2" style={{ color: 'rgba(45,43,85,0.5)' }}>
               选择模型服务
             </label>
             <div className="grid grid-cols-4 gap-2">
@@ -156,19 +156,19 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
                   style={{
                     background: selectedPreset === preset.id
                       ? 'rgba(139,120,255,0.15)'
-                      : 'rgba(255,255,255,0.04)',
+                      : 'rgba(139,124,247,0.03)',
                     border: `1px solid ${
                       selectedPreset === preset.id
                         ? 'rgba(139,120,255,0.4)'
-                        : 'rgba(255,255,255,0.06)'
+                        : 'rgba(139,124,247,0.06)'
                     }`,
                   }}
                 >
                   <span className="text-base">{preset.emoji}</span>
-                  <p className="text-[10px] mt-1 font-medium truncate" style={{ color: 'rgba(230,230,250,0.8)' }}>
+                  <p className="text-[10px] mt-1 font-medium truncate" style={{ color: '#2D2B55' }}>
                     {preset.name}
                   </p>
-                  <p className="text-[8px] mt-0.5 truncate" style={{ color: 'rgba(200,200,230,0.35)' }}>
+                  <p className="text-[8px] mt-0.5 truncate" style={{ color: 'rgba(45,43,85,0.3)' }}>
                     {preset.description}
                   </p>
                 </button>
@@ -180,7 +180,7 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
           <div className="px-5 pb-4 space-y-3">
             {/* API Key */}
             <div>
-              <label className="text-xs block mb-1.5" style={{ color: 'rgba(200,200,230,0.5)' }}>
+              <label className="text-xs block mb-1.5" style={{ color: 'rgba(45,43,85,0.5)' }}>
                 API Key {selectedPreset === 'ollama' && <span style={{ color: 'rgba(74,222,128,0.6)' }}>（本地模型无需填写）</span>}
               </label>
               <div className="relative">
@@ -191,16 +191,16 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
                   placeholder={selectedPreset === 'ollama' ? '可留空' : 'sk-...'}
                   className="w-full p-3 pr-10 rounded-xl text-sm"
                   style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    color: 'rgba(230,230,250,0.9)',
+                    background: 'rgba(139,124,247,0.04)',
+                    border: '1px solid rgba(139,124,247,0.08)',
+                    color: '#2D2B55',
                     outline: 'none',
                   }}
                 />
                 <button
                   onClick={() => setShowApiKey(!showApiKey)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
-                  style={{ color: 'rgba(200,200,230,0.4)' }}
+                  style={{ color: 'rgba(45,43,85,0.4)' }}
                 >
                   {showApiKey ? '🙈' : '👁️'}
                 </button>
@@ -209,7 +209,7 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
 
             {/* API 地址 */}
             <div>
-              <label className="text-xs block mb-1.5" style={{ color: 'rgba(200,200,230,0.5)' }}>
+              <label className="text-xs block mb-1.5" style={{ color: 'rgba(45,43,85,0.5)' }}>
                 API 地址
               </label>
               <input
@@ -219,9 +219,9 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
                 placeholder="https://api.deepseek.com/v1"
                 className="w-full p-3 rounded-xl text-sm"
                 style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  color: 'rgba(230,230,250,0.9)',
+                  background: 'rgba(139,124,247,0.04)',
+                  border: '1px solid rgba(139,124,247,0.08)',
+                  color: '#2D2B55',
                   outline: 'none',
                 }}
               />
@@ -229,7 +229,7 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
 
             {/* 模型名称 */}
             <div>
-              <label className="text-xs block mb-1.5" style={{ color: 'rgba(200,200,230,0.5)' }}>
+              <label className="text-xs block mb-1.5" style={{ color: 'rgba(45,43,85,0.5)' }}>
                 模型名称
                 {selectedPreset === 'doubao' && (
                   <span style={{ color: 'rgba(255,180,100,0.6)', marginLeft: 6, fontSize: '10px' }}>
@@ -248,9 +248,9 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
                 }
                 className="w-full p-3 rounded-xl text-sm"
                 style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  color: 'rgba(230,230,250,0.9)',
+                  background: 'rgba(139,124,247,0.04)',
+                  border: '1px solid rgba(139,124,247,0.08)',
+                  color: '#2D2B55',
                   outline: 'none',
                 }}
               />
@@ -259,7 +259,7 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
             {/* 高级参数 */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs block mb-1.5" style={{ color: 'rgba(200,200,230,0.5)' }}>
+                <label className="text-xs block mb-1.5" style={{ color: 'rgba(45,43,85,0.5)' }}>
                   创造性 ({config.temperature.toFixed(1)})
                 </label>
                 <input
@@ -274,7 +274,7 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
                 />
               </div>
               <div>
-                <label className="text-xs block mb-1.5" style={{ color: 'rgba(200,200,230,0.5)' }}>
+                <label className="text-xs block mb-1.5" style={{ color: 'rgba(45,43,85,0.5)' }}>
                   最大Token ({config.maxTokens})
                 </label>
                 <input
@@ -300,9 +300,9 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
                 disabled={testing}
                 className="flex-1 p-3 rounded-xl text-sm font-medium transition-all"
                 style={{
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: testing ? 'rgba(200,200,230,0.4)' : 'rgba(230,230,250,0.8)',
+                  background: 'rgba(139,124,247,0.06)',
+                  border: '1px solid rgba(139,124,247,0.1)',
+                  color: testing ? 'rgba(45,43,85,0.4)' : '#2D2B55',
                   cursor: testing ? 'wait' : 'pointer',
                 }}
               >
@@ -358,10 +358,10 @@ export default function AISettingsPanel({ isOpen, onClose }: AISettingsPanelProp
 
             {/* 说明 */}
             <div className="pt-2 text-center">
-              <p className="text-[10px]" style={{ color: 'rgba(200,200,230,0.25)' }}>
+              <p className="text-[10px]" style={{ color: 'rgba(45,43,85,0.25)' }}>
                 API Key 仅保存在本地浏览器，不会上传到任何服务器
               </p>
-              <p className="text-[10px] mt-1" style={{ color: 'rgba(200,200,230,0.25)' }}>
+              <p className="text-[10px] mt-1" style={{ color: 'rgba(45,43,85,0.25)' }}>
                 未配置 AI 时使用本地规则引擎，所有功能仍可正常使用
               </p>
             </div>

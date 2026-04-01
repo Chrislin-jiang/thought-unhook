@@ -60,13 +60,13 @@ function BalloonAnimation({
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }} className="text-5xl mb-6">🎈</motion.div>
-        <p className="text-lg text-center mb-2" style={{ color: 'rgba(200,200,230,0.8)' }}>所有气球都飞走了</p>
-        <p className="text-xs text-center mb-6" style={{ color: 'rgba(200,200,230,0.4)' }}>
+        <p className="text-lg text-center mb-2" style={{ color: 'rgba(45,43,85,0.8)' }}>所有气球都飞走了</p>
+        <p className="text-xs text-center mb-6" style={{ color: 'rgba(45,43,85,0.35)' }}>
           它们带走了念头，飘向了天空。你的手空了，心也轻了。
         </p>
         <button onClick={onBack} className="px-6 py-2.5 rounded-full text-sm" style={{
-          background: 'rgba(255,255,255,0.05)', color: 'rgba(200,200,230,0.5)',
-          border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer',
+          background: 'rgba(139,124,247,0.04)', color: 'rgba(45,43,85,0.45)',
+          border: '1px solid rgba(139,124,247,0.08)', cursor: 'pointer',
         }}>返回实验室</button>
       </div>
     );
@@ -74,7 +74,7 @@ function BalloonAnimation({
 
   return (
     <div className="flex-1 relative overflow-hidden px-4 py-6">
-      <p className="text-center text-xs mb-4 relative z-10" style={{ color: 'rgba(200,200,230,0.4)' }}>
+      <p className="text-center text-xs mb-4 relative z-10" style={{ color: 'rgba(45,43,85,0.35)' }}>
         点击气球松手，让它飞走 — 还剩 {thoughts.length - releasedBalloons.size} 个
       </p>
 
@@ -112,13 +112,13 @@ function BalloonAnimation({
                   background: `radial-gradient(circle at 30% 30%, ${color.replace('0.3', '0.5')}, ${color})`,
                   boxShadow: `0 4px 20px ${color}`,
                 }}>
-                  <p className="text-[9px] text-center leading-tight" style={{ color: 'rgba(230,230,250,0.9)' }}>
+                  <p className="text-[9px] text-center leading-tight" style={{ color: '#2D2B55' }}>
                     {thought.length > 20 ? thought.slice(0, 20) + '...' : thought}
                   </p>
                 </div>
                 {/* 线 */}
                 <div className="w-px h-8" style={{ background: 'rgba(200,200,230,0.2)' }} />
-                <span className="text-[10px]" style={{ color: 'rgba(200,200,230,0.3)' }}>松手</span>
+                <span className="text-[10px]" style={{ color: 'rgba(45,43,85,0.25)' }}>松手</span>
               </motion.button>
             );
           })}

@@ -69,13 +69,13 @@ function TVAnimation({
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }} className="text-5xl mb-6">📺</motion.div>
-        <p className="text-lg text-center mb-2" style={{ color: 'rgba(200,200,230,0.8)' }}>电视关了</p>
-        <p className="text-xs text-center mb-6" style={{ color: 'rgba(200,200,230,0.4)' }}>
+        <p className="text-lg text-center mb-2" style={{ color: 'rgba(45,43,85,0.8)' }}>电视关了</p>
+        <p className="text-xs text-center mb-6" style={{ color: 'rgba(45,43,85,0.35)' }}>
           那些念头只是屏幕上的字幕，关了电视它们就消失了。
         </p>
         <button onClick={onBack} className="px-6 py-2.5 rounded-full text-sm" style={{
-          background: 'rgba(255,255,255,0.05)', color: 'rgba(200,200,230,0.5)',
-          border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer',
+          background: 'rgba(139,124,247,0.04)', color: 'rgba(45,43,85,0.45)',
+          border: '1px solid rgba(139,124,247,0.08)', cursor: 'pointer',
         }}>返回实验室</button>
       </div>
     );
@@ -96,7 +96,7 @@ function TVAnimation({
         }}
       >
         {/* 频道号 */}
-        <div className="absolute top-3 right-3 text-[10px]" style={{ color: 'rgba(200,200,230,0.3)' }}>
+        <div className="absolute top-3 right-3 text-[10px]" style={{ color: 'rgba(45,43,85,0.25)' }}>
           CH {currentChannel + 1}
         </div>
 
@@ -108,7 +108,7 @@ function TVAnimation({
             animate={{ opacity: isMuted ? 0.2 : volume / 100 }}
             className="text-sm text-center leading-relaxed"
             style={{
-              color: isMuted ? 'rgba(200,200,230,0.2)' : 'rgba(200,200,230,0.8)',
+              color: isMuted ? 'rgba(200,200,230,0.2)' : 'rgba(45,43,85,0.8)',
               filter: isMuted ? 'blur(2px)' : 'none',
             }}
           >
@@ -129,12 +129,12 @@ function TVAnimation({
 
         {/* 音量条 */}
         <div className="absolute bottom-3 left-3 right-3 flex items-center gap-2">
-          <span className="text-[10px]" style={{ color: 'rgba(200,200,230,0.3)' }}>🔊</span>
-          <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <span className="text-[10px]" style={{ color: 'rgba(45,43,85,0.25)' }}>🔊</span>
+          <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(139,124,247,0.04)' }}>
             <motion.div
               animate={{ width: `${isMuted ? 0 : volume}%` }}
               className="h-full rounded-full"
-              style={{ background: 'rgba(139,120,255,0.4)' }}
+              style={{ background: 'rgba(139,124,247,0.4)' }}
             />
           </div>
         </div>
@@ -147,7 +147,7 @@ function TVAnimation({
         <RemoteButton emoji="⏏️" label="关机" onClick={handleTurnOff} disabled={isOff} accent />
       </div>
 
-      <p className="text-xs mt-4" style={{ color: 'rgba(200,200,230,0.3)' }}>
+      <p className="text-xs mt-4" style={{ color: 'rgba(45,43,85,0.25)' }}>
         你是观众，不是节目里的角色
       </p>
     </div>
@@ -163,8 +163,8 @@ function RemoteButton({ emoji, label, onClick, disabled, accent }: {
       disabled={disabled}
       className="flex flex-col items-center gap-1 p-3 rounded-xl"
       style={{
-        background: accent ? 'rgba(255,100,100,0.1)' : 'rgba(255,255,255,0.05)',
-        border: `1px solid ${accent ? 'rgba(255,100,100,0.2)' : 'rgba(255,255,255,0.08)'}`,
+        background: accent ? 'rgba(255,100,100,0.1)' : 'rgba(139,124,247,0.04)',
+        border: `1px solid ${accent ? 'rgba(255,100,100,0.2)' : 'rgba(139,124,247,0.08)'}`,
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.3 : 1,
       }}
@@ -172,7 +172,7 @@ function RemoteButton({ emoji, label, onClick, disabled, accent }: {
       whileTap={disabled ? {} : { scale: 0.95 }}
     >
       <span className="text-xl">{emoji}</span>
-      <span className="text-[10px]" style={{ color: 'rgba(200,200,230,0.5)' }}>{label}</span>
+      <span className="text-[10px]" style={{ color: 'rgba(45,43,85,0.45)' }}>{label}</span>
     </motion.button>
   );
 }

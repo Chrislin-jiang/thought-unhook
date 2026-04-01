@@ -70,13 +70,13 @@ function CloudAnimation({
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }} className="text-5xl mb-6">🌤️</motion.div>
-        <p className="text-lg text-center mb-2" style={{ color: 'rgba(200,200,230,0.8)' }}>天空晴朗了</p>
-        <p className="text-xs text-center mb-6" style={{ color: 'rgba(200,200,230,0.4)' }}>
+        <p className="text-lg text-center mb-2" style={{ color: 'rgba(45,43,85,0.8)' }}>天空晴朗了</p>
+        <p className="text-xs text-center mb-6" style={{ color: 'rgba(45,43,85,0.35)' }}>
           云朵散去了，带走了文字。天空本来就是空的。
         </p>
         <button onClick={onBack} className="px-6 py-2.5 rounded-full text-sm" style={{
-          background: 'rgba(255,255,255,0.05)', color: 'rgba(200,200,230,0.5)',
-          border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer',
+          background: 'rgba(139,124,247,0.04)', color: 'rgba(45,43,85,0.45)',
+          border: '1px solid rgba(139,124,247,0.08)', cursor: 'pointer',
         }}>返回实验室</button>
       </div>
     );
@@ -108,15 +108,15 @@ function CloudAnimation({
                 transition={{ duration: isDissolving ? 3 : 0.5 }}
                 className="relative px-6 py-4 rounded-3xl max-w-xs"
                 style={{
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'rgba(139,124,247,0.08)',
+                  border: '1px solid rgba(139,124,247,0.1)',
                   boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                 }}
               >
                 {/* 云朵装饰 */}
                 <div className="absolute -top-2 -left-2 text-xl opacity-30">☁️</div>
                 <div className="absolute -bottom-1 -right-2 text-lg opacity-20">☁️</div>
-                <p className="text-sm text-center" style={{ color: 'rgba(230,230,250,0.8)' }}>
+                <p className="text-sm text-center" style={{ color: '#2D2B55' }}>
                   {thought}
                 </p>
               </motion.div>
@@ -129,7 +129,7 @@ function CloudAnimation({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-sm"
-            style={{ color: 'rgba(200,200,230,0.5)' }}
+            style={{ color: 'rgba(45,43,85,0.45)' }}
           >
             风吹过... 一切归于宁静 🍃
           </motion.p>
