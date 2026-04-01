@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>戏精猫 — 出戏 OffStage 陪伴形象设计</title>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #8B7CF7;
+    --primary-dark: #6355D8;
+    --primary-light: #A89CFB;
+    --mint: #4ECDC4;
+    --mint-dark: #2A9D8F;
+    --pink: #FF8FAB;
+    --bg: #F8F6FF;
+    --text: #2D2B55;
+    --text-sec: rgba(45,43,85,0.65);
+    --text-hint: rgba(45,43,85,0.35);
+    --glass-bg: rgba(255,255,255,0.7);
+    --glass-border: rgba(139,124,247,0.12);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'LXGW WenKai', 'Noto Sans SC', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== Background decoration ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    width: 60vw; height: 60vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(139,124,247,0.07) 0%, transparent 70%);
+    top: -15%; right: -20%;
+    animation: float-orb 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    width: 50vw; height: 50vw;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(78,205,196,0.05) 0%, transparent 70%);
+    bottom: -10%; left: -15%;
+    animation: float-orb 25s ease-in-out infinite reverse;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes float-orb {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(20px,-15px) scale(1.05); }
+    66% { transform: translate(-10px,10px) scale(0.95); }
+  }
+
+  /* ===== Header ===== */
+  .header {
+    text-align: center;
+    padding: 60px 20px 30px;
+    position: relative;
+    z-index: 1;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--mint));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .header p {
+    font-size: 14px;
+    color: var(--text-sec);
+  }
+  .header .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 9999px;
+    background: rgba(139,124,247,0.08);
+    border: 1.5px solid rgba(139,124,247,0.12);
+    font-size: 12px;
+    color: var(--primary);
+    margin-top: 12px;
+  }
+
+  /* ===== Main showcase ===== */
+  .showcase {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+
+  .hero-mascot {
+    position: relative;
+  }
+
+  .hero-mascot .speech-bubble {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--text);
+    white-space: nowrap;
+    animation: speech-float 3s ease-in-out infinite;
+    box-shadow: 0 4px 20px rgba(139,124,247,0.08);
+  }
+  .hero-mascot .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgba(255,255,255,0.7);
+  }
+
+  @keyframes speech-float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-4px); }
+  }
+
+  /* ===== Section ===== */
+  .section-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-sec);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    border-radius: 2px;
+    background: linear-gradient(135deg, var(--primary), var(--mint));
+  }
+
+  /* ===== Mood Grid ===== */
+  .mood-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+  .mood-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 16px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    cursor: default;
+    box-shadow: 0 2px 16px rgba(139,124,247,0.04);
+  }
+  .mood-card:hover {
+    border-color: rgba(139,124,247,0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(139,124,247,0.1);
+  }
+  .mood-card .mood-label {
+    font-size: 11px;
+    color: var(--text-sec);
+    font-weight: 500;
+  }
+  .mood-card .mood-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: rgba(139,124,247,0.06);
+    color: var(--primary);
+  }
+
+  /* ===== Size demo ===== */
+  .size-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 20px;
+    background: var(--glass-bg);
+    border: 1.5px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 24px 16px 16px;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 16px rgba(139,124,247,0.04);
+  }
+  .size-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .size-label {
+    font-size: 10px;
+    color: var(--text-hint);
+  }
+
+  /* ===== Use case cards ===== */
+  .use-cases {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+  .use-case {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 2px 16px rgba(139,124,247,0.04);
+  }
+  .use-case-text h3 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .use-case-text p {
+    font-size: 12px;
+    color: var(--text-hint);
+    line-height: 1.5;
+  }
+
+  /* ===== Color palette ===== */
+  .palette {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .color-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .color-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 2px solid white;
+  }
+  .color-name {
+    font-size: 10px;
+    color: var(--text-hint);
+  }
+
+  /* ===== Design notes ===== */
+  .design-notes {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 60px;
+    box-shadow: 0 2px 16px rgba(139,124,247,0.04);
+  }
+  .design-notes h3 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary);
+    margin-bottom: 12px;
+  }
+  .design-notes ul {
+    list-style: none;
+    padding: 0;
+  }
+  .design-notes li {
+    font-size: 12px;
+    color: var(--text-sec);
+    line-height: 1.8;
+    padding-left: 18px;
+    position: relative;
+  }
+  .design-notes li::before {
+    content: '•';
+    position: absolute;
+    left: 4px;
+    color: var(--mint);
+  }
+
+  /* ===== SVG float animation ===== */
+  .mascot-anim {
+    animation: mascot-float 4s ease-in-out infinite;
+  }
+  @keyframes mascot-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-8px) rotate(1.5deg); }
+    75% { transform: translateY(-4px) rotate(-1deg); }
+  }
+
+  .mascot-anim-slow {
+    animation: mascot-float 6s ease-in-out infinite;
+  }
+
+  /* ===== SVG tail wag ===== */
+  @keyframes tail-wag {
+    0%, 100% { d: path('M 145 155 Q 168 140, 175 118 Q 180 102, 172 95'); }
+    50% { d: path('M 145 155 Q 172 135, 178 115 Q 184 98, 170 88'); }
+  }
+
+  /* blink */
+  @keyframes blink {
+    0%, 45%, 55%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.1); }
+  }
+  .eye-blink {
+    animation: blink 4s ease-in-out infinite;
+  }
+
+  /* wave */
+  @keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-15deg); }
+    75% { transform: rotate(15deg); }
+  }
+
+  /* zzz */
+  @keyframes zzz-float {
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50% { opacity: 0.7; transform: translateY(-8px); }
+  }
+
+  /* thinking ? */
+  @keyframes think-wobble {
+    0%, 100% { opacity: 0.3; transform: rotate(0deg); }
+    50% { opacity: 0.7; transform: rotate(10deg); }
+  }
+
+  /* sparkle */
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0.6); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  /* meditation ring */
+  @keyframes med-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* mask dangle */
+  @keyframes mask-dangle {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(5deg); }
+    70% { transform: rotate(-3deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>戏精猫 Drama Cat</h1>
+  <p>出戏 OffStage 应用陪伴形象</p>
+  <div class="badge">🎭 参考 OtterLife 风格 · 融合戏剧隐喻</div>
+</div>
+
+<div class="showcase">
+
+  <!-- ===== 主视觉 Hero ===== -->
+  <div class="hero-section">
+    <div class="hero-mascot">
+      <div class="speech-bubble">嗨～准备好出戏了吗？ 🎭</div>
+      <div class="mascot-anim" style="width:200px; height:200px; margin-top:20px;">
+        <!-- 默认状态 — 大号 -->
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg0" x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#7B6CF0"/>
+              <stop offset="100%" stop-color="#6355D8"/>
+            </linearGradient>
+            <radialGradient id="bh0" cx="40%" cy="30%" r="50%">
+              <stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="bl0" x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#EDE9FE"/>
+              <stop offset="100%" stop-color="#DDD6FE"/>
+            </linearGradient>
+            <radialGradient id="br0L" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="mg0" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#4ECDC4"/>
+              <stop offset="100%" stop-color="#45B7AA"/>
+            </linearGradient>
+            <linearGradient id="sg0" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFD700"/>
+              <stop offset="100%" stop-color="#FFB36B"/>
+            </linearGradient>
+            <filter id="ss0">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#6355D8" flood-opacity="0.15"/>
+            </filter>
+            <filter id="ms0">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#2A9D8F" flood-opacity="0.2"/>
+            </filter>
+          </defs>
+          <!-- Tail -->
+          <path d="M 145 155 Q 168 140, 175 118 Q 180 102, 172 95" stroke="url(#bg0)" stroke-width="10" stroke-linecap="round" fill="none">
+            <animate attributeName="d" values="M 145 155 Q 168 140, 175 118 Q 180 102, 172 95;M 145 155 Q 172 135, 178 115 Q 184 98, 170 88;M 145 155 Q 168 140, 175 118 Q 180 102, 172 95" dur="3s" repeatCount="indefinite"/>
+          </path>
+          <!-- Body -->
+          <ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bg0)" filter="url(#ss0)"/>
+          <ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bh0)"/>
+          <!-- Belly -->
+          <ellipse cx="100" cy="132" rx="30" ry="32" fill="url(#bl0)" opacity="0.9"/>
+          <!-- Arms -->
+          <ellipse cx="55" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(15 55 120)"/>
+          <ellipse cx="145" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(-15 145 120)"/>
+          <!-- Feet -->
+          <ellipse cx="80" cy="175" rx="16" ry="8" fill="#5B4ECF"/>
+          <ellipse cx="120" cy="175" rx="16" ry="8" fill="#5B4ECF"/>
+          <ellipse cx="80" cy="174" rx="10" ry="5" fill="#EDE9FE" opacity="0.5"/>
+          <ellipse cx="120" cy="174" rx="10" ry="5" fill="#EDE9FE" opacity="0.5"/>
+          <!-- Head -->
+          <circle cx="100" cy="80" r="45" fill="url(#bg0)" filter="url(#ss0)"/>
+          <circle cx="100" cy="80" r="45" fill="url(#bh0)"/>
+          <!-- Ears -->
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/>
+          <path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/>
+          <path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <!-- Blush -->
+          <circle cx="74" cy="92" r="9" fill="url(#br0L)"/>
+          <circle cx="126" cy="92" r="9" fill="url(#br0L)"/>
+          <!-- Eyes (with blink) -->
+          <g class="eye-blink" style="transform-origin:87px 80px">
+            <circle cx="87" cy="80" r="5" fill="#2D2B55"/>
+            <circle cx="86" cy="78" r="2" fill="white"/>
+          </g>
+          <g class="eye-blink" style="transform-origin:113px 80px">
+            <circle cx="113" cy="80" r="5" fill="#2D2B55"/>
+            <circle cx="112" cy="78" r="2" fill="white"/>
+          </g>
+          <!-- Mouth -->
+          <path d="M 94 95 Q 100 101, 106 95" stroke="#2D2B55" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <!-- Whiskers -->
+          <line x1="55" y1="85" x2="72" y2="88" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="55" y1="92" x2="72" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="88" x2="145" y2="85" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="92" x2="145" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <!-- Mask -->
+          <g style="animation: mask-dangle 5s ease-in-out infinite; transform-origin: 148px 55px;">
+            <g transform="translate(135, 42) rotate(15)">
+              <ellipse cx="0" cy="0" rx="14" ry="12" fill="url(#mg0)" filter="url(#ms0)"/>
+              <ellipse cx="-5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+              <ellipse cx="5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+              <path d="M -5 4 Q 0 8, 5 4" stroke="#2A9D8F" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <circle cx="0" cy="-7" r="2" fill="url(#sg0)"/>
+              <ellipse cx="-4" cy="-5" rx="3" ry="2" fill="white" opacity="0.2"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 7种情绪状态 ===== -->
+  <div class="section-title">情绪状态</div>
+  <div class="mood-grid">
+
+    <!-- 默认 -->
+    <div class="mood-card">
+      <div style="width:72px;height:72px" class="mascot-anim-slow">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg1" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#7B6CF0"/><stop offset="100%" stop-color="#6355D8"/></linearGradient>
+            <radialGradient id="bh1" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/><stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="bl1" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#EDE9FE"/><stop offset="100%" stop-color="#DDD6FE"/></linearGradient>
+            <radialGradient id="br1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="mg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ECDC4"/><stop offset="100%" stop-color="#45B7AA"/></linearGradient>
+            <linearGradient id="sg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFB36B"/></linearGradient>
+          </defs>
+          <path d="M 145 155 Q 168 140, 175 118 Q 180 102, 172 95" stroke="url(#bg1)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bg1)"/><ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bh1)"/>
+          <ellipse cx="100" cy="132" rx="30" ry="32" fill="url(#bl1)" opacity="0.9"/>
+          <ellipse cx="55" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(15 55 120)"/>
+          <ellipse cx="145" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(-15 145 120)"/>
+          <ellipse cx="80" cy="175" rx="16" ry="8" fill="#5B4ECF"/><ellipse cx="120" cy="175" rx="16" ry="8" fill="#5B4ECF"/>
+          <circle cx="100" cy="80" r="45" fill="url(#bg1)"/><circle cx="100" cy="80" r="45" fill="url(#bh1)"/>
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/><path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/><path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <circle cx="74" cy="92" r="9" fill="url(#br1)"/><circle cx="126" cy="92" r="9" fill="url(#br1)"/>
+          <g class="eye-blink" style="transform-origin:87px 80px"><circle cx="87" cy="80" r="5" fill="#2D2B55"/><circle cx="86" cy="78" r="2" fill="white"/></g>
+          <g class="eye-blink" style="transform-origin:113px 80px"><circle cx="113" cy="80" r="5" fill="#2D2B55"/><circle cx="112" cy="78" r="2" fill="white"/></g>
+          <path d="M 94 95 Q 100 101, 106 95" stroke="#2D2B55" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <line x1="55" y1="85" x2="72" y2="88" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="55" y1="92" x2="72" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="88" x2="145" y2="85" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="92" x2="145" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <g transform="translate(135, 42) rotate(15)">
+            <ellipse cx="0" cy="0" rx="14" ry="12" fill="url(#mg1)"/>
+            <ellipse cx="-5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <ellipse cx="5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <path d="M -5 4 Q 0 8, 5 4" stroke="#2A9D8F" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <circle cx="0" cy="-7" r="2" fill="url(#sg1)"/>
+          </g>
+        </svg>
+      </div>
+      <span class="mood-label">默认</span>
+      <span class="mood-tag">日常陪伴</span>
+    </div>
+
+    <!-- 开心 -->
+    <div class="mood-card">
+      <div style="width:72px;height:72px" class="mascot-anim-slow">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg2" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#7B6CF0"/><stop offset="100%" stop-color="#6355D8"/></linearGradient>
+            <radialGradient id="bh2" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/><stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="bl2" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#EDE9FE"/><stop offset="100%" stop-color="#DDD6FE"/></linearGradient>
+            <radialGradient id="br2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="mg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ECDC4"/><stop offset="100%" stop-color="#45B7AA"/></linearGradient>
+            <linearGradient id="sg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFB36B"/></linearGradient>
+          </defs>
+          <path d="M 145 155 Q 168 140, 175 118 Q 180 102, 172 95" stroke="url(#bg2)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bg2)"/><ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bh2)"/>
+          <ellipse cx="100" cy="132" rx="30" ry="32" fill="url(#bl2)" opacity="0.9"/>
+          <ellipse cx="55" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(15 55 120)"/>
+          <ellipse cx="145" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(-15 145 120)"/>
+          <ellipse cx="80" cy="175" rx="16" ry="8" fill="#5B4ECF"/><ellipse cx="120" cy="175" rx="16" ry="8" fill="#5B4ECF"/>
+          <circle cx="100" cy="80" r="45" fill="url(#bg2)"/><circle cx="100" cy="80" r="45" fill="url(#bh2)"/>
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/><path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/><path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <circle cx="74" cy="92" r="9" fill="url(#br2)"/><circle cx="126" cy="92" r="9" fill="url(#br2)"/>
+          <!-- Happy eyes (curved up) -->
+          <path d="M 83 80 Q 87 74, 91 80" stroke="#2D2B55" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M 109 80 Q 113 74, 117 80" stroke="#2D2B55" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <!-- Big smile -->
+          <path d="M 92 95 Q 100 105, 108 95" stroke="#2D2B55" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <line x1="55" y1="85" x2="72" y2="88" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="55" y1="92" x2="72" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="88" x2="145" y2="85" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="92" x2="145" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <!-- Sparkles -->
+          <text x="55" y="28" font-size="10" style="animation: sparkle 2s ease-in-out infinite;">✨</text>
+          <text x="145" y="22" font-size="8" style="animation: sparkle 2.5s ease-in-out infinite 0.5s;">✨</text>
+          <g transform="translate(135, 42) rotate(15)">
+            <ellipse cx="0" cy="0" rx="14" ry="12" fill="url(#mg2)"/>
+            <ellipse cx="-5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <ellipse cx="5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <path d="M -5 4 Q 0 8, 5 4" stroke="#2A9D8F" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <circle cx="0" cy="-7" r="2" fill="url(#sg2)"/>
+          </g>
+        </svg>
+      </div>
+      <span class="mood-label">开心</span>
+      <span class="mood-tag">成功出戏</span>
+    </div>
+
+    <!-- 瞌睡 -->
+    <div class="mood-card">
+      <div style="width:72px;height:72px" class="mascot-anim-slow">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg3" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#7B6CF0"/><stop offset="100%" stop-color="#6355D8"/></linearGradient>
+            <radialGradient id="bh3" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/><stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="bl3" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#EDE9FE"/><stop offset="100%" stop-color="#DDD6FE"/></linearGradient>
+            <radialGradient id="br3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="mg3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ECDC4"/><stop offset="100%" stop-color="#45B7AA"/></linearGradient>
+          </defs>
+          <path d="M 145 155 Q 168 140, 175 118 Q 180 102, 172 95" stroke="url(#bg3)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bg3)"/><ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bh3)"/>
+          <ellipse cx="100" cy="132" rx="30" ry="32" fill="url(#bl3)" opacity="0.9"/>
+          <ellipse cx="55" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(15 55 120)"/>
+          <ellipse cx="145" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(-15 145 120)"/>
+          <ellipse cx="80" cy="175" rx="16" ry="8" fill="#5B4ECF"/><ellipse cx="120" cy="175" rx="16" ry="8" fill="#5B4ECF"/>
+          <circle cx="100" cy="80" r="45" fill="url(#bg3)"/><circle cx="100" cy="80" r="45" fill="url(#bh3)"/>
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/><path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/><path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <circle cx="74" cy="92" r="9" fill="url(#br3)"/><circle cx="126" cy="92" r="9" fill="url(#br3)"/>
+          <!-- Sleepy eyes -->
+          <path d="M 82 82 Q 87 86, 92 82" stroke="#2D2B55" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M 108 82 Q 113 86, 118 82" stroke="#2D2B55" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <!-- O mouth -->
+          <circle cx="100" cy="96" r="3" fill="#2D2B55" opacity="0.5"/>
+          <!-- zzz -->
+          <text x="140" y="55" font-size="10" fill="#8B7CF7" opacity="0.6" font-weight="bold" style="animation: zzz-float 3s ease-in-out infinite;">z</text>
+          <text x="148" y="45" font-size="8" fill="#8B7CF7" opacity="0.4" font-weight="bold" style="animation: zzz-float 3s ease-in-out infinite 0.5s;">z</text>
+          <line x1="55" y1="85" x2="72" y2="88" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="55" y1="92" x2="72" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="88" x2="145" y2="85" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="92" x2="145" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <!-- Mask tilted on head -->
+          <g transform="translate(125, 40) rotate(25)">
+            <ellipse cx="0" cy="0" rx="14" ry="12" fill="url(#mg3)"/>
+            <ellipse cx="-5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <ellipse cx="5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <path d="M -5 4 Q 0 8, 5 4" stroke="#2A9D8F" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          </g>
+        </svg>
+      </div>
+      <span class="mood-label">瞌睡</span>
+      <span class="mood-tag">散场时分</span>
+    </div>
+
+    <!-- 思考 -->
+    <div class="mood-card">
+      <div style="width:72px;height:72px" class="mascot-anim-slow">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg4" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#7B6CF0"/><stop offset="100%" stop-color="#6355D8"/></linearGradient>
+            <radialGradient id="bh4" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/><stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="bl4" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#EDE9FE"/><stop offset="100%" stop-color="#DDD6FE"/></linearGradient>
+            <radialGradient id="br4" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="mg4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ECDC4"/><stop offset="100%" stop-color="#45B7AA"/></linearGradient>
+            <linearGradient id="sg4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFB36B"/></linearGradient>
+          </defs>
+          <path d="M 145 155 Q 168 140, 175 118 Q 180 102, 172 95" stroke="url(#bg4)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bg4)"/><ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bh4)"/>
+          <ellipse cx="100" cy="132" rx="30" ry="32" fill="url(#bl4)" opacity="0.9"/>
+          <ellipse cx="55" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(15 55 120)"/>
+          <ellipse cx="145" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(-15 145 120)"/>
+          <ellipse cx="80" cy="175" rx="16" ry="8" fill="#5B4ECF"/><ellipse cx="120" cy="175" rx="16" ry="8" fill="#5B4ECF"/>
+          <circle cx="100" cy="80" r="45" fill="url(#bg4)"/><circle cx="100" cy="80" r="45" fill="url(#bh4)"/>
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/><path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/><path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <circle cx="74" cy="92" r="9" fill="url(#br4)"/><circle cx="126" cy="92" r="9" fill="url(#br4)"/>
+          <!-- Thinking eyes (one big one small) -->
+          <circle cx="87" cy="80" r="5" fill="#2D2B55"/><circle cx="86" cy="78" r="2" fill="white"/>
+          <ellipse cx="113" cy="80" rx="4" ry="5" fill="#2D2B55"/><circle cx="112" cy="78" r="1.5" fill="white"/>
+          <!-- Flat mouth -->
+          <path d="M 95 97 Q 100 95, 105 97" stroke="#2D2B55" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <!-- ? -->
+          <text x="135" y="55" font-size="14" fill="#8B7CF7" opacity="0.6" font-weight="bold" style="animation: think-wobble 2.5s ease-in-out infinite;">?</text>
+          <line x1="55" y1="85" x2="72" y2="88" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="55" y1="92" x2="72" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="88" x2="145" y2="85" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="92" x2="145" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <g transform="translate(135, 42) rotate(15)">
+            <ellipse cx="0" cy="0" rx="14" ry="12" fill="url(#mg4)"/>
+            <ellipse cx="-5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <ellipse cx="5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <path d="M -5 4 Q 0 8, 5 4" stroke="#2A9D8F" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <circle cx="0" cy="-7" r="2" fill="url(#sg4)"/>
+          </g>
+        </svg>
+      </div>
+      <span class="mood-label">思考</span>
+      <span class="mood-tag">AI 分析中</span>
+    </div>
+
+    <!-- 挥手 -->
+    <div class="mood-card">
+      <div style="width:72px;height:72px" class="mascot-anim-slow">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg5" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#7B6CF0"/><stop offset="100%" stop-color="#6355D8"/></linearGradient>
+            <radialGradient id="bh5" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/><stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="bl5" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#EDE9FE"/><stop offset="100%" stop-color="#DDD6FE"/></linearGradient>
+            <radialGradient id="br5" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="mg5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ECDC4"/><stop offset="100%" stop-color="#45B7AA"/></linearGradient>
+            <linearGradient id="sg5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFB36B"/></linearGradient>
+          </defs>
+          <path d="M 145 155 Q 168 140, 175 118 Q 180 102, 172 95" stroke="url(#bg5)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bg5)"/><ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bh5)"/>
+          <ellipse cx="100" cy="132" rx="30" ry="32" fill="url(#bl5)" opacity="0.9"/>
+          <ellipse cx="55" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(15 55 120)"/>
+          <!-- Waving arm -->
+          <g style="animation: wave 1.5s ease-in-out infinite; transform-origin: 140px 110px;">
+            <ellipse cx="148" cy="105" rx="10" ry="14" fill="#6B5DD3" transform="rotate(-25 148 105)"/>
+            <circle cx="152" cy="96" r="4" fill="#EDE9FE" opacity="0.7"/>
+          </g>
+          <ellipse cx="80" cy="175" rx="16" ry="8" fill="#5B4ECF"/><ellipse cx="120" cy="175" rx="16" ry="8" fill="#5B4ECF"/>
+          <circle cx="100" cy="80" r="45" fill="url(#bg5)"/><circle cx="100" cy="80" r="45" fill="url(#bh5)"/>
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/><path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/><path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <circle cx="74" cy="92" r="9" fill="url(#br5)"/><circle cx="126" cy="92" r="9" fill="url(#br5)"/>
+          <g class="eye-blink" style="transform-origin:87px 80px"><circle cx="87" cy="80" r="5" fill="#2D2B55"/><circle cx="86" cy="78" r="2" fill="white"/></g>
+          <g class="eye-blink" style="transform-origin:113px 80px"><circle cx="113" cy="80" r="5" fill="#2D2B55"/><circle cx="112" cy="78" r="2" fill="white"/></g>
+          <path d="M 94 95 Q 100 101, 106 95" stroke="#2D2B55" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <line x1="55" y1="85" x2="72" y2="88" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="55" y1="92" x2="72" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="88" x2="145" y2="85" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="92" x2="145" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <g transform="translate(135, 42) rotate(15)">
+            <ellipse cx="0" cy="0" rx="14" ry="12" fill="url(#mg5)"/>
+            <ellipse cx="-5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <ellipse cx="5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <path d="M -5 4 Q 0 8, 5 4" stroke="#2A9D8F" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <circle cx="0" cy="-7" r="2" fill="url(#sg5)"/>
+          </g>
+        </svg>
+      </div>
+      <span class="mood-label">挥手</span>
+      <span class="mood-tag">引导/欢迎</span>
+    </div>
+
+    <!-- 冥想 -->
+    <div class="mood-card">
+      <div style="width:72px;height:72px" class="mascot-anim-slow">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg6" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#7B6CF0"/><stop offset="100%" stop-color="#6355D8"/></linearGradient>
+            <radialGradient id="bh6" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/><stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="bl6" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#EDE9FE"/><stop offset="100%" stop-color="#DDD6FE"/></linearGradient>
+            <radialGradient id="br6" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="mg6" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ECDC4"/><stop offset="100%" stop-color="#45B7AA"/></linearGradient>
+            <linearGradient id="sg6" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFB36B"/></linearGradient>
+          </defs>
+          <!-- Meditation ring -->
+          <circle cx="100" cy="80" r="55" fill="none" stroke="#4ECDC4" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.4" style="animation: med-spin 12s linear infinite; transform-origin: 100px 80px;"/>
+          <path d="M 145 155 Q 168 140, 175 118 Q 180 102, 172 95" stroke="url(#bg6)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bg6)"/><ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bh6)"/>
+          <ellipse cx="100" cy="132" rx="30" ry="32" fill="url(#bl6)" opacity="0.9"/>
+          <!-- Meditation hands (closer together) -->
+          <ellipse cx="88" cy="130" rx="10" ry="13" fill="#6B5DD3" transform="rotate(15 88 130)"/>
+          <ellipse cx="112" cy="130" rx="10" ry="13" fill="#6B5DD3" transform="rotate(-15 112 130)"/>
+          <ellipse cx="80" cy="175" rx="16" ry="8" fill="#5B4ECF"/><ellipse cx="120" cy="175" rx="16" ry="8" fill="#5B4ECF"/>
+          <circle cx="100" cy="80" r="45" fill="url(#bg6)"/><circle cx="100" cy="80" r="45" fill="url(#bh6)"/>
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/><path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/><path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <circle cx="74" cy="92" r="9" fill="url(#br6)"/><circle cx="126" cy="92" r="9" fill="url(#br6)"/>
+          <g class="eye-blink" style="transform-origin:87px 80px"><circle cx="87" cy="80" r="5" fill="#2D2B55"/><circle cx="86" cy="78" r="2" fill="white"/></g>
+          <g class="eye-blink" style="transform-origin:113px 80px"><circle cx="113" cy="80" r="5" fill="#2D2B55"/><circle cx="112" cy="78" r="2" fill="white"/></g>
+          <path d="M 94 95 Q 100 100, 106 95" stroke="#2D2B55" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <line x1="55" y1="85" x2="72" y2="88" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="55" y1="92" x2="72" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="88" x2="145" y2="85" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="92" x2="145" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <g transform="translate(135, 42) rotate(15)">
+            <ellipse cx="0" cy="0" rx="14" ry="12" fill="url(#mg6)"/>
+            <ellipse cx="-5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <ellipse cx="5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <path d="M -5 4 Q 0 8, 5 4" stroke="#2A9D8F" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <circle cx="0" cy="-7" r="2" fill="url(#sg6)"/>
+          </g>
+        </svg>
+      </div>
+      <span class="mood-label">冥想</span>
+      <span class="mood-tag">出戏练习</span>
+    </div>
+
+    <!-- 偷看 -->
+    <div class="mood-card">
+      <div style="width:72px;height:72px" class="mascot-anim-slow">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg7" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#7B6CF0"/><stop offset="100%" stop-color="#6355D8"/></linearGradient>
+            <radialGradient id="bh7" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/><stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="bl7" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#EDE9FE"/><stop offset="100%" stop-color="#DDD6FE"/></linearGradient>
+            <radialGradient id="br7" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/></radialGradient>
+            <linearGradient id="mg7" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4ECDC4"/><stop offset="100%" stop-color="#45B7AA"/></linearGradient>
+            <linearGradient id="sg7" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FFB36B"/></linearGradient>
+          </defs>
+          <path d="M 145 155 Q 168 140, 175 118 Q 180 102, 172 95" stroke="url(#bg7)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bg7)"/><ellipse cx="100" cy="125" rx="52" ry="55" fill="url(#bh7)"/>
+          <ellipse cx="100" cy="132" rx="30" ry="32" fill="url(#bl7)" opacity="0.9"/>
+          <ellipse cx="55" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(15 55 120)"/>
+          <ellipse cx="145" cy="120" rx="10" ry="14" fill="#6B5DD3" transform="rotate(-15 145 120)"/>
+          <ellipse cx="80" cy="175" rx="16" ry="8" fill="#5B4ECF"/><ellipse cx="120" cy="175" rx="16" ry="8" fill="#5B4ECF"/>
+          <circle cx="100" cy="80" r="45" fill="url(#bg7)"/><circle cx="100" cy="80" r="45" fill="url(#bh7)"/>
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/><path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/><path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <circle cx="74" cy="92" r="9" fill="url(#br7)"/><circle cx="126" cy="92" r="9" fill="url(#br7)"/>
+          <!-- Peek eyes (looking to the side) -->
+          <circle cx="87" cy="80" r="5" fill="#2D2B55"/><circle cx="89" cy="79" r="2" fill="white"/>
+          <circle cx="113" cy="80" r="5" fill="#2D2B55"/><circle cx="115" cy="79" r="2" fill="white"/>
+          <path d="M 94 95 Q 100 101, 106 95" stroke="#2D2B55" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <line x1="55" y1="85" x2="72" y2="88" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="55" y1="92" x2="72" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="88" x2="145" y2="85" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <line x1="128" y1="92" x2="145" y2="92" stroke="#A89CFB" stroke-width="1" opacity="0.4"/>
+          <g transform="translate(135, 42) rotate(15)">
+            <ellipse cx="0" cy="0" rx="14" ry="12" fill="url(#mg7)"/>
+            <ellipse cx="-5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <ellipse cx="5" cy="-2" rx="3.5" ry="2.5" fill="#2A9D8F"/>
+            <path d="M -5 4 Q 0 8, 5 4" stroke="#2A9D8F" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+            <circle cx="0" cy="-7" r="2" fill="url(#sg7)"/>
+          </g>
+        </svg>
+      </div>
+      <span class="mood-label">偷看</span>
+      <span class="mood-tag">空状态</span>
+    </div>
+
+  </div>
+
+  <!-- ===== 应用场景 ===== -->
+  <div class="section-title">在应用中的使用场景</div>
+  <div class="use-cases">
+    <div class="use-case">
+      <div style="width:56px;height:56px;flex-shrink:0" class="mascot-anim-slow">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="ubg1" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#7B6CF0"/><stop offset="100%" stop-color="#6355D8"/></linearGradient><radialGradient id="ubh1" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/><stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/></radialGradient><radialGradient id="ubr1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/></radialGradient></defs>
+          <circle cx="100" cy="80" r="45" fill="url(#ubg1)"/><circle cx="100" cy="80" r="45" fill="url(#ubh1)"/>
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/><path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/><path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <circle cx="74" cy="92" r="9" fill="url(#ubr1)"/><circle cx="126" cy="92" r="9" fill="url(#ubr1)"/>
+          <path d="M 83 80 Q 87 74, 91 80" stroke="#2D2B55" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M 109 80 Q 113 74, 117 80" stroke="#2D2B55" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M 92 95 Q 100 105, 108 95" stroke="#2D2B55" stroke-width="2" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="use-case-text">
+        <h3>🎭 内心剧场 · 空状态</h3>
+        <p>当没有念头时，戏精猫在舞台中央等待，配文「舞台已准备好」</p>
+      </div>
+    </div>
+    <div class="use-case">
+      <div style="width:56px;height:56px;flex-shrink:0" class="mascot-anim-slow">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="ubg2" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#7B6CF0"/><stop offset="100%" stop-color="#6355D8"/></linearGradient><radialGradient id="ubh2" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/><stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/></radialGradient><radialGradient id="ubr2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/></radialGradient></defs>
+          <circle cx="100" cy="80" r="45" fill="url(#ubg2)"/><circle cx="100" cy="80" r="45" fill="url(#ubh2)"/>
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/><path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/><path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <circle cx="74" cy="92" r="9" fill="url(#ubr2)"/><circle cx="126" cy="92" r="9" fill="url(#ubr2)"/>
+          <circle cx="87" cy="80" r="5" fill="#2D2B55"/><circle cx="86" cy="78" r="2" fill="white"/>
+          <ellipse cx="113" cy="80" rx="4" ry="5" fill="#2D2B55"/><circle cx="112" cy="78" r="1.5" fill="white"/>
+          <path d="M 95 97 Q 100 95, 105 97" stroke="#2D2B55" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <text x="135" y="55" font-size="14" fill="#8B7CF7" opacity="0.6" font-weight="bold">?</text>
+        </svg>
+      </div>
+      <div class="use-case-text">
+        <h3>🧪 出戏练习 · 引导</h3>
+        <p>在练习页面引导用户操作，思考状态配「?」</p>
+      </div>
+    </div>
+    <div class="use-case">
+      <div style="width:56px;height:56px;flex-shrink:0" class="mascot-anim-slow">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="ubg3" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0%" stop-color="#7B6CF0"/><stop offset="100%" stop-color="#6355D8"/></linearGradient><radialGradient id="ubh3" cx="40%" cy="30%" r="50%"><stop offset="0%" stop-color="#A89CFB" stop-opacity="0.6"/><stop offset="100%" stop-color="#A89CFB" stop-opacity="0"/></radialGradient><radialGradient id="ubr3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FF8FAB" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF8FAB" stop-opacity="0"/></radialGradient></defs>
+          <circle cx="100" cy="80" r="45" fill="url(#ubg3)"/><circle cx="100" cy="80" r="45" fill="url(#ubh3)"/>
+          <path d="M 65 52 L 55 25 L 80 45 Z" fill="#7B6CF0"/><path d="M 67 50 L 59 30 L 77 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <path d="M 135 52 L 145 25 L 120 45 Z" fill="#7B6CF0"/><path d="M 133 50 L 141 30 L 123 46 Z" fill="#FF8FAB" opacity="0.5"/>
+          <circle cx="74" cy="92" r="9" fill="url(#ubr3)"/><circle cx="126" cy="92" r="9" fill="url(#ubr3)"/>
+          <path d="M 82 82 Q 87 86, 92 82" stroke="#2D2B55" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M 108 82 Q 113 86, 118 82" stroke="#2D2B55" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <circle cx="100" cy="96" r="3" fill="#2D2B55" opacity="0.5"/>
+          <text x="140" y="55" font-size="10" fill="#8B7CF7" opacity="0.6" font-weight="bold">z</text>
+          <text x="148" y="45" font-size="8" fill="#8B7CF7" opacity="0.4" font-weight="bold">z</text>
+        </svg>
+      </div>
+      <div class="use-case-text">
+        <h3>🌙 散场时分 · 陪睡</h3>
+        <p>在睡前模式中，戏精猫陪你做呼吸练习，眯着眼 Zzz</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 配色方案 ===== -->
+  <div class="section-title">色彩体系</div>
+  <div class="palette">
+    <div class="color-chip"><div class="color-dot" style="background:#7B6CF0"></div><span class="color-name">主体</span></div>
+    <div class="color-chip"><div class="color-dot" style="background:#6355D8"></div><span class="color-name">阴影</span></div>
+    <div class="color-chip"><div class="color-dot" style="background:#A89CFB"></div><span class="color-name">高光</span></div>
+    <div class="color-chip"><div class="color-dot" style="background:#EDE9FE"></div><span class="color-name">肚皮</span></div>
+    <div class="color-chip"><div class="color-dot" style="background:#4ECDC4"></div><span class="color-name">面具</span></div>
+    <div class="color-chip"><div class="color-dot" style="background:#FF8FAB"></div><span class="color-name">腮红</span></div>
+    <div class="color-chip"><div class="color-dot" style="background:#FFD700"></div><span class="color-name">星星</span></div>
+    <div class="color-chip"><div class="color-dot" style="background:#2D2B55"></div><span class="color-name">瞳孔</span></div>
+  </div>
+
+  <!-- ===== 设计说明 ===== -->
+  <div class="design-notes">
+    <h3>设计理念</h3>
+    <ul>
+      <li><strong>圆润扁平风格</strong> — 参考 OtterLife 海獭的圆润体态和简约轮廓，所有形状使用大圆角</li>
+      <li><strong>薰衣草紫色系</strong> — 与应用品牌色 #8B7CF7 一脉相承，略深一度 (#7B6CF0→#6355D8) 增加体积感</li>
+      <li><strong>戏剧面具元素</strong> — 薄荷绿面具挂在耳旁，呼应「出戏」核心隐喻，微微晃动增添生动感</li>
+      <li><strong>粉色腮红 + 尖耳猫造型</strong> — 选择猫而非人形，因为猫天然有种「看戏」的高冷气质，又不失可爱</li>
+      <li><strong>多情绪状态</strong> — 7种情绪适配不同场景：默认/开心/瞌睡/思考/挥手/冥想/偷看</li>
+      <li><strong>微动画</strong> — 尾巴摆动、眨眼、面具晃动、呼吸浮动，节奏缓慢（3-6s），营造治愈氛围</li>
+      <li><strong>纯 SVG 实现</strong> — 零图片依赖，支持任意缩放，体积 < 3KB，适配所有主题背景</li>
+    </ul>
+  </div>
+
+</div>
+
+</body>
+</html>
