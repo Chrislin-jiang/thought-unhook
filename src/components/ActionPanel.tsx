@@ -158,10 +158,10 @@ export default function ActionPanel() {
     useThoughtStore.setState({ releasingMethod: 'blow' });
     // 0.7s 变形为云朵，然后触发 exit 飘走动画(2s)
     setTimeout(() => {
-      releaseThought(thought.uid, 'blow');
-      setReleasingId(null);
+      releaseThought(thought.uid, 'melt');
+      setMeltingId(null);
       selectThought(null);
-    }, 2800);
+    }, 3000);
   };
 
   // ===== 🫠 融化操作 =====

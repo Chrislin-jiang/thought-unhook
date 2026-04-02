@@ -17,28 +17,33 @@ interface Props {
 function getExitAnimation(method: ReleaseMethod | null) {
   switch (method) {
     case 'blow':
-      // 云朵向右上方飘远
+      // 云朵向右上方飘远，带有被吹散的效果
       return {
-        opacity: [1, 0.9, 0.6, 0.2, 0],
-        y: [0, -40, -120, -250, -420],
-        x: [0, 30, 80, 160, 280],
-        scale: [1, 1.02, 0.85, 0.55, 0.25],
+        opacity: [1, 0.8, 0.4, 0],
+        y: [0, -60, -150, -300],
+        x: [0, 50, 130, 260],
+        scale: [1, 1.1, 0.9, 0.4],
+        rotate: [0, 5, 15, 30],
+        filter: ['blur(0px)', 'blur(1px)', 'blur(3px)', 'blur(8px)'],
         transition: {
-          duration: 2.0,
-          ease: [0.1, 0.5, 0.3, 1],
+          duration: 2.5,
+          ease: [0.1, 0.6, 0.2, 1],
         },
       };
     case 'melt':
-      // 向下流淌滑落
+      // 向下流淌滑落，增加粘滞感和不规则形变
       return {
-        opacity: [1, 0.85, 0.6, 0.25, 0],
-        y: [0, 20, 80, 180, 320],
-        scaleX: [1, 1.06, 1.15, 1.1, 0.8],
-        scaleY: [1, 0.9, 0.6, 0.3, 0.06],
-        filter: ['blur(0px)', 'blur(0px)', 'blur(2px)', 'blur(5px)', 'blur(10px)'],
+        opacity: [1, 0.9, 0.7, 0.3, 0],
+        y: [0, 15, 60, 150, 280],
+        scaleX: [1, 1.08, 1.1, 1, 0.8],
+        scaleY: [1, 0.85, 0.6, 0.3, 0.05],
+        skewX: [0, -2, 3, -1, 0],
+        filter: ['blur(0px)', 'blur(1px)', 'blur(2px)', 'blur(5px)', 'blur(10px)'],
         transition: {
-          duration: 1.8,
-          ease: [0.4, 0, 0.7, 0.2],
+          type: 'spring',
+          stiffness: 80,
+          damping: 15,
+          mass: 0.8,
         },
       };
     case 'resize':
@@ -94,7 +99,12 @@ const ThoughtBubble = forwardRef<HTMLDivElement, Props>(function ThoughtBubble({
       className="thought-bubble"
       style={{ position: 'relative', transform: `translateX(${offsetX})`, overflow: 'visible' }}
     >
-      <div className="bubble-glow" style={{ background: colors.glow }} />
+      <motion.div
+        className="bubble-glow"
+        style={{ background: colors.glow }}
+        animate={{ opacity: isBlowing || isMelting ? 0 : 0.15 }}
+        transition={{ duration: 0.4 }}
+      />
 
       {/* 吹走时：卡通云朵 SVG 覆盖整个气泡 */}
       <AnimatePresence>
@@ -121,24 +131,24 @@ const ThoughtBubble = forwardRef<HTMLDivElement, Props>(function ThoughtBubble({
                 </filter>
               </defs>
               {/* 主体云朵 — 多个重叠椭圆组合 */}
-              <g filter="url(#cloud-soft)">
+              <motion.g filter="url(#cloud-soft)">
                 {/* 底部长椭圆 */}
-                <ellipse cx="100" cy="82" rx="88" ry="30" fill="url(#cloud-grad)" />
+                <motion.ellipse initial={{ x: 0, y: 0, opacity: 1 }} exit={{ x: 20, y: -10, opacity: 0, scale: 0.9 }} transition={{ duration: 2.0, delay: 0.1 }} cx="100" cy="82" rx="88" ry="30" fill="url(#cloud-grad)" />
                 {/* 左下团 */}
-                <ellipse cx="42" cy="68" rx="36" ry="32" fill="url(#cloud-grad)" />
+                <motion.ellipse initial={{ x: 0, y: 0, opacity: 1 }} exit={{ x: -30, y: -25, opacity: 0, scale: 0.8 }} transition={{ duration: 2.2, delay: 0 }} cx="42" cy="68" rx="36" ry="32" fill="url(#cloud-grad)" />
                 {/* 中左上团 */}
-                <ellipse cx="68" cy="42" rx="34" ry="30" fill="url(#cloud-grad)" />
+                <motion.ellipse initial={{ x: 0, y: 0, opacity: 1 }} exit={{ x: -15, y: -45, opacity: 0, scale: 0.85 }} transition={{ duration: 2.3, delay: 0.05 }} cx="68" cy="42" rx="34" ry="30" fill="url(#cloud-grad)" />
                 {/* 中央顶团（最高） */}
-                <ellipse cx="105" cy="30" rx="38" ry="32" fill="url(#cloud-grad)" />
+                <motion.ellipse initial={{ x: 0, y: 0, opacity: 1 }} exit={{ x: 10, y: -55, opacity: 0, scale: 0.75 }} transition={{ duration: 2.1, delay: 0.1 }} cx="105" cy="30" rx="38" ry="32" fill="url(#cloud-grad)" />
                 {/* 中右上团 */}
-                <ellipse cx="140" cy="44" rx="30" ry="28" fill="url(#cloud-grad)" />
+                <motion.ellipse initial={{ x: 0, y: 0, opacity: 1 }} exit={{ x: 40, y: -40, opacity: 0, scale: 0.8 }} transition={{ duration: 2.4, delay: 0 }} cx="140" cy="44" rx="30" ry="28" fill="url(#cloud-grad)" />
                 {/* 右下团 */}
-                <ellipse cx="158" cy="66" rx="34" ry="30" fill="url(#cloud-grad)" />
+                <motion.ellipse initial={{ x: 0, y: 0, opacity: 1 }} exit={{ x: 50, y: -20, opacity: 0, scale: 0.9 }} transition={{ duration: 2.2, delay: 0.15 }} cx="158" cy="66" rx="34" ry="30" fill="url(#cloud-grad)" />
                 {/* 填充中间区域 */}
-                <ellipse cx="100" cy="58" rx="70" ry="35" fill="url(#cloud-grad)" />
-              </g>
+                <motion.ellipse initial={{ x: 0, y: 0, opacity: 1 }} exit={{ x: 5, y: -20, opacity: 0, scale: 1.05 }} transition={{ duration: 2.5, delay: 0.1 }} cx="100" cy="58" rx="70" ry="35" fill="url(#cloud-grad)" />
+              </motion.g>
               {/* 高光 */}
-              <ellipse cx="80" cy="38" rx="22" ry="14" fill="rgba(255,255,255,0.06)" />
+              <motion.ellipse initial={{ opacity: 0.06 }} exit={{ opacity: 0 }} transition={{ duration: 1.5 }} cx="80" cy="38" rx="22" ry="14" fill="rgba(255,255,255,1)" />
             </svg>
           </motion.div>
         )}
@@ -146,16 +156,18 @@ const ThoughtBubble = forwardRef<HTMLDivElement, Props>(function ThoughtBubble({
 
       <motion.div
         animate={isBlowing ? {
-          background: 'rgba(218, 235, 255, 0.12)',
-          borderColor: 'rgba(200, 220, 255, 0.06)',
-          boxShadow: '0 4px 40px rgba(200, 220, 255, 0.1)',
+          // 吹走时，气泡背景和边框渐变为透明
+          background: 'rgba(218, 235, 255, 0)',
+          borderColor: 'rgba(200, 220, 255, 0)',
+          boxShadow: '0 0 0 rgba(200, 220, 255, 0)',
           scale: 1.05,
         } : isMelting ? {
-          background: 'rgba(255, 200, 160, 0.15)',
-          borderColor: 'rgba(255, 180, 130, 0.12)',
-          boxShadow: '0 8px 30px rgba(255, 160, 100, 0.1)',
-          borderRadius: '28px 28px 40% 40%',
-          scaleX: 1.06,
+          background: 'rgba(255, 200, 160, 0.2)',
+          borderColor: 'rgba(255, 180, 130, 0.15)',
+          boxShadow: '0 6px 25px rgba(255, 160, 100, 0.15)',
+          borderRadius: ['24px', '28px 28px 45% 45%', '30px 30px 50% 50%'],
+          scaleX: [1, 1.05, 1.02],
+          skewX: [0, 1, -1, 0],
         } : {
           y: [0, -floatY, 0],
           x: [0, floatX, 0],
@@ -166,7 +178,7 @@ const ThoughtBubble = forwardRef<HTMLDivElement, Props>(function ThoughtBubble({
             ? { duration: 0.7, ease: 'easeOut' }
             : { duration: floatDuration, ease: 'easeInOut', repeat: Infinity, delay: floatDelay }
         }
-        className="relative rounded-3xl px-5 py-3.5 backdrop-blur-sm"
+        className={`relative rounded-3xl px-5 py-3.5 ${isBlowing ? '' : 'backdrop-blur-sm'}`}
         style={{
           background: isSelected
             ? `linear-gradient(135deg, ${colors.bg.replace('0.12', '0.18')}, rgba(0,240,255,0.03))`
@@ -212,45 +224,93 @@ const ThoughtBubble = forwardRef<HTMLDivElement, Props>(function ThoughtBubble({
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
                 />
-                {/* 液滴1 — 左侧长滴 */}
+                {/* 液滴1 — 左侧长滴，路径变形动画 */}
                 <motion.path
-                  d="M30,2 Q28,2 28,6 Q28,14 32,22 Q34,28 32,32 Q30,36 32,36 Q34,36 34,32 Q36,28 36,22 Q36,14 34,6 Q34,2 32,2 Z"
                   fill="url(#drip-grad)"
-                  initial={{ scaleY: 0, originY: 0 }}
-                  animate={{ scaleY: [0, 0.6, 1, 1.1] }}
-                  transition={{ duration: 1.2, delay: 0.3, ease: 'easeIn' }}
+                  initial={{ d: "M32,2 C32,2 32,2 32,2 C32,2 32,2 32,2 Z" }}
+                  animate={{
+                    d: [
+                      "M32,2 C32,2 32,2 32,2 C32,2 32,2 32,2 Z", // 初始点
+                      "M30,2 Q28,2 28,6 Q28,14 32,22 Q36,14 34,6 Q34,2 32,2 Z", // 开始形成
+                      "M30,2 Q28,2 28,8 Q28,18 32,28 Q36,18 34,8 Q34,2 32,2 Z", // 拉长
+                      "M30,5 Q28,5 28,10 Q28,20 32,32 Q36,20 34,10 Q34,5 32,5 Z", // 即将断开
+                      "M32,15 Q30,18 30,22 Q30,30 32,36 Q34,30 34,22 Q34,18 32,15 Z" // 断开后下落
+                    ],
+                    opacity: [1, 1, 1, 1, 0],
+                  }}
+                  transition={{
+                    duration: 1.8, delay: 0.3, ease: 'easeInOut',
+                  }}
                 />
-                {/* 液滴2 — 中间粗滴 */}
+                {/* 液滴2 — 中间粗滴，路径变形动画 */}
                 <motion.path
-                  d="M95,2 Q91,2 90,8 Q89,16 92,26 Q94,32 93,37 Q92,40 96,40 Q100,40 99,36 Q98,32 100,26 Q103,16 102,8 Q101,2 97,2 Z"
                   fill="url(#drip-grad)"
-                  initial={{ scaleY: 0, originY: 0 }}
-                  animate={{ scaleY: [0, 0.4, 0.9, 1.15] }}
-                  transition={{ duration: 1.4, delay: 0.5, ease: 'easeIn' }}
+                  initial={{ d: "M96,2 C96,2 96,2 96,2 C96,2 96,2 96,2 Z" }}
+                  animate={{
+                    d: [
+                      "M96,2 C96,2 96,2 96,2 C96,2 96,2 96,2 Z",
+                      "M95,2 Q91,2 90,8 Q89,16 92,26 Q98,16 102,8 Q101,2 97,2 Z",
+                      "M95,3 Q91,3 90,10 Q89,20 92,32 Q98,20 102,10 Q101,3 97,3 Z",
+                      "M95,8 Q91,8 90,15 Q89,25 92,37 Q98,25 102,15 Q101,8 97,8 Z",
+                      "M96,20 Q94,24 94,28 Q94,36 96,40 Q98,36 98,28 Q98,24 96,20 Z"
+                    ],
+                    opacity: [1, 1, 1, 1, 0],
+                  }}
+                  transition={{
+                    duration: 2.0, delay: 0.5, ease: 'easeInOut',
+                  }}
                 />
-                {/* 液滴3 — 右侧细滴 */}
+                {/* 液滴3 — 右侧细滴，路径变形动画 */}
                 <motion.path
-                  d="M155,2 Q153,2 153,5 Q153,12 155,20 Q156,26 155,30 Q154,33 156,33 Q158,33 157,30 Q156,26 157,20 Q159,12 159,5 Q159,2 157,2 Z"
                   fill="url(#drip-grad)"
-                  initial={{ scaleY: 0, originY: 0 }}
-                  animate={{ scaleY: [0, 0.5, 1, 1.05] }}
-                  transition={{ duration: 1.0, delay: 0.7, ease: 'easeIn' }}
+                  initial={{ d: "M156,2 C156,2 156,2 156,2 C156,2 156,2 156,2 Z" }}
+                  animate={{
+                    d: [
+                      "M156,2 C156,2 156,2 156,2 C156,2 156,2 156,2 Z",
+                      "M155,2 Q153,2 153,5 Q153,12 155,20 Q157,12 159,5 Q159,2 157,2 Z",
+                      "M155,3 Q153,3 153,7 Q153,15 155,25 Q157,15 159,7 Q159,3 157,3 Z",
+                      "M155,6 Q153,6 153,10 Q153,18 155,28 Q157,18 159,10 Q159,6 157,6 Z",
+                      "M156,18 Q154,21 154,24 Q154,30 156,33 Q158,30 158,24 Q158,21 156,18 Z"
+                    ],
+                    opacity: [1, 1, 1, 1, 0],
+                  }}
+                  transition={{
+                    duration: 1.6, delay: 0.7, ease: 'easeInOut',
+                  }}
                 />
-                {/* 液滴4 — 左侧小滴 */}
+                {/* 液滴4 — 左侧小滴，路径变形动画 */}
                 <motion.path
-                  d="M60,3 Q59,3 59,6 Q59,10 60,15 Q61,18 60,20 Q59,21 61,21 Q62,21 62,18 Q62,15 63,10 Q63,6 63,3 Z"
                   fill="url(#drip-grad)"
-                  initial={{ scaleY: 0, originY: 0 }}
-                  animate={{ scaleY: [0, 0.7, 1] }}
-                  transition={{ duration: 0.9, delay: 0.9, ease: 'easeIn' }}
+                  initial={{ d: "M61,3 C61,3 61,3 61,3 C61,3 61,3 61,3 Z" }}
+                  animate={{
+                    d: [
+                      "M61,3 C61,3 61,3 61,3 C61,3 61,3 61,3 Z",
+                      "M60,3 Q59,3 59,6 Q59,10 60,15 Q62,10 63,6 Q63,3 61,3 Z",
+                      "M60,4 Q59,4 59,8 Q59,13 60,18 Q62,13 63,8 Q63,4 61,4 Z",
+                      "M61,10 Q60,12 60,14 Q60,18 61,21 Q62,18 62,14 Q62,12 61,10 Z"
+                    ],
+                    opacity: [1, 1, 1, 0],
+                  }}
+                  transition={{
+                    duration: 1.4, delay: 0.9, ease: 'easeInOut',
+                  }}
                 />
-                {/* 液滴5 — 右侧小滴 */}
+                {/* 液滴5 — 右侧小滴，路径变形动画 */}
                 <motion.path
-                  d="M130,2 Q129,2 129,5 Q129,9 130,14 Q131,17 130,19 Q130,20 131,20 Q132,20 132,17 Q132,14 133,9 Q133,5 133,2 Z"
                   fill="url(#drip-grad)"
-                  initial={{ scaleY: 0, originY: 0 }}
-                  animate={{ scaleY: [0, 0.6, 1] }}
-                  transition={{ duration: 0.8, delay: 0.6, ease: 'easeIn' }}
+                  initial={{ d: "M131,2 C131,2 131,2 131,2 C131,2 131,2 131,2 Z" }}
+                  animate={{
+                    d: [
+                      "M131,2 C131,2 131,2 131,2 C131,2 131,2 131,2 Z",
+                      "M130,2 Q129,2 129,5 Q129,9 130,14 Q132,9 133,5 Q133,2 131,2 Z",
+                      "M130,3 Q129,3 129,7 Q129,12 130,17 Q132,12 133,7 Q133,3 131,3 Z",
+                      "M131,9 Q130,11 130,13 Q130,17 131,19 Q132,17 132,13 Q132,11 131,9 Z"
+                    ],
+                    opacity: [1, 1, 1, 0],
+                  }}
+                  transition={{
+                    duration: 1.2, delay: 0.6, ease: 'easeInOut',
+                  }}
                 />
               </svg>
             </motion.div>
