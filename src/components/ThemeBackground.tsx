@@ -172,6 +172,8 @@ function CosmosBg() {
     let lastTime = performance.now();
 
     function update(now: number) {
+      if (!ctx) return;
+      
       const dt = now - lastTime;
       lastTime = now;
 
