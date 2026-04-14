@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>念头解绑 — 页面预览</title>
+    <title>出戏 — 页面预览</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
@@ -12,20 +12,6 @@
         rel="stylesheet">
     <style>
         :root {
-            --bg-start: #050510;
-            --bg-end: #0a0a1a;
-            --text-primary: #e0e8f0;
-            --text-secondary: #8892a0;
-            --text-tertiary: #6b7280;
-            --frame-bg: #1a1a2e;
-            --frame-accent: #2a2a3e;
-            --card-shadow: rgba(0, 0, 0, 0.15);
-            --status-icon: #fff;
-            --accent: #3766F0;
-            --accent-rgb: 0, 240, 255;
-        }
-
-        [data-theme="light"] {
             --bg-start: #f8fafb;
             --bg-end: #eef2f5;
             --text-primary: #1a1a2e;
@@ -34,7 +20,23 @@
             --frame-bg: #1a1a2e;
             --frame-accent: #2a2a3e;
             --card-shadow: rgba(0, 0, 0, 0.15);
-            --status-icon: #000;
+            --status-icon: #fff;
+            --accent: #00f0ff;
+            --accent-rgb: 0, 240, 255;
+        }
+
+        [data-theme="dark"] {
+            --bg-start: #050510;
+            --bg-end: #0a0a1a;
+            --text-primary: #e0e8f0;
+            --text-secondary: #8892a0;
+            --text-tertiary: #6b7280;
+            --frame-bg: #1a1a2e;
+            --frame-accent: #2a2a3e;
+            --card-shadow: rgba(0, 0, 0, 0.4);
+            --status-icon: #fff;
+            --accent: #00f0ff;
+            --accent-rgb: 0, 240, 255;
         }
 
         * {
@@ -51,20 +53,6 @@
             overflow-x: hidden;
             transition: background 0.3s ease, color 0.3s ease;
             position: relative;
-        }
-
-        /* 赛博网格背景 */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.04;
-            background-image:
-                linear-gradient(rgba(0, 240, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
         }
 
         /* 主题切换按钮 */
@@ -110,14 +98,14 @@
             align-items: center;
             justify-content: center;
             font-size: 32px;
-            background: linear-gradient(135deg, var(--accent), #ff2d8a);
+            background: linear-gradient(135deg, #00f0ff 0%, #0088ff 100%);
             box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
         }
 
         .page-header h1 {
             font-size: 32px;
             font-weight: 900;
-            background: linear-gradient(135deg, var(--accent) 0%, #ff2d8a 100%);
+            background: linear-gradient(135deg, var(--accent) 0%, #0088ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -131,17 +119,6 @@
             font-weight: 400;
         }
 
-        /* 预览区标题 */
-        .section-title {
-            font-size: 22px;
-            font-weight: 800;
-            padding: 0 48px;
-            margin-bottom: 24px;
-            color: var(--text-primary);
-            position: relative;
-            z-index: 1;
-        }
-
         /* 横向滚动容器 */
         .preview-scroll-wrapper {
             width: 100%;
@@ -150,7 +127,7 @@
             padding: 0 48px 48px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
-            scrollbar-color: rgba(0, 240, 255, 0.4) transparent;
+            scrollbar-color: rgba(var(--accent-rgb), 0.4) transparent;
             position: relative;
             z-index: 1;
         }
@@ -164,13 +141,13 @@
         }
 
         .preview-scroll-wrapper::-webkit-scrollbar-thumb {
-            background: rgba(0, 240, 255, 0.4);
+            background: rgba(var(--accent-rgb), 0.4);
             border-radius: 3px;
         }
 
         .preview-container {
             display: flex;
-            justify-content: center;
+            justify-content: space-around;
             flex-wrap: wrap;
             gap: 40px;
             padding: 8px 0;
@@ -202,7 +179,7 @@
             font-weight: 400;
         }
 
-        /* iPhone 16 Pro 外壳 */
+        /* iPhone 16 Pro 外壳 - 保持原始样式 */
         .iphone-frame {
             position: relative;
             width: 280px;
@@ -234,7 +211,7 @@
             border-radius: 30px;
             overflow: hidden;
             position: relative;
-            background: #fff;
+            background: #0a0a1a;
         }
 
         /* iOS 状态栏 */
@@ -249,16 +226,12 @@
             align-items: center;
             justify-content: space-between;
             padding: 6px 16px 0;
-            background: #fff;
+            background: #0a0a1a;
             font-family: 'SF Pro Text', 'Inter', -apple-system, sans-serif;
             font-size: 10.5px;
             font-weight: 600;
             color: var(--status-icon);
             transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        [data-theme="light"] .status-bar {
-            background: #ffffff;
         }
 
         .status-bar-left {
@@ -367,7 +340,7 @@
             transition: background 0.3s ease;
         }
 
-        /* iframe 容器 */
+        /* iframe 容器 - 状态栏下方 */
         .iframe-wrapper {
             position: absolute;
             top: 36px;
@@ -436,7 +409,7 @@
         .loading-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            background: linear-gradient(135deg, #050510 0%, #0a0a1a 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -454,7 +427,7 @@
         .loading-spinner {
             width: 28px;
             height: 28px;
-            border: 3px solid rgba(0, 240, 255, 0.2);
+            border: 3px solid rgba(var(--accent-rgb), 0.2);
             border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -481,11 +454,6 @@
 
             .page-header h1 {
                 font-size: 24px;
-            }
-
-            .section-title {
-                font-size: 18px;
-                padding: 0 24px;
             }
 
             .preview-scroll-wrapper {
@@ -557,37 +525,44 @@
 </head>
 
 <body>
-    <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">☀️</button>
+    <!-- 主题切换按钮 -->
+    <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">🌙</button>
 
+    <!-- 顶部标题 -->
     <div class="page-header">
-        <div class="logo">🫧</div>
-        <h1>念头解绑</h1>
-        <p class="subtitle">Thought Unhook — 觉察与解绑</p>
+        <div class="logo">🎭</div>
+        <h1>出戏</h1>
+        <p class="subtitle">OffStage — 从念头的剧本里，出戏</p>
     </div>
-
-    <div class="section-title">预览</div>
 
     <div class="preview-scroll-wrapper">
-        <div class="preview-container" id="previewContainer"></div>
+        <div class="preview-container" id="previewContainer">
+            <!-- 卡片将由 JS 动态生成 -->
+        </div>
     </div>
 
+    <!-- 底部 -->
     <div class="page-footer">
-        <p>念头解绑 &nbsp;|&nbsp; <a href="http://localhost:5173" target="_blank">打开完整应用 →</a></p>
+        <p>出戏 OffStage &nbsp;|&nbsp; <a href="https://thought-unhook.vercel.app" target="_blank">打开完整应用 →</a></p>
     </div>
 
     <script>
+        // 页面配置：路由路径、标题、描述
         const pages = [
-            { path: "/#/space", title: "念头空间", desc: "记录、分类与解绑念头" },
-            { path: "/#/journal", title: "觉察日志", desc: "回顾你的觉察旅程" },
-            { path: "/#/lab", title: "解钩实验室", desc: "创意练习与角色扮演" },
-            { path: "/#/night", title: "夜间模式", desc: "在星光下安然入睡" }
+            { path: "/#/space", title: "🎭 内心剧场", desc: "记录念头，觉察内心剧本" },
+            { path: "/#/journal", title: "📜 演出记录", desc: "回顾你的觉察旅程" },
+            { path: "/#/lab", title: "🎪 出戏练习", desc: "认知解离创意练习" },
+            { path: "/#/night", title: "🌙 散场时分", desc: "在星光下安然入睡" }
         ];
 
-        const BASE_URL = 'http://localhost:5173';
+        const BASE_URL = 'https://thought-unhook.vercel.app';
         const container = document.getElementById('previewContainer');
+
+        // 深色模式切换
         const themeToggle = document.getElementById('themeToggle');
         const html = document.documentElement;
 
+        // 读取保存的主题偏好
         const savedTheme = localStorage.getItem('preview-theme') || 'dark';
         html.setAttribute('data-theme', savedTheme);
         updateThemeIcon(savedTheme);
@@ -598,21 +573,22 @@
             html.setAttribute('data-theme', newTheme);
             localStorage.setItem('preview-theme', newTheme);
             updateThemeIcon(newTheme);
-            document.querySelectorAll('iframe').forEach(iframe => {
-                iframe.contentWindow?.postMessage({ type: 'theme-toggle', isDark: newTheme === 'dark' }, '*');
-            });
         });
 
         function updateThemeIcon(theme) {
-            themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+            themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
         }
 
+        // 生成页面卡片
         pages.forEach((page, index) => {
             const card = document.createElement('div');
             card.className = 'preview-card';
 
+            // 获取当前时间
             const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const timeStr = `${hours}:${minutes}`;
 
             card.innerHTML = `
                 <div class="card-label">
@@ -620,28 +596,42 @@
                     <p>${page.desc}</p>
                 </div>
                 <div class="iphone-frame">
-                    <div class="iphone-screen">
+                    <div class="iphone-screen" id="screen-${index}">
+                        <!-- iOS 状态栏 -->
                         <div class="status-bar">
-                            <div class="status-bar-left"><span class="time">${timeStr}</span></div>
-                            <div class="status-bar-center"><div class="dynamic-island"></div></div>
+                            <div class="status-bar-left">
+                                <span class="time">${timeStr}</span>
+                            </div>
+                            <div class="status-bar-center">
+                                <div class="dynamic-island"></div>
+                            </div>
                             <div class="status-bar-right">
+                                <!-- 蜂窝信号 -->
                                 <div class="signal-icon">
-                                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
                                 </div>
+                                <!-- WiFi -->
                                 <div class="wifi-icon">
-                                    <svg viewBox="0 0 16 12" fill="none">
+                                    <svg viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M8 10.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5z" fill="currentColor"/>
                                         <path d="M5.17 8.83a4.002 4.002 0 0 1 5.66 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
                                         <path d="M2.34 6a7.07 7.07 0 0 1 11.32 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
                                         <path d="M0 3.17a10.5 10.5 0 0 1 16 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
                                     </svg>
                                 </div>
+                                <!-- 电量 -->
                                 <div class="battery-icon">
-                                    <div class="battery-body"><div class="battery-level"></div></div>
+                                    <div class="battery-body">
+                                        <div class="battery-level"></div>
+                                    </div>
                                     <div class="battery-cap"></div>
                                 </div>
                             </div>
                         </div>
+                        <!-- iframe 容器 -->
                         <div class="iframe-wrapper">
                             <div class="loading-overlay" id="loading-${index}">
                                 <div class="loading-spinner"></div>
@@ -650,6 +640,7 @@
                             <iframe
                                 src="${BASE_URL}${page.path}"
                                 loading="lazy"
+                                id="iframe-${index}"
                                 onload="document.getElementById('loading-${index}').classList.add('hidden')"
                             ></iframe>
                         </div>
@@ -660,10 +651,13 @@
             container.appendChild(card);
         });
 
+        // 每分钟更新状态栏时间
         setInterval(() => {
             const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
             document.querySelectorAll('.status-bar-left .time').forEach(el => {
-                el.textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                el.textContent = `${h}:${m}`;
             });
         }, 10000);
     </script>
