@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>念头解绑 — 页面预览</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-start: #050510;
+            --bg-end: #0a0a1a;
+            --text-primary: #e0e8f0;
+            --text-secondary: #8892a0;
+            --text-tertiary: #6b7280;
+            --frame-bg: #1a1a2e;
+            --frame-accent: #2a2a3e;
+            --card-shadow: rgba(0, 0, 0, 0.15);
+            --status-icon: #fff;
+            --accent: #3766F0;
+            --accent-rgb: 0, 240, 255;
+        }
+
+        [data-theme="light"] {
+            --bg-start: #f8fafb;
+            --bg-end: #eef2f5;
+            --text-primary: #1a1a2e;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --frame-bg: #1a1a2e;
+            --frame-accent: #2a2a3e;
+            --card-shadow: rgba(0, 0, 0, 0.15);
+            --status-icon: #000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+
+        /* 赛博网格背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.04;
+            background-image:
+                linear-gradient(rgba(0, 240, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* 主题切换按钮 */
+        .theme-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 100;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--frame-bg);
+            background: var(--frame-bg);
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px var(--card-shadow);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* 顶部标题区域 */
+        .page-header {
+            text-align: center;
+            padding: 48px 24px 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header .logo {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            object-fit: cover;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            background: linear-gradient(135deg, var(--accent), #ff2d8a);
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent) 0%, #ff2d8a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header .subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* 预览区标题 */
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            padding: 0 48px;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 横向滚动容器 */
+        .preview-scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0 48px 48px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 240, 255, 0.4) transparent;
+            position: relative;
+            z-index: 1;
+        }
+
+        .preview-scroll-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .preview-scroll-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .preview-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(0, 240, 255, 0.4);
+            border-radius: 3px;
+        }
+
+        .preview-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            padding: 8px 0;
+        }
+
+        /* 每个预览卡片 */
+        .preview-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .preview-card .card-label {
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .preview-card .card-label h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .preview-card .card-label p {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
+
+        /* iPhone 16 Pro 外壳 */
+        .iphone-frame {
+            position: relative;
+            width: 280px;
+            height: 624px;
+            background: var(--frame-bg);
+            border-radius: 38px;
+            padding: 8px;
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                0 20px 60px var(--card-shadow),
+                0 8px 24px rgba(0, 0, 0, 0.15),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        }
+
+        .preview-card:hover .iphone-frame {
+            transform: translateY(-4px);
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                0 28px 70px rgba(0, 0, 0, 0.3),
+                0 12px 32px rgba(0, 0, 0, 0.2),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        /* 屏幕区域 */
+        .iphone-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            background: #fff;
+        }
+
+        /* iOS 状态栏 */
+        .status-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 36px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 16px 0;
+            background: #fff;
+            font-family: 'SF Pro Text', 'Inter', -apple-system, sans-serif;
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--status-icon);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        [data-theme="light"] .status-bar {
+            background: #ffffff;
+        }
+
+        .status-bar-left {
+            display: flex;
+            align-items: center;
+            width: 72px;
+        }
+
+        .status-bar-left .time {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .status-bar-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 灵动岛 */
+        .dynamic-island {
+            width: 62px;
+            height: 16px;
+            background: #000;
+            border-radius: 20px;
+        }
+
+        .status-bar-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            width: 72px;
+        }
+
+        /* 蜂窝信号图标 */
+        .signal-icon {
+            display: flex;
+            align-items: flex-end;
+            gap: 1px;
+            height: 10px;
+        }
+
+        .signal-icon .bar {
+            width: 2.5px;
+            background: var(--status-icon);
+            border-radius: 0.5px;
+            transition: background 0.3s ease;
+        }
+
+        .signal-icon .bar:nth-child(1) { height: 3px; }
+        .signal-icon .bar:nth-child(2) { height: 5px; }
+        .signal-icon .bar:nth-child(3) { height: 7px; }
+        .signal-icon .bar:nth-child(4) { height: 10px; }
+
+        /* WiFi 图标 */
+        .wifi-icon {
+            width: 12px;
+            height: 12px;
+            position: relative;
+        }
+
+        .wifi-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .wifi-icon path {
+            stroke: var(--status-icon);
+            transition: stroke 0.3s ease;
+        }
+
+        /* 电量图标 */
+        .battery-icon {
+            display: flex;
+            align-items: center;
+            gap: 1px;
+        }
+
+        .battery-body {
+            width: 18px;
+            height: 9px;
+            border: 1.2px solid var(--status-icon);
+            border-radius: 2px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 1.2px;
+            transition: border-color 0.3s ease;
+        }
+
+        .battery-level {
+            width: 75%;
+            height: 100%;
+            background: var(--status-icon);
+            border-radius: 0.5px;
+            transition: background 0.3s ease;
+        }
+
+        .battery-cap {
+            width: 1.5px;
+            height: 4px;
+            background: var(--status-icon);
+            border-radius: 0 1px 1px 0;
+            transition: background 0.3s ease;
+        }
+
+        /* iframe 容器 */
+        .iframe-wrapper {
+            position: absolute;
+            top: 36px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        /* iframe 样式 */
+        .iphone-screen iframe {
+            width: 402px;
+            height: 874px;
+            border: none;
+            transform-origin: top left;
+            transform: scale(0.6567);
+        }
+
+        /* 底部侧边按钮装饰 */
+        .iphone-frame::before {
+            content: '';
+            position: absolute;
+            right: -2px;
+            top: 120px;
+            width: 3px;
+            height: 44px;
+            background: var(--frame-accent);
+            border-radius: 0 2px 2px 0;
+            transition: background 0.3s ease;
+        }
+
+        .iphone-frame::after {
+            content: '';
+            position: absolute;
+            left: -2px;
+            top: 100px;
+            width: 3px;
+            height: 28px;
+            background: var(--frame-accent);
+            border-radius: 2px 0 0 2px;
+            box-shadow: 0 40px 0 var(--frame-accent), 0 72px 0 var(--frame-accent);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* 底部信息 */
+        .page-footer {
+            text-align: center;
+            padding: 32px 24px 48px;
+            color: var(--text-tertiary);
+            font-size: 13px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .page-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* 加载动画 */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            border-radius: 0 0 30px 30px;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(0, 240, 255, 0.2);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        .loading-text {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 32px 16px 24px;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+
+            .section-title {
+                font-size: 18px;
+                padding: 0 24px;
+            }
+
+            .preview-scroll-wrapper {
+                padding: 0 24px 32px;
+            }
+
+            .preview-container {
+                gap: 24px;
+            }
+
+            .iphone-frame {
+                width: 220px;
+                height: 477px;
+                border-radius: 30px;
+                padding: 6px;
+            }
+
+            .iphone-screen {
+                border-radius: 24px;
+            }
+
+            .status-bar {
+                height: 28px;
+                padding: 4px 12px 0;
+                font-size: 8.5px;
+            }
+
+            .status-bar-left .time {
+                font-size: 9px;
+            }
+
+            .dynamic-island {
+                width: 48px;
+                height: 13px;
+            }
+
+            .signal-icon .bar {
+                width: 2px;
+            }
+
+            .signal-icon .bar:nth-child(1) { height: 2.5px; }
+            .signal-icon .bar:nth-child(2) { height: 4px; }
+            .signal-icon .bar:nth-child(3) { height: 5.5px; }
+            .signal-icon .bar:nth-child(4) { height: 8px; }
+
+            .battery-body {
+                width: 15px;
+                height: 7.5px;
+            }
+
+            .iframe-wrapper {
+                top: 28px;
+            }
+
+            .iphone-screen iframe {
+                transform: scale(0.5174);
+            }
+
+            .status-bar-right {
+                gap: 3px;
+                width: 60px;
+            }
+
+            .status-bar-left {
+                width: 60px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">☀️</button>
+
+    <div class="page-header">
+        <div class="logo">🫧</div>
+        <h1>念头解绑</h1>
+        <p class="subtitle">Thought Unhook — 觉察与解绑</p>
+    </div>
+
+    <div class="section-title">预览</div>
+
+    <div class="preview-scroll-wrapper">
+        <div class="preview-container" id="previewContainer"></div>
+    </div>
+
+    <div class="page-footer">
+        <p>念头解绑 &nbsp;|&nbsp; <a href="http://localhost:5173" target="_blank">打开完整应用 →</a></p>
+    </div>
+
+    <script>
+        const pages = [
+            { path: "/#/space", title: "念头空间", desc: "记录、分类与解绑念头" },
+            { path: "/#/journal", title: "觉察日志", desc: "回顾你的觉察旅程" },
+            { path: "/#/lab", title: "解钩实验室", desc: "创意练习与角色扮演" },
+            { path: "/#/night", title: "夜间模式", desc: "在星光下安然入睡" }
+        ];
+
+        const BASE_URL = 'http://localhost:5173';
+        const container = document.getElementById('previewContainer');
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        const savedTheme = localStorage.getItem('preview-theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('preview-theme', newTheme);
+            updateThemeIcon(newTheme);
+            document.querySelectorAll('iframe').forEach(iframe => {
+                iframe.contentWindow?.postMessage({ type: 'theme-toggle', isDark: newTheme === 'dark' }, '*');
+            });
+        });
+
+        function updateThemeIcon(theme) {
+            themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        pages.forEach((page, index) => {
+            const card = document.createElement('div');
+            card.className = 'preview-card';
+
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            card.innerHTML = `
+                <div class="card-label">
+                    <h3>${page.title}</h3>
+                    <p>${page.desc}</p>
+                </div>
+                <div class="iphone-frame">
+                    <div class="iphone-screen">
+                        <div class="status-bar">
+                            <div class="status-bar-left"><span class="time">${timeStr}</span></div>
+                            <div class="status-bar-center"><div class="dynamic-island"></div></div>
+                            <div class="status-bar-right">
+                                <div class="signal-icon">
+                                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                </div>
+                                <div class="wifi-icon">
+                                    <svg viewBox="0 0 16 12" fill="none">
+                                        <path d="M8 10.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5z" fill="currentColor"/>
+                                        <path d="M5.17 8.83a4.002 4.002 0 0 1 5.66 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+                                        <path d="M2.34 6a7.07 7.07 0 0 1 11.32 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+                                        <path d="M0 3.17a10.5 10.5 0 0 1 16 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+                                    </svg>
+                                </div>
+                                <div class="battery-icon">
+                                    <div class="battery-body"><div class="battery-level"></div></div>
+                                    <div class="battery-cap"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="iframe-wrapper">
+                            <div class="loading-overlay" id="loading-${index}">
+                                <div class="loading-spinner"></div>
+                                <div class="loading-text">加载中...</div>
+                            </div>
+                            <iframe
+                                src="${BASE_URL}${page.path}"
+                                loading="lazy"
+                                onload="document.getElementById('loading-${index}').classList.add('hidden')"
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+
+        setInterval(() => {
+            const now = new Date();
+            document.querySelectorAll('.status-bar-left .time').forEach(el => {
+                el.textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            });
+        }, 10000);
+    </script>
+</body>
+
+</html>
